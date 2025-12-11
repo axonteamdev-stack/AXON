@@ -1,0 +1,25 @@
+localhost:3000/api/auth/register/doctor
+localhost:3000/api/auth/register/patient
+
+doctor => fullName , email , password , profileImage
+patient => fullName , email , password , specialization , yearsExperience , medicalCertificateNumber , certificateImage, profileImage
+---------------------
+localhost:3000/api/auth/login
+{
+    "role" : "patient" ,
+    "email" : "example@example.com" ,
+    "password" : "password"
+}
+----------------
+{
+    "role" : "patient" ,
+    "email" : "example@example.com" ,
+    "password" : "password"
+}
+------------------------------
+localhost:3000/api/auth/change-password
+must login
+{
+    "oldPassword" : "hamo12345678aaa" ,
+    "newPassword" : "hamo12345678aaa"
+}
