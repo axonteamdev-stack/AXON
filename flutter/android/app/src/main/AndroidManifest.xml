@@ -1,8 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+ <!-- Permissions هنا -->
+<uses-permission android:name="android.permission.USE_BIOMETRIC"/>
+<uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+<uses-permission android:name="android.permission.BIOMETRIC"/>
+
     <application
-        android:label="axon"
+        android:label="Axon"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
