@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SplashBottomLetters extends StatelessWidget {
   final Animation<double> animation;
-  const SplashBottomLetters({super.key, required this.animation});
+
+  const SplashBottomLetters({
+    super.key,
+    required this.animation,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
       bottom: MediaQuery.of(context).size.height / 2 - 87,
       left: MediaQuery.of(context).size.width / 2 - 73,
-      width: 140.w,
+      width: 140,
       child: AnimatedBuilder(
         animation: animation,
         builder: (context, child) {
@@ -33,14 +36,14 @@ class SplashBottomLetters extends StatelessWidget {
             child: child,
           );
         },
-
         child: FittedBox(
+          fit: BoxFit.scaleDown,
           child: SizedBox(
-            height: 50.h,
+            height: 50,
             child: Row(
               children: [
-                Image.asset("assets/logo/A.png", width: 44.w),
-                 SizedBox(width: 40.w),
+                Image.asset("assets/logo/A.png", width: 44),
+                const SizedBox(width: 40),
                 Image.asset("assets/logo/O.png"),
                 Image.asset("assets/logo/N.png"),
               ],

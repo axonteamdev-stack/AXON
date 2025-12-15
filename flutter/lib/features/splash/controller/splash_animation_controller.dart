@@ -1,38 +1,54 @@
 import 'package:flutter/material.dart';
 
 class SplashAnimationController {
-  late AnimationController fadeController;
-  late AnimationController slideController;
+  late AnimationController xController;
+  late AnimationController lettersController;
 
-  late Animation<double> fadeAnimation;
-  late Animation<double> slideAnimation;
+  late Animation<double> xFadeAnimation;
+  late Animation<double> lettersFadeAnimation;
 
-  void init(TickerProvider vsync) {
-    fadeController = AnimationController(
+  void init({
+    required TickerProvider vsync,
+    required VoidCallback onFinished,
+  }) {
+    xController = AnimationController(
       vsync: vsync,
       duration: const Duration(milliseconds: 2000),
     );
 
-    slideController = AnimationController(
+    lettersController = AnimationController(
       vsync: vsync,
       duration: const Duration(milliseconds: 1200),
     );
 
-    fadeAnimation = CurvedAnimation(
-      parent: fadeController,
+    xFadeAnimation = CurvedAnimation(
+      parent: xController,
       curve: Curves.easeIn,
     );
 
-    slideAnimation = CurvedAnimation(
-      parent: slideController,
+    lettersFadeAnimation = CurvedAnimation(
+      parent: lettersController,
       curve: Curves.easeOut,
     );
 
-    fadeController.forward();
+    xController.forward();
+
+    xController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        lettersController.forward();
+      }
+    });
+
+   lettersController.addStatusListener((status) async {
+  if (status == AnimationStatus.completed) {
+    await Future.delayed(const Duration(milliseconds: 300));
+    onFinished();
+  }
+});
   }
 
   void dispose() {
-    fadeController.dispose();
-    slideController.dispose();
+    xController.dispose();
+    lettersController.dispose();
   }
 }

@@ -1,3 +1,4 @@
+import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/core/widgets/text_app.dart';
@@ -85,7 +86,12 @@ class PatientAllergiesView extends StatelessWidget {
 
             Padding(
               padding: EdgeInsets.only(bottom: 40.h),
-              child: CustomButton(text: "Finish", onPressed: () {}),
+              child: CustomButton(text: "Finish", onPressed: () {
+                 Navigator.pushNamed(
+                    context,
+                    AppRoutes.patientRadiology,
+                  );
+              }),
             ),
           ],
         ),

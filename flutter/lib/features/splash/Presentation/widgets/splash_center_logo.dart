@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SplashCenterLogo extends StatelessWidget {
-  final Animation<double> fadeAnimation;
+  final Animation<double> animation;
 
-  const SplashCenterLogo({super.key, required this.fadeAnimation});
+  const SplashCenterLogo({
+    super.key,
+    required this.animation,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: AnimatedBuilder(
-        animation: fadeAnimation,
+        animation: animation,
         builder: (context, child) {
-          final start = fadeAnimation.value.clamp(0.0, 1.0);
+          final start = animation.value.clamp(0.0, 1.0);
           final end = (start + 0.1).clamp(0.0, 1.0);
 
           return ShaderMask(
@@ -31,7 +33,7 @@ class SplashCenterLogo extends StatelessWidget {
             child: child,
           );
         },
-        child: Image.asset("assets/logo/X.png" , width: 400.w),
+        child: Image.asset('assets/logo/X.png'),
       ),
     );
   }

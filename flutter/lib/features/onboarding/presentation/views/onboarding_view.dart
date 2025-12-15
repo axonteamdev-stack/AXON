@@ -102,7 +102,7 @@ class OnBoardingView extends StatelessWidget {
                           if (cubit.currentIndex == 2) {
                             Navigator.pushReplacementNamed(
                               context,
-                              AppRoutes.registration,
+                              AppRoutes.login,
                             );
                           } else {
                             cubit.changePage(cubit.currentIndex + 1);
