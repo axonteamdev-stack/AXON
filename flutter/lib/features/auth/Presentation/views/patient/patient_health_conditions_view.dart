@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -14,20 +15,20 @@ class PatientHealthConditionsView extends StatelessWidget {
   PatientHealthConditionsView({super.key});
 
   final List<String> conditions = const [
-    "Diabetes Type 1",
-    "Diabetes Type 2",
-    "Hypertension",
-    "Heart Disease",
-    "Asthma",
-    "COPD",
-    "Arthritis",
-    "Thyroid Disorder",
-    "Kidney Disease",
-    "Liver Disease",
-    "Cancer",
-    "Epilepsy",
-    "Depression",
-    "Anxiety",
+    'Diabetes Type 1',
+    'Diabetes Type 2',
+    'Hypertension',
+    'Heart Disease',
+    'Asthma',
+    'COPD',
+    'Arthritis',
+    'Thyroid Disorder',
+    'Kidney Disease',
+    'Liver Disease',
+    'Cancer',
+    'Epilepsy',
+    'Depression',
+    'Anxiety',
   ];
 
   @override
@@ -40,27 +41,24 @@ class PatientHealthConditionsView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 55.h),
-
-            CenterIconHeader(
+            const CenterIconHeader(
               icon: Icons.favorite_outline,
-              title: "Health Conditions",
-              subtitle: "Do you have any chronic conditions?",
+              title: 'Health Conditions',
+              subtitle: 'Do you have any chronic conditions?',
             ),
-
             SizedBox(height: 40.h),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const TextApp(
-                  text: "Select all that apply",
+                  text: 'Select all that apply',
                   fontSize: 14,
                   weight: AppTextWeight.semiBold,
                 ),
                 BlocBuilder<PatientRegistrationCubit, PatientRegistrationState>(
                   builder: (context, state) {
                     return TextApp(
-                      text: "${state.selectedConditions.length} Selected",
+                      text: '${state.selectedConditions.length} Selected',
                       fontSize: 10,
                       color: AppColors.grey,
                     );
@@ -68,8 +66,6 @@ class PatientHealthConditionsView extends StatelessWidget {
                 ),
               ],
             ),
-
-            // SizedBox(height: 12.h),
             BlocBuilder<PatientRegistrationCubit, PatientRegistrationState>(
               builder: (context, state) {
                 return SelectableItemGrid(
@@ -82,16 +78,13 @@ class PatientHealthConditionsView extends StatelessWidget {
                 );
               },
             ),
-
             SizedBox(height: 30.h),
-
             Padding(
               padding: EdgeInsets.only(bottom: 40.h),
               child: CustomButton(
-                text: "Next",
+                text: 'Next',
                 onPressed: () {
-                  Navigator.pushNamed(
-                    context,
+                  context.pushName(
                     AppRoutes.patientAllergies,
                     arguments: context.read<PatientRegistrationCubit>(),
                   );

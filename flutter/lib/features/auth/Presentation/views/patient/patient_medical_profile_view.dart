@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
@@ -28,40 +29,43 @@ class PatientMedicalProfileView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 55.h),
-
             const CenterIconHeader(
               imagePath: AppImages.medicalProfile,
-              title: "Medical Profile",
-              subtitle: "Help us understand your health better",
+              title: 'Medical Profile',
+              subtitle: 'Help us understand your health better',
             ),
-
             SizedBox(height: 25.h),
-
-            const FormLabel(text: "Blood Type"),
-
+            const FormLabel(text: 'Blood Type'),
             BlocBuilder<PatientRegistrationCubit, PatientRegistrationState>(
               builder: (context, state) {
                 return ReusableDropdown(
-                  hint: "Select Blood Type",
+                  hint: 'Select Blood Type',
                   value: state.bloodType,
-                  items: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
+                  items: const [
+                    'A+',
+                    'A-',
+                    'B+',
+                    'B-',
+                    'O+',
+                    'O-',
+                    'AB+',
+                    'AB-'
+                  ],
                   onChanged: (v) => cubit.setBloodType(v!),
                 );
               },
             ),
-
             SizedBox(height: 20.h),
-
             Row(
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const FormLabel(text: "Height (cm)"),
+                      const FormLabel(text: 'Height (cm)'),
                       CustomTextField(
                         controller: cubit.heightCtrl,
-                        hintText: "170",
+                        hintText: '170',
                         keyboardType: TextInputType.number,
                         prefixIcon: Image.asset(
                           AppImages.height,
@@ -73,17 +77,15 @@ class PatientMedicalProfileView extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 SizedBox(width: 12.w),
-
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const FormLabel(text: "Weight (kg)"),
+                      const FormLabel(text: 'Weight (kg)'),
                       CustomTextField(
                         controller: cubit.weightCtrl,
-                        hintText: "62.5",
+                        hintText: '62.5',
                         keyboardType: TextInputType.number,
                         prefixIcon: Image.asset(
                           AppImages.weight,
@@ -98,46 +100,44 @@ class PatientMedicalProfileView extends StatelessWidget {
                 ),
               ],
             ),
-
             SizedBox(height: 20.h),
-
             Container(
               padding: EdgeInsets.all(12.r),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.blue.shade200),
+                border: Border.all(color: AppColors.blue),
                 borderRadius: BorderRadius.circular(12),
-                color: Colors.blue.shade50,
+                color: AppColors.blue.withOpacity(0.1),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.blue, size: 20.sp),
+                  Icon(
+                    Icons.info_outline,
+                    color: AppColors.blue,
+                    size: 20.sp,
+                  ),
                   SizedBox(width: 10.w),
-                  Expanded(
+                  const Expanded(
                     child: TextApp(
                       text:
-                          "Your medical information helps doctors provide better care.",
-                      fontSize: 13.sp,
-                      color: Colors.blue,
+                          'Your medical information helps doctors provide better care.',
+                      fontSize: 13,
+                      color: AppColors.blue,
                     ),
                   ),
                 ],
               ),
             ),
-
             SizedBox(height: 50.h),
-
             CustomButton(
-              text: "Next",
+              text: 'Next',
               height: 50.h,
               onPressed: () {
-                Navigator.pushNamed(
-                  context,
+                context.pushName(
                   AppRoutes.patientHealthConditions,
                   arguments: context.read<PatientRegistrationCubit>(),
                 );
               },
             ),
-
             SizedBox(height: 40.h),
           ],
         ),

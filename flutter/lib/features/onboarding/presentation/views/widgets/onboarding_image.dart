@@ -1,3 +1,4 @@
+import 'package:Axon/core/style/colors.dart';
 import 'package:flutter/material.dart';
 
 class OnBoardingImage extends StatelessWidget {
@@ -12,7 +13,7 @@ class OnBoardingImage extends StatelessWidget {
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
+        color: AppColors.grey.withOpacity(0.15),
         borderRadius: BorderRadius.circular(35),
       ),
       child: ClipRRect(

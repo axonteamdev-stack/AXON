@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/helpers/validation_helper.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
@@ -9,7 +10,6 @@ import 'package:Axon/features/auth/Presentation/views/widgets/form_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 
 class ResetPasswordView extends StatelessWidget {
   const ResetPasswordView({super.key});
@@ -32,49 +32,37 @@ class ResetPasswordView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 80.h),
-
-                    TextApp(
-                      text: "Create New Password",
-                      fontSize: 22.sp,
+                    const TextApp(
+                      text: 'Create New Password',
+                      fontSize: 22,
                       weight: AppTextWeight.semiBold,
                     ),
-
                     SizedBox(height: 30.h),
-
-                    FormLabel(text: "New Password"),
+                    const FormLabel(text: 'New Password'),
                     CustomTextField(
                       controller: cubit.passwordController,
-                      hintText: "Enter new password",
+                      hintText: 'Enter new password',
                       isPassword: true,
                       validator: ValidationHelper.validatePassword,
                     ),
-
                     SizedBox(height: 22.h),
-
-                    FormLabel(text: "Confirm Password"),
+                    const FormLabel(text: 'Confirm Password'),
                     CustomTextField(
                       controller: cubit.confirmPasswordController,
-                      hintText: "Confirm password",
+                      hintText: 'Confirm password',
                       isPassword: true,
-                      validator: (value) {
-                        if (value != cubit.passwordController.text) {
-                          return "Passwords do not match";
-                        }
-                        return null;
-                      },
+                      validator: (value) =>
+                          ValidationHelper.validateConfirmPassword(
+                        value,
+                        cubit.passwordController.text,
+                      ),
                     ),
-
                     SizedBox(height: 35.h),
-
                     CustomButton(
-                      text: "Reset Password",
+                      text: 'Reset Password',
                       height: 50.h,
                       onPressed: () {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          AppRoutes.login,
-                          (_) => false,
-                        );
+                        context.pushNamedAndRemoveUntil(AppRoutes.login);
                       },
                     ),
                   ],

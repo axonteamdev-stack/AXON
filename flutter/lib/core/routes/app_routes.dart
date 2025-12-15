@@ -1,7 +1,7 @@
 import 'package:Axon/core/routes/base_routes.dart';
 import 'package:Axon/features/auth/Presentation/manager/doctor%20registration/doctor_registration_cubit.dart';
 import 'package:Axon/features/auth/Presentation/manager/patient_registration/patient_registration_cubit.dart';
-import 'package:Axon/features/auth/Presentation/views/doctor_registration_view.dart';
+import 'package:Axon/features/auth/Presentation/views/doctor/doctor_registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/forget%20password/forgot_password_email_view.dart';
 import 'package:Axon/features/auth/Presentation/views/forget%20password/forgot_password_otp_view.dart';
 import 'package:Axon/features/auth/Presentation/views/forget%20password/reset_password_view.dart';
@@ -17,36 +17,44 @@ import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart
 import 'package:Axon/features/splash/Presentation/views/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 class AppRoutes {
+  // Splash & Onboarding
   static const splash = '/';
+  static const onBoarding = 'onBoarding';
+
+  // Auth
   static const login = 'login';
   static const registration = 'registration';
   static const selectRole = 'selectRole';
-  static const onBoarding = 'onBoarding';
+
+  // Doctor Registration
   static const registrationDoctor = 'registrationDoctor';
 
+  // Patient Registration
   static const patientMedicalProfile = "patientMedicalProfile";
   static const patientHealthConditions = "patientHealthConditions";
   static const patientAllergies = "patientAllergies";
 
+  // Forgot Password
   static const forgotPasswordEmail = "forgotPasswordEmail";
-static const forgotPasswordOtp = "forgotPasswordOtp";
-static const resetPassword = "resetPassword";
+  static const forgotPasswordOtp = "forgotPasswordOtp";
+  static const resetPassword = "resetPassword";
 
-
-static const patientLabTests = "patientLabTests";
-static const patientRadiology = "patientRadiology";
-
+  // Patient Documents
+  static const patientLabTests = "patientLabTests";
+  static const patientRadiology = "patientRadiology";
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+
+      // Splash & Onboarding
       case splash:
         return BaseRoute(page: const SplashView());
 
       case onBoarding:
         return BaseRoute(page: const OnBoardingView());
 
+      // Auth
       case selectRole:
         return BaseRoute(page: const SelectRoleView());
 
@@ -56,6 +64,7 @@ static const patientRadiology = "patientRadiology";
       case registration:
         return BaseRoute(page: const RegistrationView());
 
+      // Doctor Registration
       case registrationDoctor:
         return BaseRoute(
           page: BlocProvider(
@@ -64,6 +73,7 @@ static const patientRadiology = "patientRadiology";
           ),
         );
 
+      // Patient Registration
       case patientMedicalProfile:
         return BaseRoute(
           page: BlocProvider(
@@ -104,34 +114,29 @@ static const patientRadiology = "patientRadiology";
           ),
         );
 
+      // Forgot Password
+      case forgotPasswordEmail:
+        return BaseRoute(page: const ForgotPasswordEmailView());
 
+      case forgotPasswordOtp:
+        return BaseRoute(page: const ForgotPasswordOtpView());
 
-         case forgotPasswordEmail:
-      return BaseRoute(page: const ForgotPasswordEmailView());
+      case resetPassword:
+        return BaseRoute(page: const ResetPasswordView());
 
-    case forgotPasswordOtp:
-      return BaseRoute(page: const ForgotPasswordOtpView());
+      // Patient Documents
+      case patientLabTests:
+        return BaseRoute(page: const PatientLabTestsView());
 
-    case resetPassword:
-      return BaseRoute(page: const ResetPasswordView());
-
-  // ===== Patient Registration Flow =====
-    case patientLabTests:
-      return BaseRoute(page: const PatientLabTestsView());
-
-    case patientRadiology:
-      return BaseRoute(page: const PatientRadiologyView());
-
-      
+      case patientRadiology:
+        return BaseRoute(page: const PatientRadiologyView());
 
       default:
         return BaseRoute(
-          page: const Scaffold(body: Center(child: Text('Route not found'))),
+          page: const Scaffold(
+            body: Center(child: Text('Route not found')),
+          ),
         );
-
-
-
-        
     }
   }
 }

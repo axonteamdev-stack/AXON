@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/helpers/validation_helper.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
@@ -31,44 +32,34 @@ class ForgotPasswordEmailView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 80.h),
-
-                    TextApp(
-                      text: "Forgot Password",
-                      fontSize: 22.sp,
+                    const TextApp(
+                      text: 'Forgot Password',
+                      fontSize: 22,
                       weight: AppTextWeight.semiBold,
                     ),
-
                     SizedBox(height: 12.h),
-
-                    TextApp(
-                      text: "Enter your email to receive a verification code",
-                      fontSize: 14.sp,
-                      color: Colors.grey,
+                    const TextApp(
+                      text:
+                          'Enter your email to receive a verification code',
+                      fontSize: 14,
+                      color: AppColors.grey,
                     ),
-
                     SizedBox(height: 30.h),
-
-                    FormLabel(text: "Email"),
+                    const FormLabel(text: 'Email'),
                     SizedBox(height: 8.h),
-
                     CustomTextField(
                       controller: cubit.emailController,
-                      hintText: "Enter your email",
+                      hintText: 'Enter your email',
                       validator: ValidationHelper.validateEmail,
                     ),
-
                     SizedBox(height: 35.h),
-
                     CustomButton(
-                      text: "Send Code",
+                      text: 'Send Code',
                       height: 50.h,
                       isLoading: state is ForgotPasswordLoading,
                       onPressed: () {
                         cubit.sendEmail(context);
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.forgotPasswordOtp,
-                        );
+                        context.pushName(AppRoutes.forgotPasswordOtp);
                       },
                     ),
                   ],

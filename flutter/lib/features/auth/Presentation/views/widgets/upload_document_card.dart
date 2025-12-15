@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:Axon/core/style/colors.dart';
+import 'package:Axon/core/widgets/custom_text_field.dart';
+import 'package:Axon/core/widgets/text_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -16,7 +19,8 @@ class UploadDocumentCard extends StatelessWidget {
     required this.labelController,
     required this.onPick,
     required this.onRemove,
-    required this.onLabelChanged, required this.hintText,
+    required this.onLabelChanged,
+    required this.hintText,
   });
 
   @override
@@ -26,12 +30,11 @@ class UploadDocumentCard extends StatelessWidget {
       padding: EdgeInsets.all(12.r),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: AppColors.grey),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Upload Box (نفس شكل Medical License)
           GestureDetector(
             onTap: onPick,
             child: Container(
@@ -39,7 +42,7 @@ class UploadDocumentCard extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: AppColors.grey),
               ),
               child: file == null
                   ? Column(
@@ -48,14 +51,14 @@ class UploadDocumentCard extends StatelessWidget {
                         Icon(
                           Icons.cloud_upload_outlined,
                           size: 32,
-                          color: Colors.grey.shade600,
+                          color: AppColors.grey,
                         ),
                         SizedBox(height: 10.h),
-                        Text(
-                          "Drag or Click to upload attachment",
-                          style: TextStyle(color: Colors.grey.shade600),
+                        const TextApp(
+                          text: 'Drag or Click to upload attachment',
+                          color: AppColors.grey,
+                          fontSize: 14,
                         ),
-                        
                       ],
                     )
                   : Stack(
@@ -69,8 +72,6 @@ class UploadDocumentCard extends StatelessWidget {
                             fit: BoxFit.cover,
                           ),
                         ),
-
-                        /// ❌ Remove
                         Positioned(
                           top: 6,
                           right: 6,
@@ -85,7 +86,7 @@ class UploadDocumentCard extends StatelessWidget {
                               child: const Icon(
                                 Icons.close,
                                 size: 16,
-                                color: Colors.white,
+                                color: AppColors.white,
                               ),
                             ),
                           ),
@@ -94,30 +95,18 @@ class UploadDocumentCard extends StatelessWidget {
                     ),
             ),
           ),
-
           SizedBox(height: 12.h),
-
-          /// Label input
-          Text(
-            "Description",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 13.sp,
-            ),
+          const TextApp(
+            text: 'Description',
+            weight: AppTextWeight.semiBold,
+            fontSize: 13,
+            color: AppColors.black,
           ),
-
           SizedBox(height: 6.h),
-
-          TextField(
+          CustomTextField(
             controller: labelController,
+            hintText: hintText,
             onChanged: onLabelChanged,
-            decoration: InputDecoration(
-              hintText: hintText,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              isDense: true,
-            ),
           ),
         ],
       ),

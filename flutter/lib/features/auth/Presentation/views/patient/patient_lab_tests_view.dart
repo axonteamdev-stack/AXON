@@ -1,6 +1,9 @@
+import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/helpers/snackbar.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
+
 import 'package:Axon/features/auth/Presentation/manager/patient%20documents/atient_documents_cubit.dart';
 import 'package:Axon/features/auth/Presentation/manager/patient%20documents/patient_documents_state.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header.dart';
@@ -19,9 +22,7 @@ class PatientLabTestsView extends StatelessWidget {
       child: BlocConsumer<PatientDocumentsCubit, PatientDocumentsState>(
         listener: (context, state) {
           if (state.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error!)),
-            );
+            Snackbar.showError(context, message: state.error!);
             context.read<PatientDocumentsCubit>().clearError();
           }
         },
@@ -33,7 +34,7 @@ class PatientLabTestsView extends StatelessWidget {
             floatingActionButton: FloatingActionButton(
               backgroundColor: AppColors.primaryColor,
               onPressed: cubit.addDocument,
-              child: const Icon(Icons.add , color: AppColors.white,),
+              child: const Icon(Icons.add, color: AppColors.white),
             ),
             body: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -41,40 +42,33 @@ class PatientLabTestsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 55.h),
-
                   const CenterIconHeader(
                     icon: Icons.science_outlined,
-                    title: "Lab Tests",
-                    subtitle: "Upload your medical lab tests",
+                    title: 'Lab Tests',
+                    subtitle: 'Upload your medical lab tests',
                   ),
-
                   SizedBox(height: 30.h),
-
                   ...List.generate(
-  state.documents.length,
-  (index) => UploadDocumentCard(
-    file: state.documents[index].file,
-    labelController: state.documents[index].labelController,
-    onPick: () => cubit.pickImage(index),
-    onRemove: () => cubit.removeDocument(index),
-    onLabelChanged: (value) {
-      cubit.updateLabel(index, value);
-    }, hintText: 'Enter the type of medical scan',
-  ),
-),
-
+                    state.documents.length,
+                    (index) => UploadDocumentCard(
+                      file: state.documents[index].file,
+                      labelController:
+                          state.documents[index].labelController,
+                      onPick: () => cubit.pickImage(index),
+                      onRemove: () => cubit.removeDocument(index),
+                      onLabelChanged: (value) {
+                        cubit.updateLabel(index, value);
+                      },
+                      hintText: 'Enter the type of medical scan',
+                    ),
+                  ),
                   SizedBox(height: 40.h),
-
                   CustomButton(
-                    text: "Next",
+                    text: 'Next',
                     onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        AppRoutes.login,
-                      );
+                      context.pushName(AppRoutes.login);
                     },
                   ),
-
                   SizedBox(height: 40.h),
                 ],
               ),

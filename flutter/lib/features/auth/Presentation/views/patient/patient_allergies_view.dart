@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -14,20 +15,20 @@ class PatientAllergiesView extends StatelessWidget {
   PatientAllergiesView({super.key});
 
   final List<String> allergies = const [
-    "Penicillin",
-    "Aspirin",
-    "Ibuprofen",
-    "Sulfa Drugs",
-    "Latex",
-    "Peanuts",
-    "Tree Nuts",
-    "Shellfish",
-    "Eggs",
-    "Milk",
-    "Soy",
-    "Dust",
-    "Pollen",
-    "Pet Dander",
+    'Penicillin',
+    'Aspirin',
+    'Ibuprofen',
+    'Sulfa Drugs',
+    'Latex',
+    'Peanuts',
+    'Tree Nuts',
+    'Shellfish',
+    'Eggs',
+    'Milk',
+    'Soy',
+    'Dust',
+    'Pollen',
+    'Pet Dander',
   ];
 
   @override
@@ -40,27 +41,24 @@ class PatientAllergiesView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 55.h),
-
-            CenterIconHeader(
+            const CenterIconHeader(
               icon: Icons.error_outline_rounded,
-              title: "Allergies",
-              subtitle: "Do you have any known allergies?",
+              title: 'Allergies',
+              subtitle: 'Do you have any known allergies?',
             ),
-
             SizedBox(height: 40.h),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const TextApp(
-                  text: "Select all that apply",
+                  text: 'Select all that apply',
                   fontSize: 14,
                   weight: AppTextWeight.semiBold,
                 ),
                 BlocBuilder<PatientRegistrationCubit, PatientRegistrationState>(
                   builder: (context, state) {
                     return TextApp(
-                      text: "${state.selectedAllergies.length} Selected",
+                      text: '${state.selectedAllergies.length} Selected',
                       fontSize: 10,
                       color: AppColors.grey,
                     );
@@ -68,30 +66,27 @@ class PatientAllergiesView extends StatelessWidget {
                 ),
               ],
             ),
-
-            // SizedBox(height: 12.h),
             BlocBuilder<PatientRegistrationCubit, PatientRegistrationState>(
               builder: (context, state) {
                 return SelectableItemGrid(
                   items: allergies,
                   selectedItems: state.selectedAllergies,
                   selectedColor: AppColors.primaryColor,
-                  onSelect: (a) =>
-                      context.read<PatientRegistrationCubit>().toggleAllergy(a),
+                  onSelect: (a) => context
+                      .read<PatientRegistrationCubit>()
+                      .toggleAllergy(a),
                 );
               },
             ),
-
             SizedBox(height: 30.h),
-
             Padding(
               padding: EdgeInsets.only(bottom: 40.h),
-              child: CustomButton(text: "Finish", onPressed: () {
-                 Navigator.pushNamed(
-                    context,
-                    AppRoutes.patientRadiology,
-                  );
-              }),
+              child: CustomButton(
+                text: 'Finish',
+                onPressed: () {
+                  context.pushName(AppRoutes.patientRadiology);
+                },
+              ),
             ),
           ],
         ),

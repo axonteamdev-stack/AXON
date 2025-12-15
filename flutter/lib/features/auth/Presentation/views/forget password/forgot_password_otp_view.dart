@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -28,29 +29,21 @@ class ForgotPasswordOtpView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 80.h),
-
-                  TextApp(
-                    text: "Verification Code",
-                    fontSize: 22.sp,
+                  const TextApp(
+                    text: 'Verification Code',
+                    fontSize: 22,
                     weight: AppTextWeight.semiBold,
                   ),
-
                   SizedBox(height: 12.h),
-
-                  TextApp(
+                  const TextApp(
                     text:
-                        "Enter the 4-digit code sent to your email address",
-                    fontSize: 14.sp,
-                    color: Colors.grey,
+                        'Enter the 4-digit code sent to your email address',
+                    fontSize: 14,
+                    color: AppColors.grey,
                   ),
-
                   SizedBox(height: 35.h),
-
-                  FormLabel(text: "OTP Code"),
-
+                  const FormLabel(text: 'OTP Code'),
                   SizedBox(height: 12.h),
-
-                  /// ✅ OTP Boxes
                   PinCodeTextField(
                     appContext: context,
                     length: 4,
@@ -62,6 +55,7 @@ class ForgotPasswordOtpView extends StatelessWidget {
                     textStyle: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.w600,
+                      color: AppColors.black,
                     ),
                     pinTheme: PinTheme(
                       shape: PinCodeFieldShape.box,
@@ -70,38 +64,28 @@ class ForgotPasswordOtpView extends StatelessWidget {
                       fieldWidth: 55.w,
                       activeColor: AppColors.primaryColor,
                       selectedColor: AppColors.primaryColor,
-                      inactiveColor: Colors.grey.shade300,
-                      activeFillColor: Colors.white,
-                      selectedFillColor: Colors.white,
-                      inactiveFillColor: Colors.white,
+                      inactiveColor: AppColors.grey,
+                      activeFillColor: AppColors.white,
+                      selectedFillColor: AppColors.white,
+                      inactiveFillColor: AppColors.white,
                     ),
                     onChanged: (value) {},
                   ),
-
                   SizedBox(height: 40.h),
-
                   CustomButton(
-                    text: "Verify",
+                    text: 'Verify',
                     height: 50.h,
                     onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        AppRoutes.resetPassword,
-                      );
+                      context.pushName(AppRoutes.resetPassword);
                     },
                   ),
-
                   SizedBox(height: 25.h),
-
-                  /// Resend
                   Center(
                     child: GestureDetector(
-                      onTap: () {
-                        // cubit.resendOtp();
-                      },
-                      child: TextApp(
-                        text: "Resend Code",
-                        fontSize: 14.sp,
+                      onTap: () {},
+                      child: const TextApp(
+                        text: 'Resend Code',
+                        fontSize: 14,
                         color: AppColors.primaryColor,
                       ),
                     ),
