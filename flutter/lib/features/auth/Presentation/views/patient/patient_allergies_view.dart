@@ -72,9 +72,8 @@ class PatientAllergiesView extends StatelessWidget {
                   items: allergies,
                   selectedItems: state.selectedAllergies,
                   selectedColor: AppColors.primaryColor,
-                  onSelect: (a) => context
-                      .read<PatientRegistrationCubit>()
-                      .toggleAllergy(a),
+                  onSelect: (a) =>
+                      context.read<PatientRegistrationCubit>().toggleAllergy(a),
                 );
               },
             ),
@@ -82,7 +81,7 @@ class PatientAllergiesView extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(bottom: 40.h),
               child: CustomButton(
-                text: 'Finish',
+                text: 'Next',
                 onPressed: () {
                   context.pushName(AppRoutes.patientRadiology);
                 },

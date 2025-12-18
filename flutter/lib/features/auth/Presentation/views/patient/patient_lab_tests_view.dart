@@ -52,8 +52,7 @@ class PatientLabTestsView extends StatelessWidget {
                     state.documents.length,
                     (index) => UploadDocumentCard(
                       file: state.documents[index].file,
-                      labelController:
-                          state.documents[index].labelController,
+                      labelController: state.documents[index].labelController,
                       onPick: () => cubit.pickImage(index),
                       onRemove: () => cubit.removeDocument(index),
                       onLabelChanged: (value) {
@@ -64,7 +63,7 @@ class PatientLabTestsView extends StatelessWidget {
                   ),
                   SizedBox(height: 40.h),
                   CustomButton(
-                    text: 'Next',
+                    text: 'Finish',
                     onPressed: () {
                       context.pushName(AppRoutes.login);
                     },
