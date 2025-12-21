@@ -55,18 +55,20 @@ class CustomButton extends StatelessWidget {
     return Container(
       width: width ?? double.infinity,
       height: height ?? 50.h,
-      decoration: BoxDecoration(
-        color: color ?? AppColors.primaryColor,
-        borderRadius: BorderRadius.circular(borderRadius ?? 12),
-        boxShadow: [
-          if (shadowColor != null)
-            BoxShadow(
-              color: shadowColor!,
-              offset: const Offset(0, 4),
-              blurRadius: 4,
-            ),
-        ],
+     decoration: BoxDecoration(
+  color: color ?? AppColors.primaryColor,
+  borderRadius: BorderRadius.circular(borderRadius ?? 12),
+  border: border != null ? Border.fromBorderSide(border!) : null, // ✅
+  boxShadow: [
+    if (shadowColor != null)
+      BoxShadow(
+        color: shadowColor!,
+        offset: const Offset(0, 4),
+        blurRadius: 4,
       ),
+  ],
+),
+
       child: Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(borderRadius ?? 12),

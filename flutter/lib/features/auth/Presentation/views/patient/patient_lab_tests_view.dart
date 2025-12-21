@@ -65,7 +65,9 @@ class PatientLabTestsView extends StatelessWidget {
                   CustomButton(
                     text: 'Finish',
                     onPressed: () {
-                      context.pushName(AppRoutes.login);
+context.pushNamedAndRemoveUntil(
+  AppRoutes.accountCreated,
+);
                     },
                   ),
                   SizedBox(height: 40.h),

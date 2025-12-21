@@ -6,6 +6,7 @@ import 'package:Axon/features/auth/Presentation/views/forget%20password/forgot_p
 import 'package:Axon/features/auth/Presentation/views/forget%20password/forgot_password_otp_view.dart';
 import 'package:Axon/features/auth/Presentation/views/forget%20password/reset_password_view.dart';
 import 'package:Axon/features/auth/Presentation/views/login_view.dart';
+import 'package:Axon/features/auth/Presentation/views/patient/account_created_view.dart';
 import 'package:Axon/features/auth/Presentation/views/patient/patient_allergies_view.dart';
 import 'package:Axon/features/auth/Presentation/views/patient/patient_health_conditions_view.dart';
 import 'package:Axon/features/auth/Presentation/views/patient/patient_lab_tests_view.dart';
@@ -13,6 +14,7 @@ import 'package:Axon/features/auth/Presentation/views/patient/patient_medical_pr
 import 'package:Axon/features/auth/Presentation/views/patient/patient_radiology_view.dart';
 import 'package:Axon/features/auth/Presentation/views/registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/select_role_view.dart';
+import 'package:Axon/features/home/presentation/views/home_view.dart';
 import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:Axon/features/splash/Presentation/views/splash_view.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +45,16 @@ class AppRoutes {
   // Patient Documents
   static const patientLabTests = "patientLabTests";
   static const patientRadiology = "patientRadiology";
+
+  // Auth Success
+static const accountCreated = 'accountCreated';
+
+
+  // Home
+static const home = 'home';
+
+
+
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -130,6 +142,15 @@ class AppRoutes {
 
       case patientRadiology:
         return BaseRoute(page: const PatientRadiologyView());
+
+// Auth Success
+        case AppRoutes.accountCreated:
+  return BaseRoute(page: const AccountCreatedView());
+
+// Home
+case AppRoutes.home:
+  return BaseRoute(page: const HomeView());
+
 
       default:
         return BaseRoute(

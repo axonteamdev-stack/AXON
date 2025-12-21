@@ -1,0 +1,91 @@
+import 'package:Axon/core/style/app_text_styles.dart';
+import 'package:Axon/core/style/colors.dart';
+import 'package:Axon/core/widgets/custom_button.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+class DoctorCard extends StatelessWidget {
+  final String doctorName;
+  final String specialty;
+
+  const DoctorCard({
+    super.key,
+    required this.doctorName,
+    required this.specialty,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(16.r),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.04),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // ================= Text =================
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  doctorName,
+                  style: AppTextStyles.semiBold.copyWith(fontSize: 14.sp),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  specialty,
+                  style: AppTextStyles.body.copyWith(
+                    fontSize: 12.sp,
+                    color: AppColors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(width: 12.w),
+
+          // ================= Buttons =================
+          Row(
+            children: [
+              SizedBox(
+                width: 96.w,
+                child: CustomButton(
+                  height: 34.h,
+                  text: "View Details",
+                  fontSize: 12.sp,
+                  onPressed: () {},
+                ),
+              ),
+              SizedBox(width: 8.w),
+              SizedBox(
+                width: 96.w,
+                child: CustomButton(
+                  height: 34.h,
+                  text: "Chat",
+                  fontSize: 12.sp,
+                  color: AppColors.white,
+                  textColor: AppColors.grey,
+                  border: BorderSide(
+                    color: AppColors.grey.withOpacity(.4),
+                  ),
+                  onPressed: () {},
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

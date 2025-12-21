@@ -1,0 +1,98 @@
+import 'dart:async';
+import 'package:Axon/core/routes/app_routes.dart';
+import 'package:Axon/core/style/colors.dart';
+import 'package:flutter/material.dart';
+
+
+class AccountCreatedView extends StatefulWidget {
+  const AccountCreatedView({super.key});
+
+  @override
+  State<AccountCreatedView> createState() => _AccountCreatedViewState();
+}
+
+class _AccountCreatedViewState extends State<AccountCreatedView>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+
+    _scaleAnimation =
+        CurvedAnimation(parent: _controller, curve: Curves.elasticOut);
+
+    _opacityAnimation =
+        Tween<double>(begin: 0, end: 1).animate(_controller);
+
+    _controller.forward();
+
+    // ⏱️ Navigate to Home after animation
+    Timer(const Duration(seconds: 2), () {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.home,
+        (route) => false,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: Center(
+        child: FadeTransition(
+          opacity: _opacityAnimation,
+          child: ScaleTransition(
+            scale: _scaleAnimation,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_circle,
+                    color: AppColors.primaryColor,
+                    size: 80,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  "Account Created Successfully 🎉",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "Welcome! Redirecting to home...",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
