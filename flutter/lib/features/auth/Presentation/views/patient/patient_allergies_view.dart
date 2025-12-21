@@ -2,84 +2,36 @@ import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
-import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/auth/Presentation/manager/patient_registration/patient_registration_cubit.dart';
-import 'package:Axon/features/auth/Presentation/manager/patient_registration/patient_registration_state.dart';
+import 'package:Axon/features/auth/Presentation/manager/patient_dynamic_list/patient_dynamic_list_cubit.dart';
+import 'package:Axon/features/auth/Presentation/manager/patient_dynamic_list/patient_dynamic_list_state.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header.dart';
-import 'package:Axon/features/auth/Presentation/views/widgets/selectable_item_grid.dart';
+import 'package:Axon/features/auth/Presentation/views/widgets/patient_dynamic_input_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PatientAllergiesView extends StatelessWidget {
-  PatientAllergiesView({super.key});
-
-  final List<String> allergies = const [
-    'Penicillin',
-    'Aspirin',
-    'Ibuprofen',
-    'Sulfa Drugs',
-    'Latex',
-    'Peanuts',
-    'Tree Nuts',
-    'Shellfish',
-    'Eggs',
-    'Milk',
-    'Soy',
-    'Dust',
-    'Pollen',
-    'Pet Dander',
-  ];
+  const PatientAllergiesView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 55.h),
-            const CenterIconHeader(
-              icon: Icons.error_outline_rounded,
-              title: 'Allergies',
-              subtitle: 'Do you have any known allergies?',
-            ),
-            SizedBox(height: 40.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const TextApp(
-                  text: 'Select all that apply',
-                  fontSize: 14,
-                  weight: AppTextWeight.semiBold,
-                ),
-                BlocBuilder<PatientRegistrationCubit, PatientRegistrationState>(
-                  builder: (context, state) {
-                    return TextApp(
-                      text: '${state.selectedAllergies.length} Selected',
-                      fontSize: 10,
-                      color: AppColors.grey,
-                    );
-                  },
-                ),
-              ],
-            ),
-            BlocBuilder<PatientRegistrationCubit, PatientRegistrationState>(
-              builder: (context, state) {
-                return SelectableItemGrid(
-                  items: allergies,
-                  selectedItems: state.selectedAllergies,
-                  selectedColor: AppColors.primaryColor,
-                  onSelect: (a) =>
-                      context.read<PatientRegistrationCubit>().toggleAllergy(a),
-                );
+    return BlocProvider(
+      create: (_) => PatientDynamicListCubit(),
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            backgroundColor: AppColors.white,
+
+            floatingActionButton: FloatingActionButton(
+              backgroundColor: AppColors.primaryColor,
+              onPressed: () {
+                context.read<PatientDynamicListCubit>().addItem();
               },
+              child: const Icon(Icons.add, color: Colors.white),
             ),
-            SizedBox(height: 30.h),
-            Padding(
-              padding: EdgeInsets.only(bottom: 40.h),
+
+            bottomNavigationBar: Padding(
+              padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
               child: CustomButton(
                 text: 'Next',
                 onPressed: () {
@@ -87,8 +39,36 @@ class PatientAllergiesView extends StatelessWidget {
                 },
               ),
             ),
-          ],
-        ),
+
+            body: BlocBuilder<PatientDynamicListCubit, PatientDynamicListState>(
+              builder: (context, state) {
+                return SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 55.h),
+                      const CenterIconHeader(
+                        icon: Icons.error_outline_rounded,
+                        title: 'Allergies',
+                        subtitle: 'Add your allergies',
+                      ),
+                      SizedBox(height: 30.h),
+                      ...List.generate(
+                        state.items.length,
+                        (index) => PatientDynamicInputCard(
+                          controller: state.items[index].controller,
+                          hint: 'Enter allergy name',
+                        ),
+                      ),
+                      SizedBox(height: 120.h),
+                    ],
+                  ),
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }

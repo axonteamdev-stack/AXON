@@ -20,7 +20,7 @@ class NotificationIcon extends StatelessWidget {
         children: [
           Icon(
             Icons.notifications_none,
-            size: 22,
+            size: 25,
             color: AppColors.white,
           ),
           if (count > 0)

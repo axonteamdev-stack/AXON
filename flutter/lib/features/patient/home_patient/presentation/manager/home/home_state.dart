@@ -1,4 +1,4 @@
-import 'package:Axon/features/home/data/models/home_model.dart';
+import 'package:Axon/features/patient/home_patient/data/models/home_model.dart';
 
 abstract class HomeState {}
 

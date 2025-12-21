@@ -1,9 +1,7 @@
 import 'package:Axon/core/extensions/context_extension.dart';
-import 'package:Axon/core/helpers/snackbar.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
-
 import 'package:Axon/features/auth/Presentation/manager/patient%20documents/atient_documents_cubit.dart';
 import 'package:Axon/features/auth/Presentation/manager/patient%20documents/patient_documents_state.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header.dart';
@@ -11,7 +9,6 @@ import 'package:Axon/features/auth/Presentation/views/widgets/upload_document_ca
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 class PatientRadiologyView extends StatelessWidget {
   const PatientRadiologyView({super.key});
 
@@ -19,58 +16,94 @@ class PatientRadiologyView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => PatientDocumentsCubit()..addDocument(),
-      child: BlocConsumer<PatientDocumentsCubit, PatientDocumentsState>(
-        listener: (context, state) {
-          if (state.error != null) {
-            Snackbar.showError(context, message: state.error!);
-            context.read<PatientDocumentsCubit>().clearError();
-          }
-        },
-        builder: (context, state) {
-          final cubit = context.read<PatientDocumentsCubit>();
-
+      child: Builder(
+        builder: (blocContext) {
           return Scaffold(
             backgroundColor: AppColors.white,
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: AppColors.primaryColor,
-              onPressed: cubit.addDocument,
-              child: const Icon(Icons.add, color: AppColors.white),
-            ),
-            body: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 55.h),
-                  const CenterIconHeader(
-                    icon: Icons.monitor_heart_outlined,
-                    title: 'Radiology',
-                    subtitle: 'Upload your radiology images',
-                  ),
-                  SizedBox(height: 30.h),
-                  ...List.generate(
-                    state.documents.length,
-                    (index) => UploadDocumentCard(
-                      file: state.documents[index].file,
-                      labelController: state.documents[index].labelController,
-                      onPick: () => cubit.pickImage(index),
-                      onRemove: () => cubit.removeDocument(index),
-                      onLabelChanged: (value) {
-                        cubit.updateLabel(index, value);
-                      },
-                      hintText: 'Enter the type of medical scan',
+
+            body: Stack(
+              children: [
+                Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20.w),
+                        child: BlocBuilder<PatientDocumentsCubit,
+                            PatientDocumentsState>(
+                          builder: (context, state) {
+                            final cubit = blocContext
+                                .read<PatientDocumentsCubit>();
+
+                            return Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 55.h),
+
+                                const CenterIconHeader(
+                                  icon: Icons.monitor_heart_outlined,
+                                  title: 'Radiology',
+                                  subtitle:
+                                      'Upload your radiology images',
+                                ),
+
+                                SizedBox(height: 30.h),
+
+                                ...List.generate(
+                                  state.documents.length,
+                                  (index) => UploadDocumentCard(
+                                    file:
+                                        state.documents[index].file,
+                                    labelController: state
+                                        .documents[index]
+                                        .labelController,
+                                    onPick: () =>
+                                        cubit.pickImage(index),
+                                    onRemove: () =>
+                                        cubit.removeDocument(index),
+                                    onLabelChanged: (v) =>
+                                        cubit.updateLabel(index, v),
+                                    hintText:
+                                        'Enter the type of medical scan',
+                                  ),
+                                ),
+
+                                SizedBox(height: 120.h),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
                     ),
+
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(
+                          20.w, 0, 20.w, 24.h),
+                      child: CustomButton(
+                        text: 'Next',
+                        onPressed: () {
+                          blocContext.pushName(
+                              AppRoutes.patientLabTests);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+                Positioned(
+                  right: 20.w,
+                  bottom: 90.h,
+                  child: FloatingActionButton(
+                    backgroundColor: AppColors.primaryColor,
+                    onPressed: () => blocContext
+                        .read<PatientDocumentsCubit>()
+                        .addDocument(),
+                    child: const Icon(Icons.add,
+                        color: Colors.white),
                   ),
-                  SizedBox(height: 40.h),
-                  CustomButton(
-                    text: 'Next',
-                    onPressed: () {
-                      context.pushName(AppRoutes.patientLabTests);
-                    },
-                  ),
-                  SizedBox(height: 40.h),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },

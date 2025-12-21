@@ -1,7 +1,7 @@
 
-import 'package:Axon/features/home/presentation/views/widgets/articles_tips_section.dart';
-import 'package:Axon/features/home/presentation/views/widgets/quick_actions_section.dart';
-import 'package:Axon/features/home/presentation/views/widgets/today_medication_section.dart';
+import 'package:Axon/features/patient/home_patient/presentation/views/widgets/articles_tips_section.dart';
+import 'package:Axon/features/patient/home_patient/presentation/views/widgets/quick_actions_section.dart';
+import 'package:Axon/features/patient/home_patient/presentation/views/widgets/today_medication_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

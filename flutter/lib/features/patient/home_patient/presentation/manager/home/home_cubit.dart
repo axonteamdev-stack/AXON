@@ -1,5 +1,5 @@
-import 'package:Axon/features/home/data/models/home_model.dart';
-import 'package:Axon/features/home/presentation/manager/home/home_state.dart';
+import 'package:Axon/features/patient/home_patient/data/models/home_model.dart';
+import 'package:Axon/features/patient/home_patient/presentation/manager/home/home_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeCubit extends Cubit<HomeState> {

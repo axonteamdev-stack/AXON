@@ -1,7 +1,9 @@
+import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class HomeBottomNavBar extends StatefulWidget {
   const HomeBottomNavBar({super.key});
 
@@ -19,6 +21,24 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
     _NavItem(AppImages.profile, 'Profile'),
   ];
 
+  void _onTap(int index) {
+    setState(() => currentIndex = index);
+
+
+     if (index == 0) {
+      Navigator.pushNamed(context, AppRoutes.home);
+    }
+    else if (index == 1) {
+      // Navigator.pushNamed(context, AppRoutes.chats);
+    }
+    else if (index == 2) {
+      // Navigator.pushNamed(context, AppRoutes.community);
+    }
+ if (index == 3) {
+      // Navigator.pushNamed(context, AppRoutes.patientProfile);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -26,7 +46,7 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
       child: Padding(
         padding: EdgeInsets.fromLTRB(14.w, 0, 14.w, 14.h),
         child: Container(
-          height: 66.h,  
+          height: 66.h,
           padding: EdgeInsets.symmetric(horizontal: 14.w),
           decoration: BoxDecoration(
             color: AppColors.white,
@@ -47,13 +67,11 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
 
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  setState(() => currentIndex = index);
-                },
+                onTap: () => _onTap(index),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOut,
-                  height: 48.h, // ⬅️ أصغر
+                  height: 48.h,
                   padding: EdgeInsets.symmetric(
                     horizontal: isSelected ? 16.w : 10.w,
                   ),
@@ -68,8 +86,8 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
                     children: [
                       Image.asset(
                         item.icon,
-                        width: 20.w,
-                        height: 20.w,
+                        width: 23.w,
+                        height: 23.w,
                         color: isSelected
                             ? AppColors.white
                             : AppColors.primaryColor.withOpacity(0.9),
@@ -81,7 +99,7 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
                           maxLines: 1,
                           overflow: TextOverflow.fade,
                           style: TextStyle(
-                            fontSize: 12.sp, // ⬅️ أصغر
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w600,
                             color: AppColors.white,
                           ),

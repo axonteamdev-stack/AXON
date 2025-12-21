@@ -1,7 +1,7 @@
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/home/presentation/views/widgets/notification_icon.dart';
+import 'package:Axon/features/patient/home_patient/presentation/views/widgets/notification_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

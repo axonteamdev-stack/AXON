@@ -23,124 +23,145 @@ class PatientMedicalProfileView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 55.h),
-            const CenterIconHeader(
-              imagePath: AppImages.medicalProfile,
-              title: 'Medical Profile',
-              subtitle: 'Help us understand your health better',
-            ),
-            SizedBox(height: 25.h),
-            const FormLabel(text: 'Blood Type'),
-            BlocBuilder<PatientRegistrationCubit, PatientRegistrationState>(
-              builder: (context, state) {
-                return ReusableDropdown(
-                  hint: 'Select Blood Type',
-                  value: state.bloodType,
-                  items: const [
-                    'A+',
-                    'A-',
-                    'B+',
-                    'B-',
-                    'O+',
-                    'O-',
-                    'AB+',
-                    'AB-'
-                  ],
-                  onChanged: (v) => cubit.setBloodType(v!),
-                );
-              },
-            ),
-            SizedBox(height: 20.h),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const FormLabel(text: 'Height (cm)'),
-                      CustomTextField(
-                        controller: cubit.heightCtrl,
-                        hintText: '170',
-                        keyboardType: TextInputType.number,
-                        prefixIcon: Image.asset(
-                          AppImages.height,
-                          width: 20,
-                          height: 20,
-                        ),
-                        onChanged: cubit.setHeight,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const FormLabel(text: 'Weight (kg)'),
-                      CustomTextField(
-                        controller: cubit.weightCtrl,
-                        hintText: '62.5',
-                        keyboardType: TextInputType.number,
-                        prefixIcon: Image.asset(
-                          AppImages.weight,
-                          width: 16,
-                          height: 16,
-                          fit: BoxFit.contain,
-                        ),
-                        onChanged: cubit.setWeight,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20.h),
-            Container(
-              padding: EdgeInsets.all(12.r),
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.blue),
-                borderRadius: BorderRadius.circular(12),
-                color: AppColors.blue.withOpacity(0.1),
-              ),
-              child: Row(
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: AppColors.blue,
-                    size: 20.sp,
+                  SizedBox(height: 55.h),
+                  const CenterIconHeader(
+                    imagePath: AppImages.medicalProfile,
+                    title: 'Medical Profile',
+                    subtitle:
+                        'Help us understand your health better',
                   ),
-                  SizedBox(width: 10.w),
-                  const Expanded(
-                    child: TextApp(
-                      text:
-                          'Your medical information helps doctors provide better care.',
-                      fontSize: 13,
-                      color: AppColors.blue,
+                  SizedBox(height: 25.h),
+                  const FormLabel(text: 'Blood Type'),
+                  BlocBuilder<PatientRegistrationCubit,
+                      PatientRegistrationState>(
+                    builder: (context, state) {
+                      return ReusableDropdown(
+                        hint: 'Select Blood Type',
+                        value: state.bloodType,
+                        items: const [
+                          'A+',
+                          'A-',
+                          'B+',
+                          'B-',
+                          'O+',
+                          'O-',
+                          'AB+',
+                          'AB-'
+                        ],
+                        onChanged: (v) =>
+                            cubit.setBloodType(v!),
+                      );
+                    },
+                  ),
+                  SizedBox(height: 20.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            const FormLabel(
+                                text: 'Height (cm)'),
+                            CustomTextField(
+                              controller: cubit.heightCtrl,
+                              hintText: '170',
+                              keyboardType:
+                                  TextInputType.number,
+                              prefixIcon: Image.asset(
+                                AppImages.height,
+                                width: 20,
+                                height: 20,
+                              ),
+                              onChanged: cubit.setHeight,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            const FormLabel(
+                                text: 'Weight (kg)'),
+                            CustomTextField(
+                              controller: cubit.weightCtrl,
+                              hintText: '62.5',
+                              keyboardType:
+                                  TextInputType.number,
+                              prefixIcon: Image.asset(
+                                AppImages.weight,
+                                width: 16,
+                                height: 16,
+                                fit: BoxFit.contain,
+                              ),
+                              onChanged: cubit.setWeight,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20.h),
+                  Container(
+                    padding: EdgeInsets.all(12.r),
+                    decoration: BoxDecoration(
+                      border:
+                          Border.all(color: AppColors.blue),
+                      borderRadius:
+                          BorderRadius.circular(12),
+                      color: AppColors.blue.withOpacity(0.1),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: AppColors.blue,
+                          size: 20.sp,
+                        ),
+                        SizedBox(width: 10.w),
+                        const Expanded(
+                          child: TextApp(
+                            text:
+                                'Your medical information helps doctors provide better care.',
+                            fontSize: 13,
+                            color: AppColors.blue,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  SizedBox(height: 24),
                 ],
               ),
             ),
-            SizedBox(height: 50.h),
-            CustomButton(
+          ),
+          Padding(
+            padding:
+                EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
+            child: CustomButton(
               text: 'Next',
               height: 50.h,
               onPressed: () {
                 context.pushName(
                   AppRoutes.patientHealthConditions,
-                  arguments: context.read<PatientRegistrationCubit>(),
+                  arguments:
+                      context.read<PatientRegistrationCubit>(),
                 );
               },
             ),
-            SizedBox(height: 40.h),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
