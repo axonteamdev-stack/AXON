@@ -26,6 +26,9 @@ class AppImages {
   static const String book = '$IconsPath/book.png';
   static const String ai = '$IconsPath/ai.png';
   static const String post = '$IconsPath/post.png';
+  static const String chat = '$IconsPath/chat.png';
+  static const String profile = '$IconsPath/profile.png';
+  static const String community = '$IconsPath/community.png';
 
 
 // quick access

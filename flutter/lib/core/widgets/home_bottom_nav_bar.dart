@@ -2,7 +2,6 @@ import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 class HomeBottomNavBar extends StatefulWidget {
   const HomeBottomNavBar({super.key});
 
@@ -15,9 +14,9 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
 
   final items = const [
     _NavItem(AppImages.home, 'Home'),
-    _NavItem(AppImages.book, 'Books'),
-    _NavItem(AppImages.post, 'Posts'),
-    _NavItem(AppImages.ai, 'AI Chat'),
+    _NavItem(AppImages.chat, 'Chats'),
+    _NavItem(AppImages.community, 'Community'),
+    _NavItem(AppImages.profile, 'Profile'),
   ];
 
   @override
@@ -25,18 +24,18 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+        padding: EdgeInsets.fromLTRB(14.w, 0, 14.w, 14.h),
         child: Container(
-          height: 70.h,
-          padding: EdgeInsets.symmetric(horizontal: 10.w),
+          height: 66.h,  
+          padding: EdgeInsets.symmetric(horizontal: 14.w),
           decoration: BoxDecoration(
             color: AppColors.white,
-            borderRadius: BorderRadius.circular(36.r),
+            borderRadius: BorderRadius.circular(16.r),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(.06),
-                blurRadius: 20,
-                offset: const Offset(0, 6),
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
@@ -52,37 +51,37 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
                   setState(() => currentIndex = index);
                 },
                 child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
+                  duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOut,
-                  height: 52.h,
+                  height: 48.h, // ⬅️ أصغر
                   padding: EdgeInsets.symmetric(
-                    horizontal: isSelected ? 18.w : 12.w,
+                    horizontal: isSelected ? 16.w : 10.w,
                   ),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppColors.primaryColor
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(28.r),
+                    borderRadius: BorderRadius.circular(26.r),
                   ),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min, // 🔑 مهم جدًا
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Image.asset(
                         item.icon,
-                        width: 22.w,
-                        height: 22.w,
+                        width: 20.w,
+                        height: 20.w,
                         color: isSelected
                             ? AppColors.white
-                            : AppColors.grey,
+                            : AppColors.primaryColor.withOpacity(0.9),
                       ),
                       if (isSelected) ...[
-                        SizedBox(width: 8.w),
+                        SizedBox(width: 6.w),
                         Text(
                           item.label,
                           maxLines: 1,
                           overflow: TextOverflow.fade,
-                          style: const TextStyle(
-                            fontSize: 14,
+                          style: TextStyle(
+                            fontSize: 12.sp, // ⬅️ أصغر
                             fontWeight: FontWeight.w600,
                             color: AppColors.white,
                           ),

@@ -1,5 +1,7 @@
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
+import 'package:Axon/core/widgets/text_app.dart';
+import 'package:Axon/features/home/presentation/views/widgets/quick_action_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -8,92 +10,60 @@ class QuickActionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = const [
-      _QuickActionItem(
+    final List<Widget> items = const [
+      QuickActionItem(
         icon: AppImages.book,
         label: 'Book',
       ),
-      _QuickActionItem(
+      QuickActionItem(
         icon: AppImages.hospital,
         label: 'Hospitals',
       ),
-      _QuickActionItem(
+      QuickActionItem(
         icon: AppImages.Med,
         label: 'Medicals',
       ),
-      _QuickActionItem(
+      QuickActionItem(
         icon: AppImages.History,
         label: 'History',
       ),
     ];
 
-    return Padding(
-padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Quick Actions",
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: 12.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: items,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// =======================================================
-
-class _QuickActionItem extends StatelessWidget {
-  final String icon;
-  final String label;
-
-  const _QuickActionItem({
-    required this.icon,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 68.w,
-          height: 68.w,
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(16.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Center(
-            child: Image.asset(
-              icon,
-              width: 24.w,
-              height: 24.w,
-              color: AppColors.primaryColor,
-            ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: TextApp(
+            text: "Quick Actions",
+            weight: AppTextWeight.semiBold,
+            fontSize: 15.sp,
+            color: AppColors.black,
           ),
         ),
-        SizedBox(height: 8.h),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12.sp,
-            color: Colors.black87,
+        SizedBox(height: 10.h),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 10.h,
+              horizontal: 12.w,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(16.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: items,
+            ),
           ),
         ),
       ],

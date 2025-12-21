@@ -1,6 +1,6 @@
-import 'package:Axon/core/style/app_text_styles.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
+import 'package:Axon/core/widgets/text_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -15,142 +15,138 @@ class TodayMedicationCard extends StatelessWidget {
     required this.taken,
     required this.total,
     required this.medicineName,
-    this.time = "10:00 Pm",
+    this.time = "10:00 PM",
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ================= Header =================
-         
-      
-         Row(
-            children: [
-              const Text("💊"),
-              SizedBox(width: 6.w),
-              Text(
-                "Next dose in 20 minutes",
-                style: AppTextStyles.body.copyWith(
-                  fontSize: 12,
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: Container(
+        padding: EdgeInsets.all(14.r),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text("💊"),
+                SizedBox(width: 6.w),
+                TextApp(
+                  text: "Next dose in 20 minutes",
+                  weight: AppTextWeight.bold,
+                  fontSize: 12.sp,
                   color: AppColors.primaryColor,
                 ),
-              ),
-            ],
-          ),
-      
-          SizedBox(height: 12.h),
-      
-         
-      
-          // ================= Card =================
-          Container(
-            padding: EdgeInsets.all(16.r),
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(16.r),
+              ],
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            SizedBox(height: 12.h),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                
-                // ================= Left (Progress) =================
-                Column(
-                  children: [
-                    SizedBox(
-                      width: 96.w,
-                      height: 96.w,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          SizedBox(
-                            width: 96.w,
-                            height: 96.w,
-                            child: CircularProgressIndicator(
-                              value: total == 0 ? 0 : taken / total,
-                              strokeWidth: 6.w,
-                              backgroundColor:
-                                  AppColors.grey.withOpacity(.25),
-                              color: AppColors.primaryColor,
+                Expanded(
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Positioned.fill(
+                          child: CircularProgressIndicator(
+                            value: total == 0 ? 0 : taken / total,
+                            strokeWidth: 5.w,
+                            backgroundColor:
+                                AppColors.grey.withOpacity(.25),
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextApp(
+                              text: "taken today",
+                              fontSize: 10.sp,
+                              color: AppColors.grey,
                             ),
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "taken today",
-                                style: AppTextStyles.body.copyWith(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                "$taken/$total",
-                                style: AppTextStyles.semiBold.copyWith(
-                                  fontSize: 14, 
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            SizedBox(height: 4.h),
+                            TextApp(
+                              text: "$taken/$total",
+                              weight: AppTextWeight.semiBold,
+                              fontSize: 18.sp,
+                              color: AppColors.black,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-      
-                SizedBox(width: 16.w),
-      
-                // ================= Right (Details) =================
+                SizedBox(width: 14.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Next dose",
-                            style: AppTextStyles.body.copyWith(
-                              fontSize: 12, // ✅
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            "Time: $time",
-                            style: AppTextStyles.body.copyWith(
-                              fontSize: 12, // ✅
-                            ),
-                          ),
-                        ],
+                      TextApp(
+                        text: "Next dose",
+                        fontSize: 10.sp,
+                        color: AppColors.grey,
                       ),
-      
+                      SizedBox(height: 2.h),
+                      TextApp(
+                        text: medicineName,
+                        weight: AppTextWeight.semiBold,
+                        fontSize: 13.sp,
+                        color: AppColors.primaryColor,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       SizedBox(height: 6.h),
-      
-                      Text(
-                        medicineName,
-                        style: AppTextStyles.semiBold.copyWith(
-                          fontSize: 14, // ✅
-                          color: AppColors.primaryColor,
-                        ),
+                      TextApp(
+                        text: "Time",
+                        fontSize: 10.sp,
+                        color: AppColors.grey,
                       ),
-      
-                      SizedBox(height: 12.h),
-      
+                      SizedBox(height: 2.h),
+                      TextApp(
+                        text: time,
+                        weight: AppTextWeight.semiBold,
+                        fontSize: 13.sp,
+                        color: AppColors.primaryColor,
+                      ),
+                      SizedBox(height: 10.h),
                       CustomButton(
-                        height: 42.h,
+                        height: 32.h,
+                        width: double.infinity,
+                        borderRadius: 10.r,
                         text: "Taken",
+                        fontSize: 11.sp,
+                        fontWeight: ButtonTextWeight.bold,
+                        color: AppColors.primaryColor,
                         onPressed: () {},
                       ),
-      
-                      SizedBox(height: 8.h),
-      
+                      SizedBox(height: 6.h),
                       CustomButton(
-                        height: 42.h,
+                        height: 32.h,
+                        width: double.infinity,
+                        borderRadius: 10.r,
                         text: "View All",
+                        fontSize: 11.sp,
                         color: AppColors.white,
                         textColor: AppColors.primaryColor,
+                        border: BorderSide(
+                          color:
+                              AppColors.primaryColor.withOpacity(.8),
+                          width: 1,
+                        ),
                         onPressed: () {},
                       ),
                     ],
@@ -158,8 +154,8 @@ padding: EdgeInsets.symmetric(horizontal: 20.w),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

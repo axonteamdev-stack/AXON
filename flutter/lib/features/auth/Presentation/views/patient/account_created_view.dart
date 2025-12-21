@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
+import 'package:Axon/core/widgets/text_app.dart';
 import 'package:flutter/material.dart';
-
 
 class AccountCreatedView extends StatefulWidget {
   const AccountCreatedView({super.key});
@@ -34,7 +34,6 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
 
     _controller.forward();
 
-    // ⏱️ Navigate to Home after animation
     Timer(const Duration(seconds: 2), () {
       Navigator.pushNamedAndRemoveUntil(
         context,
@@ -76,17 +75,19 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  "Account Created Successfully 🎉",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                const TextApp(
+                  text: "Account Created Successfully 🎉",
+                  weight: AppTextWeight.bold,
+                  fontSize: 20,
+                  color: AppColors.black,
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  "Welcome! Redirecting to home...",
-                  style: TextStyle(color: Colors.grey),
+                const TextApp(
+                  text: "Welcome! Redirecting to home...",
+                  fontSize: 14,
+                  color: Colors.grey,
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
