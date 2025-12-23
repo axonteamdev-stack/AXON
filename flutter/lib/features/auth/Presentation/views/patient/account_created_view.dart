@@ -37,7 +37,7 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
     Timer(const Duration(seconds: 2), () {
       Navigator.pushNamedAndRemoveUntil(
         context,
-        AppRoutes.home,
+        AppRoutes.patientMain,
         (route) => false,
       );
     });

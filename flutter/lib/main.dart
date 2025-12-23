@@ -21,7 +21,7 @@ class Axon extends StatelessWidget {
           title: 'Axon',
           debugShowCheckedModeBanner: false,
 
-          initialRoute: AppRoutes.registration,
+          initialRoute: AppRoutes.onBoarding,
           onGenerateRoute: AppRoutes.onGenerateRoute,
         );
       },

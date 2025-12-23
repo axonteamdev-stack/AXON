@@ -10,7 +10,6 @@ class PatientDocumentsCubit extends Cubit<PatientDocumentsState> {
 
   final ImagePicker _picker = ImagePicker();
 
-  /// ➕ Add empty document
   void addDocument() {
     emit(
       state.copyWith(
@@ -24,12 +23,10 @@ class PatientDocumentsCubit extends Cubit<PatientDocumentsState> {
     );
   }
 
-  /// 📷 Pick image
   Future<void> pickImage(int index) async {
     try {
-      final picked = await _picker.pickImage(
-        source: ImageSource.gallery,
-      );
+      final picked =
+          await _picker.pickImage(source: ImageSource.gallery);
 
       if (picked == null) return;
 
@@ -38,16 +35,15 @@ class PatientDocumentsCubit extends Cubit<PatientDocumentsState> {
 
       emit(state.copyWith(documents: updated));
     } catch (_) {
-      emit(state.copyWith(error: "Failed to pick image"));
+      emit(state.copyWith(error: 'Failed to pick image'));
     }
   }
 
-  /// 🏷️ Update label (UI only)
   void updateLabel(int index, String value) {
+    state.documents[index].labelController.text = value;
     emit(state.copyWith(documents: [...state.documents]));
   }
 
-  /// ❌ Remove document
   void removeDocument(int index) {
     final updated = [...state.documents];
     updated[index].labelController.dispose();
@@ -56,7 +52,6 @@ class PatientDocumentsCubit extends Cubit<PatientDocumentsState> {
     emit(state.copyWith(documents: updated));
   }
 
-  /// 🧹 Clear error
   void clearError() {
     emit(state.copyWith(error: null));
   }

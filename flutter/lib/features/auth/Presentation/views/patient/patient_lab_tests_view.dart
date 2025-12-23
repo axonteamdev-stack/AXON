@@ -9,6 +9,7 @@ import 'package:Axon/features/auth/Presentation/views/widgets/upload_document_ca
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class PatientLabTestsView extends StatelessWidget {
   const PatientLabTestsView({super.key});
 
@@ -20,66 +21,88 @@ class PatientLabTestsView extends StatelessWidget {
         builder: (blocContext) {
           return Scaffold(
             backgroundColor: AppColors.white,
-
             body: Stack(
               children: [
                 Column(
                   children: [
                     Expanded(
-                      child: SingleChildScrollView(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20.w),
-                        child: BlocBuilder<PatientDocumentsCubit,
-                            PatientDocumentsState>(
-                          builder: (context, state) {
-                            final cubit = blocContext
-                                .read<PatientDocumentsCubit>();
+                      child: BlocBuilder<PatientDocumentsCubit,
+                          PatientDocumentsState>(
+                        builder: (context, state) {
+                          final cubit =
+                              blocContext.read<PatientDocumentsCubit>();
 
-                            return Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 55.h),
+                          return Column(
+                            children: [
+                              SizedBox(height: 55.h),
+                              const CenterIconHeader(
+                                icon: Icons.science_outlined,
+                                title: 'Lab Tests',
+                                subtitle:
+                                    'Upload your medical lab tests',
+                              ),
 
-                                const CenterIconHeader(
-                                  icon: Icons.science_outlined,
-                                  title: 'Lab Tests',
-                                  subtitle:
-                                      'Upload your medical lab tests',
-                                ),
-
-                                SizedBox(height: 30.h),
-
-                                ...List.generate(
-                                  state.documents.length,
-                                  (index) => UploadDocumentCard(
-                                    file:
-                                        state.documents[index].file,
-                                    labelController: state
-                                        .documents[index]
-                                        .labelController,
-                                    onPick: () =>
-                                        cubit.pickImage(index),
-                                    onRemove: () =>
-                                        cubit.removeDocument(index),
-                                    onLabelChanged: (v) =>
-                                        cubit.updateLabel(index, v),
-                                    hintText:
-                                        'Enter the type of medical scan',
-                                  ),
-                                ),
-
-                                SizedBox(height: 120.h),
-                              ],
-                            );
-                          },
-                        ),
+                              Expanded(
+                                child: state.documents.isEmpty
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: const [
+                                          Icon(Icons.info_outline,
+                                              size: 56,
+                                              color: Colors.grey),
+                                          SizedBox(height: 12),
+                                          Text(
+                                            'No lab tests added yet',
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          SizedBox(height: 6),
+                                          Text(
+                                            'Tap + to add one',
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : SingleChildScrollView(
+                                        padding:
+                                            EdgeInsets.symmetric(horizontal: 20.w),
+                                        child: Column(
+                                          children: List.generate(
+                                            state.documents.length,
+                                            (index) => UploadDocumentCard(
+                                              file: state.documents[index].file,
+                                              labelController: state
+                                                  .documents[index]
+                                                  .labelController,
+                                              onPick: () =>
+                                                  cubit.pickImage(index),
+                                              onRemove: () =>
+                                                  cubit.removeDocument(index),
+                                              onLabelChanged: (v) =>
+                                                  cubit.updateLabel(index, v),
+                                              hintText:
+                                                  'Enter the type of medical scan', enabled: true,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
 
                     Padding(
-                      padding: EdgeInsets.fromLTRB(
-                          20.w, 0, 20.w, 24.h),
+                      padding:
+                          EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
                       child: CustomButton(
                         text: 'Finish',
                         onPressed: () {
@@ -99,8 +122,8 @@ class PatientLabTestsView extends StatelessWidget {
                     onPressed: () => blocContext
                         .read<PatientDocumentsCubit>()
                         .addDocument(),
-                    child: const Icon(Icons.add,
-                        color: Colors.white),
+                    child:
+                        const Icon(Icons.add, color: Colors.white),
                   ),
                 ),
               ],

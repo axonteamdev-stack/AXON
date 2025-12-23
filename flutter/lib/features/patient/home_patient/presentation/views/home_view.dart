@@ -17,7 +17,6 @@ class HomeView extends StatelessWidget {
       create: (_) => HomeCubit()..loadHome(),
       child: Scaffold(
         backgroundColor: AppColors.white,
-        bottomNavigationBar: const HomeBottomNavBar(),
         body: SafeArea(
           child: BlocBuilder<HomeCubit, HomeState>(
             builder: (context, state) {

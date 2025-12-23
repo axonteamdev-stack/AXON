@@ -1,43 +1,25 @@
-import 'package:Axon/core/routes/app_routes.dart';
-import 'package:Axon/core/style/colors.dart';
-import 'package:Axon/core/style/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class HomeBottomNavBar extends StatefulWidget {
-  const HomeBottomNavBar({super.key});
+import 'package:Axon/core/style/colors.dart';
+import 'package:Axon/core/style/app_images.dart';
 
-  @override
-  State<HomeBottomNavBar> createState() => _HomeBottomNavBarState();
-}
+class HomeBottomNavBar extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
 
-class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
-  int currentIndex = 0;
+  const HomeBottomNavBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
-  final items = const [
+  static const List<_NavItem> items = [
     _NavItem(AppImages.home, 'Home'),
     _NavItem(AppImages.chat, 'Chats'),
     _NavItem(AppImages.community, 'Community'),
     _NavItem(AppImages.profile, 'Profile'),
   ];
-
-  void _onTap(int index) {
-    setState(() => currentIndex = index);
-
-
-     if (index == 0) {
-      Navigator.pushNamed(context, AppRoutes.home);
-    }
-    else if (index == 1) {
-      // Navigator.pushNamed(context, AppRoutes.chats);
-    }
-    else if (index == 2) {
-      // Navigator.pushNamed(context, AppRoutes.community);
-    }
- if (index == 3) {
-      // Navigator.pushNamed(context, AppRoutes.patientProfile);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +49,7 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
 
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: () => _onTap(index),
+                onTap: () => onTap(index),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOut,

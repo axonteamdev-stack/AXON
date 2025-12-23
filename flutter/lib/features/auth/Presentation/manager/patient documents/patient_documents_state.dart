@@ -1,6 +1,5 @@
 import 'package:Axon/features/auth/data/models/patient_document_model.dart';
 
-
 class PatientDocumentsState {
   final List<PatientDocumentModel> documents;
   final String? error;

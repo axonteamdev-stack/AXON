@@ -16,12 +16,13 @@ import 'package:Axon/features/auth/Presentation/views/registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/select_role_view.dart';
 import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/home_view.dart';
-import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient/patient_edit_profile_cubit.dart';
+import 'package:Axon/features/patient/home_patient/presentation/views/patient_main_view.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient%20edit/patient_edit_profile_cubit.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/views/change_password_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_allergies_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_basic_info_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_health_conditions_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_lab_tests_view.dart';
-import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_medical_profile_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_radiology_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_profile_view.dart';
 import 'package:Axon/features/splash/Presentation/views/splash_view.dart';
@@ -71,6 +72,18 @@ static const patientEditHealthConditions = 'patientEditHealthConditions';
 static const patientEditAllergies = 'patientEditAllergies';
 static const patientEditRadiology = 'patientEditRadiology';
 static const patientEditLabTests = 'patientEditLabTests';
+// Security
+static const changePassword = 'changePassword';
+static const deleteAccount = 'deleteAccount';
+
+// Patient Main
+static const patientMain = 'patientMain';
+
+
+
+
+
+
 
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
@@ -161,13 +174,8 @@ case AppRoutes.patientHealthConditions:
     ),
   );
 
-case AppRoutes.patientEditMedicalProfile:
-  return BaseRoute(
-    page: BlocProvider(
-      create: (_) => PatientEditProfileCubit(),
-      child: const PatientEditMedicalProfileView(),
-    ),
-  );
+
+
 
 case AppRoutes.patientEditHealthConditions:
   return BaseRoute(
@@ -202,6 +210,19 @@ case AppRoutes.patientEditLabTests:
   );
 
 
+  // Change Password
+case AppRoutes.changePassword:
+  return BaseRoute(
+    page: const ChangePasswordView(),
+  );
+
+
+
+
+
+// Patient Main
+case patientMain:
+  return BaseRoute(page: const PatientMainView());
 
       
 
