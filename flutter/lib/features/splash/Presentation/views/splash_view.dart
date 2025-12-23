@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:Axon/core/routes/app_routes.dart';
-import 'package:Axon/features/splash/controller/splash_animation_controller.dart';
 import 'package:Axon/features/splash/Presentation/widgets/splash_background.dart';
-import 'package:Axon/features/splash/Presentation/widgets/splash_center_logo.dart';
 import 'package:Axon/features/splash/Presentation/widgets/splash_bottom_letters.dart';
+import 'package:Axon/features/splash/Presentation/widgets/splash_center_logo.dart';
+import 'package:Axon/features/splash/controller/splash_animation_controller.dart';
+import 'package:flutter/material.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -12,11 +12,8 @@ class SplashView extends StatefulWidget {
   State<SplashView> createState() => _SplashViewState();
 }
 
-class _SplashViewState extends State<SplashView>
-    with TickerProviderStateMixin {
-
-  final SplashAnimationController _controller =
-      SplashAnimationController();
+class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
+  final SplashAnimationController _controller = SplashAnimationController();
 
   @override
   void initState() {
@@ -26,10 +23,7 @@ class _SplashViewState extends State<SplashView>
       vsync: this,
       onFinished: () {
         if (!mounted) return;
-        Navigator.pushReplacementNamed(
-          context,
-          AppRoutes.onBoarding,
-        );
+        Navigator.pushReplacementNamed(context, AppRoutes.onBoarding);
       },
     );
   }
@@ -47,13 +41,9 @@ class _SplashViewState extends State<SplashView>
         children: [
           const SplashBackground(),
 
-          SplashCenterLogo(
-            animation: _controller.xFadeAnimation,
-          ),
+          SplashCenterLogo(animation: _controller.xFadeAnimation),
 
-          SplashBottomLetters(
-            animation: _controller.lettersFadeAnimation,
-          ),
+          SplashBottomLetters(animation: _controller.lettersFadeAnimation),
         ],
       ),
     );
