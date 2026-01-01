@@ -36,7 +36,7 @@ Thumbs.db
 .idea/
 .vscode/
 
-# NPM package lock files - optional, but generally included for consistency
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+# # NPM package lock files - optional, but generally included for consistency
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

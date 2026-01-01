@@ -7,30 +7,40 @@ import { fileURLToPath } from "url";
 
 dotenv.config();
 
-// Define the uploads directory path
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadDir = path.join(__dirname, "Uploads", "Certificates");
 const personalPhotoDir = path.join(__dirname, "Uploads", "PersonalPhoto");
+const radiologyDir = path.join(__dirname, "Uploads", "Radiology");
 
-// Ensure the Uploads directory exists
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-  console.log(`Created uploads directory: ${uploadDir}`);
-}
+const createDirIfNotExists = (dir) => {
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`Created directory: ${dir}`);
+    }
+  } catch (err) {
+    console.error(`Failed to create directory ${dir}:`, err);
+  }
+};
 
-// التأكد من وجود المجلد
-if (!fs.existsSync(personalPhotoDir)) {
-  fs.mkdirSync(personalPhotoDir, { recursive: true });
-  console.log(`Created personal photo directory: ${personalPhotoDir}`);
-}
+createDirIfNotExists(uploadDir);
+createDirIfNotExists(personalPhotoDir);
+createDirIfNotExists(radiologyDir);
 
-// Connect to database
-connectDB();
+connectDB()
+  .then(() => {
+    const PORT = process.env.PORT || 3000;
+    const server = app.listen(PORT, () => {
+      console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    });
 
-const PORT = process.env.PORT;
-
-// Start the server
-app.listen(PORT, () =>
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
-);
+    process.on("SIGTERM", () => {
+      console.log("SIGTERM received, shutting down gracefully");
+      server.close(() => process.exit(0));
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to database:", err);
+    process.exit(1);
+  });

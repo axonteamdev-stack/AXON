@@ -1,63 +1,45 @@
-import jwt from "jsonwebtoken";
-import Patient from "../models/PatientModel.js";
-import Doctor from "../models/DoctorModel.js";
-import dotenv from "dotenv";
+import jwt from 'jsonwebtoken';
+import User from '../models/UserModel.js';
+import AppError, { catchAsync } from '../utils/AppError.js';
 
-dotenv.config();
+export const protect = catchAsync(async (req, res, next) => {
+    let token;
 
-// Placeholder for future use to protect routes
-const protect = (allowedRoles) => async (req, res, next) => {
-  let token;
-
-  // 1. Check for token in cookies
-  if (req.cookies.jwt) {
-    token = req.cookies.jwt;
-  }
-
-  if (!token) {
-    return res.status(401).json({ message: "Not authorized, no token" });
-  }
-
-  try {
-    // 2. Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { id, role } = decoded;
-
-    // 3. Check if user exists
-    let user;
-    if (role === "patient") {
-      user = await Patient.findById(id).select("-password");
-    } else if (role === "doctor") {
-      user = await Doctor.findById(id).select("-password");
+    // 1) التحقق من وجود التوكن في الهيدرز (للموبايل Flutter)
+    if (req.headers.authorization?.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+    } 
+    // 2) التحقق من وجود التوكن في الكوكيز (للمتصفح React)
+    else if (req.cookies.jwt) {
+        token = req.cookies.jwt;
     }
 
-    if (!user) {
-      return res
-        .status(401)
-        .json({ message: "Not authorized, user not found" });
+    if (!token) {
+        return next(new AppError('أنت غير مسجل دخول، يرجى تسجيل الدخول للوصول', 401));
     }
 
-    // 4. Check role authorization
-    if (!allowedRoles.includes(role)) {
-      return res.status(403).json({
-        message:
-          "Forbidden: You do not have the required role to access this resource.",
-      });
-    }
+    // 3) التحقق من صحة التوكن
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // 4) التأكد من وجود المستخدم
+        const currentUser = await User.findById(decoded.id);
+        if (!currentUser) {
+            return next(new AppError('المستخدم صاحب هذا التوكن لم يعد موجوداً', 401));
+        }
 
-    req.user = user;
+        req.user = currentUser;
+        next();
+    } catch (err) {
+        return next(new AppError('التوكن غير صالح أو انتهت صلاحيته', 401));
+    }
+});
+
+export const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(new AppError('ليس لديك صلاحية الوصول لهذه الميزة', 403));
+    }
     next();
-  } catch (error) {
-    console.error(error);
-    return res.status(401).json({ message: "Not authorized, token failed" });
-  }
+  };
 };
-
-const authMiddleware = {
-  protect,
-  protectPatient: protect(["patient"]),
-  protectDoctor: protect(["doctor"]),
-  protectAny: protect(["patient", "doctor"]),
-};
-
-export default authMiddleware;

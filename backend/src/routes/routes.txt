@@ -1,25 +1,150 @@
-localhost:3000/api/auth/register/doctor
-localhost:3000/api/auth/register/patient
+localhost:3000/api/v1/auth/signup-patient
+localhost:3000/api/v1/auth/signup-doctor
+localhost:3000/api/v1/auth/login
+localhost:3000/api/v1/auth/refresh-token
+localhost:3000/api/v1/auth/forgot-password
+localhost:3000/api/v1/auth/reset-password/:token
+localhost:3000/api/v1/admin/users
+localhost:3000/api/v1/admin/activate-doctor/:id
+localhost:3000/api/v1/admin/users/:id
+localhost:3000/api/v1/admin/users/:id
 
-doctor => fullName , email , password , profileImage
-patient => fullName , email , password , specialization , yearsExperience , medicalCertificateNumber , certificateImage, profileImage
----------------------
-localhost:3000/api/auth/login
+=== AUTHENTICATION ROUTES ===
+
+1. PATIENT SIGNUP
+POST localhost:3000/api/v1/auth/signup-patient
+Fields:
 {
-    "role" : "patient" ,
-    "email" : "example@example.com" ,
-    "password" : "password"
+    "fullName": "string (required)",
+    "email": "string (required)",
+    "password": "string (required, min 6 chars)",
+    "phoneNumber": "string (required)",
+    "gender": "string (Male/Female, required)",
+    "bloodType": "string (optional)",
+    "height": "number (optional)",
+    "weight": "number (optional)",
+    "conditions": "string (optional, JSON array as string)",
+    "allergies": "string (optional, JSON array as string)",
+    "radiologyDescription": "string (optional)"
 }
-----------------
+Files:
+- radiologyImage: image/jpeg, image/png (optional)
+- personalPhoto: image/jpeg, image/png (optional)
+
+---
+
+2. DOCTOR SIGNUP
+POST localhost:3000/api/v1/auth/signup-doctor
+Fields:
 {
-    "role" : "patient" ,
-    "email" : "example@example.com" ,
-    "password" : "password"
+    "fullName": "string (required)",
+    "email": "string (required)",
+    "password": "string (required, min 6 chars)",
+    "phoneNumber": "string (required)",
+    "gender": "string (Male/Female, required)",
+    "specialization": "string (required)",
+    "yearsExperience": "number (required)",
+    "medicalLicenseNumber": "string (required)"
 }
-------------------------------
-localhost:3000/api/auth/change-password
-must login
+Files:
+- licenseImage: image/jpeg, image/png (required)
+- personalPhoto: image/jpeg, image/png (optional)
+
+---
+
+3. LOGIN
+POST localhost:3000/api/v1/auth/login
+Body:
 {
-    "oldPassword" : "hamo12345678aaa" ,
-    "newPassword" : "hamo12345678aaa"
+    "email": "example@example.com",
+    "password": "password123"
 }
+Response:
+{
+    "status": "success",
+    "token": "accessToken",
+    "refreshToken": "refreshToken"
+}
+
+---
+
+4. REFRESH TOKEN
+POST localhost:3000/api/v1/auth/refresh-token
+Headers:
+- Cookie: refreshToken=<token>
+Response:
+{
+    "status": "success",
+    "token": "newAccessToken"
+}
+
+---
+
+5. FORGOT PASSWORD
+POST localhost:3000/api/v1/auth/forgot-password
+Body:
+{
+    "email": "example@example.com"
+}
+Response:
+{
+    "status": "success",
+    "message": "تم إرسال الكود للإيميل"
+}
+
+---
+
+6. RESET PASSWORD
+PATCH localhost:3000/api/v1/auth/reset-password/:token
+Body:
+{
+    "token": "123456",
+    "password": "newPassword123"
+}
+Response:
+{
+    "status": "success",
+    "message": "تم تغيير كلمة المرور بنجاح"
+}
+
+---
+
+=== ADMIN ROUTES ===
+(Requires Authentication & Admin Role)
+
+1. ADD USER
+POST localhost:3000/api/v1/admin/users
+Headers:
+- Authorization: Bearer <token>
+Body:
+{
+    "fullName": "string",
+    "email": "string",
+    "role": "patient|doctor|admin"
+}
+
+---
+
+2. ACTIVATE DOCTOR
+PATCH localhost:3000/api/v1/admin/activate-doctor/:id
+Headers:
+- Authorization: Bearer <token>
+
+---
+
+3. UPDATE USER
+PATCH localhost:3000/api/v1/admin/users/:id
+Headers:
+- Authorization: Bearer <token>
+Body:
+{
+    "fullName": "string",
+    "email": "string"
+}
+
+---
+
+4. DELETE USER
+DELETE localhost:3000/api/v1/admin/users/:id
+Headers:
+- Authorization: Bearer <token>

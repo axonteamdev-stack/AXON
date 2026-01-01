@@ -1,58 +1,60 @@
 import multer from "multer";
-import path from "path";
 import fs from "fs";
+import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// المجلدات
-const certificateDir = path.join(__dirname, "../../Uploads/Certificates");
-const personalPhotoDir = path.join(__dirname, "../../Uploads/PersonalPhoto");
-
-if (!fs.existsSync(certificateDir))
-  fs.mkdirSync(certificateDir, { recursive: true });
-if (!fs.existsSync(personalPhotoDir))
-  fs.mkdirSync(personalPhotoDir, { recursive: true });
-
-// تخزين الملفات
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    if (file.fieldname === "certificateImage") cb(null, certificateDir);
-    else if (file.fieldname === "profileImage") cb(null, personalPhotoDir);
-    else cb(new Error("Unknown file field"), false);
+    let folder = "Uploads/";
+
+    // تحديد المجلد بناءً على اسم الحقل (fieldname) المرسل من الفرونت إند
+    if (file.fieldname === "radiologyImage") {
+      folder = "Uploads/Radiology/";
+    } else if (file.fieldname === "licenseImage") {
+      folder = "Uploads/Certificates/";
+    } else if (file.fieldname === "personalPhoto") {
+      folder = "Uploads/PersonalPhoto/";
+    }
+
+    // التأكد من وجود المجلد برمجياً لزيادة الأمان
+    if (!fs.existsSync(folder)) {
+      fs.mkdirSync(folder, { recursive: true });
+    }
+
+    cb(null, folder);
   },
   filename: (req, file, cb) => {
-    const name = req.body.fullName?.replace(/\s+/g, "_") || "user";
-    const role = req.body.role || "patient";
-    cb(
-      null,
-      `${name}_${role}_${file.fieldname}${path.extname(file.originalname)}`
-    );
+    // استخدام timestamp مع الاسم الأصلي لتجنب تكرار الأسماء
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, `${uniqueSuffix}-${file.originalname}`);
   },
 });
 
-// تصفية الملفات
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) cb(null, true);
-  else cb(new Error("Only image files are allowed!"), false);
+  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Invalid file type. Only JPEG and PNG are allowed."), false);
+  }
 };
 
-// Middleware
-const uploadMiddleware = {
-  patient: multer({
-    storage,
-    fileFilter,
-    limits: { fileSize: 1024 * 1024 * 5 },
-  }).single("profileImage"),
-  doctor: multer({
-    storage,
-    fileFilter,
-    limits: { fileSize: 1024 * 1024 * 5 },
-  }).fields([
-    { name: "certificateImage", maxCount: 1 },
-    { name: "profileImage", maxCount: 1 },
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+});
+
+export default {
+  patient: upload.fields([
+    { name: "radiologyImage", maxCount: 1 },
+    { name: "personalPhoto", maxCount: 1 },
+  ]),
+  doctor: upload.fields([
+    { name: "licenseImage", maxCount: 1 },
+    { name: "personalPhoto", maxCount: 1 },
   ]),
 };
-
-export default uploadMiddleware;

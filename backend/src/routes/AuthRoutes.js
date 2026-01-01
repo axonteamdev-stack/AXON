@@ -1,48 +1,27 @@
 import express from "express";
-import authController from "../controllers/AuthController.js";
-import uploadMiddleware from "../middlewares/UploadMiddleware.js";
-import validateMiddleware from "../middlewares/ValidateMiddleware.js";
-import authMiddleware from "../middlewares/AuthMiddleware.js";
+import * as auth from "../controllers/AuthController.js";
+import upload from "../middlewares/UploadMiddleware.js";
+import validate from "../middlewares/ValidateMiddleware.js";
 
 const router = express.Router();
-
-// Route for patient registration
+// Order is vital: 1. Upload (parses form-data) -> 2. Validate -> 3. Controller
 router.post(
-  "/register/patient",
-  uploadMiddleware.patient,
-  validateMiddleware.patientRegister, // Joi validation for patient data
-  authController.registerPatient
-);
-
-// Route for doctor registration (requires file upload and validation)
-router.post(
-  "/register/doctor",
-  uploadMiddleware.doctor, // Multer handles certificate image upload first
-  validateMiddleware.doctorRegister, // Joi validation for doctor data (after file is in req.file)
-  authController.registerDoctor
-);
-
-// // صفحة تسجيل الدخول
-// router.get('/login2', authController.loginpage);
-
-// // معالجة تسجيل الدخول
-// router.post('/login2', authController.loginHandler);
-
-// Route for login (supports both patient and doctor)
-router.post(
-  "/login",
-  validateMiddleware.login, // Joi validation for login credentials
-  authController.loginUser
+  "/signup-patient",
+  upload.patient, // Ensure this is not undefined in UploadMiddleware.js
+  validate.patientRegister, // This is now a verified function
+  auth.signupPatient
 );
 
 router.post(
-  "/change-password",
-  authMiddleware.protectAny,
-  validateMiddleware.changePassword,
-  authController.changePassword
+  "/signup-doctor",
+  upload.doctor,
+  validate.doctorRegister,
+  auth.signupDoctor
 );
 
-// Route for logout
-router.post("/logout", authController.logoutUser);
+router.post("/login", validate.login, auth.login);
+router.post("/refresh-token", auth.refreshAccessToken);
+router.post("/forgot-password", auth.forgotPassword);
+router.patch("/reset-password", auth.resetPassword); // Token goes in body, not URL
 
 export default router;

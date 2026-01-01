@@ -1,192 +1,244 @@
+import User from "../models/UserModel.js";
+import AppError, { catchAsync } from "../utils/AppError.js";
+import { generateTokens } from "../utils/TokenService.js";
+import jwt from "jsonwebtoken";
+import sendEmail from "../utils/Email.js";
+import crypto from "crypto";
 import fs from "fs";
-import Patient from "../models/PatientModel.js";
-import Doctor from "../models/DoctorModel.js";
-import generateTokenAndSetCookie from "../utils/GenerateToken.js";
 
-const registerPatient = async (req, res) => {
+const safeParse = (data) => {
+  if (!data) return [];
   try {
-    const { fullName, email, password } = req.body;
-    const profileImagePath = req.file?.path || null; // single upload
-    if (await Patient.findOne({ email }))
-      return res
-        .status(400)
-        .json({ message: "Patient with this email already exists" });
-
-    const patient = await Patient.create({
-      fullName,
-      email,
-      password,
-      profileImage: profileImagePath,
-    });
-    const token = generateTokenAndSetCookie(res, patient._id, "patient");
-
-    res.status(201).json({
-      _id: patient._id,
-      fullName: patient.fullName,
-      email: patient.email,
-      role: patient.role,
-      token,
-      profileImage: profileImagePath,
-    });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "Server error during patient registration" });
+    return typeof data === "string" ? JSON.parse(data) : data;
+  } catch (e) {
+    return [];
   }
 };
 
-const registerDoctor = async (req, res) => {
-  const certificateImagePath = req.files?.certificateImage?.[0]?.path || null;
-  const profileImagePath = req.files?.profileImage?.[0]?.path || null;
+// 1. PATIENT SIGNUP
+export const signupPatient = catchAsync(async (req, res, next) => {
+  const {
+    fullName,
+    email,
+    password,
+    phoneNumber,
+    gender,
+    bloodType,
+    height,
+    weight,
+    conditions,
+    allergies,
+    radiologyDescription,
+  } = req.body;
 
-  const cleanupFiles = () => {
-    try {
-      if (certificateImagePath && fs.existsSync(certificateImagePath))
-        fs.unlinkSync(certificateImagePath);
-      if (profileImagePath && fs.existsSync(profileImagePath))
-        fs.unlinkSync(profileImagePath);
-    } catch (err) {
-      console.error("Error cleaning up files:", err);
+  // Check if user already exists
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return next(new AppError("Email already registered", 400));
+  }
+
+  const radiologyImagePath =
+    req.files?.radiologyImage?.[0]?.path?.replace(/\\/g, "/") || null;
+  const personalPhotoPath =
+    req.files?.personalPhoto?.[0]?.path?.replace(/\\/g, "/") || null;
+
+  const newUser = await User.create({
+    fullName,
+    email,
+    password,
+    phoneNumber,
+    gender,
+    role: "patient",
+    isVerified: true,
+    medicalProfile: {
+      bloodType,
+      height,
+      weight,
+      conditions: safeParse(conditions),
+      allergies: safeParse(allergies),
+      radiologyImage: radiologyImagePath,
+      radiologyDescription,
+    },
+  });
+
+  const { accessToken, refreshToken } = generateTokens(res, newUser._id);
+  const isMobile = req.headers["platform"] === "mobile";
+
+  res.status(201).json({
+    status: "success",
+    ...(isMobile && { token: accessToken, refreshToken }),
+    data: newUser,
+  });
+});
+
+// 2. DOCTOR SIGNUP
+export const signupDoctor = catchAsync(async (req, res, next) => {
+  const {
+    fullName,
+    email,
+    password,
+    phoneNumber,
+    gender,
+    specialization,
+    yearsExperience,
+    medicalLicenseNumber,
+  } = req.body;
+
+  // Check if user already exists
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return next(new AppError("Email already registered", 400));
+  }
+
+  const licenseImagePath =
+    req.files?.licenseImage?.[0]?.path?.replace(/\\/g, "/") || null;
+  const personalPhotoPath =
+    req.files?.personalPhoto?.[0]?.path?.replace(/\\/g, "/") || null;
+
+  if (!licenseImagePath) {
+    if (personalPhotoPath && fs.existsSync(personalPhotoPath)) {
+      fs.unlinkSync(personalPhotoPath);
     }
-  };
+    return next(new AppError("Medical license image is required", 400));
+  }
 
-  try {
-    if (!certificateImagePath) {
-      cleanupFiles();
-      return res
-        .status(400)
-        .json({ message: "Medical certificate image is required." });
-    }
-
-    const {
-      fullName,
-      email,
-      password,
+  const newUser = await User.create({
+    fullName,
+    email,
+    password,
+    phoneNumber,
+    gender,
+    role: "doctor",
+    isVerified: false,
+    doctorProfile: {
       specialization,
       yearsExperience,
-      medicalCertificateNumber,
-    } = req.body;
+      medicalLicenseNumber,
+      licenseImage: licenseImagePath,
+    },
+  });
 
-    if (await Doctor.findOne({ email })) {
-      if (certificateImagePath) fs.unlinkSync(certificateImagePath);
-      if (profileImagePath) fs.unlinkSync(profileImagePath);
-      return res.status(400).json({ message: "Email exists" });
-    }
-    if (await Doctor.findOne({ medicalCertificateNumber })) {
-      if (certificateImagePath) fs.unlinkSync(certificateImagePath);
-      if (profileImagePath) fs.unlinkSync(profileImagePath);
-      return res.status(400).json({ message: "Certificate exists" });
-    }
+  res.status(201).json({
+    status: "success",
+    message: "Registration request sent for admin review",
+  });
+});
 
-    const doctor = await Doctor.create({
-      fullName,
-      email,
-      password,
-      specialization,
-      yearsExperience,
-      medicalCertificateNumber,
-      certificateImage: certificateImagePath,
-      profileImage: profileImagePath,
-      isVerified: false,
-    });
+// 3. LOGIN
+export const login = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
 
-    const token = generateTokenAndSetCookie(res, doctor._id, "doctor");
-
-    res.status(201).json({
-      _id: doctor._id,
-      fullName: doctor.fullName,
-      email: doctor.email,
-      specialization: doctor.specialization,
-      isVerified: doctor.isVerified,
-      role: doctor.role,
-      token,
-      certificateImage: certificateImagePath,
-      profileImage: profileImagePath,
-    });
-  } catch (error) {
-    cleanupFiles();
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "Server error during doctor registration" });
+  // Check if email and password exist
+  if (!email || !password) {
+    return next(new AppError("Please provide email and password", 400));
   }
-};
 
-const loginUser = async (req, res) => {
-  try {
-    const { email, password, role } = req.body;
-    let userModel =
-      role === "patient" ? Patient : role === "doctor" ? Doctor : null;
-    if (!userModel)
-      return res.status(400).json({ message: "Invalid login role" });
+  // Check if user exists & password is correct
+  const user = await User.findOne({ email }).select("+password");
 
-    const user = await userModel.findOne({ email }).select("+password");
-    if (user && (await user.matchPassword(password))) {
-      const token = generateTokenAndSetCookie(res, user._id, role);
-      const response = {
-        _id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        token,
-      };
-      if (role === "doctor") {
-        response.specialization = user.specialization;
-        response.isVerified = user.isVerified;
-      }
-      return res.json(response);
-    }
-    res.status(401).json({ message: "Invalid credentials" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error during login" });
+  if (!user || !(await user.matchPassword(password))) {
+    return next(new AppError("Incorrect email or password", 401));
   }
-};
 
-const logoutUser = (req, res) => {
-  res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) });
-  res.status(200).json({ message: "User logged out successfully" });
-};
+  const { accessToken, refreshToken } = generateTokens(res, user._id);
+  const isMobile = req.headers["platform"] === "mobile";
 
-const changePassword = async (req, res) => {
+  res.status(200).json({
+    status: "success",
+    ...(isMobile && { token: accessToken, refreshToken }),
+    data: user,
+  });
+});
+
+// 4. REFRESH TOKEN
+export const refreshAccessToken = catchAsync(async (req, res, next) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return next(new AppError("No refresh token provided", 401));
+  }
+
   try {
-    const { oldPassword, newPassword } = req.body;
-
-    // req.user is already populated by protect middleware
-    const role = req.user.role;
-
-    const userModel =
-      role === "patient" ? Patient : role === "doctor" ? Doctor : null;
-
-    const user = await userModel.findById(req.user._id).select("+password");
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+    const user = await User.findById(decoded.id);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return next(new AppError("User not found", 404));
     }
 
-    // Check if old password is correct
-    const isMatch = await user.matchPassword(oldPassword);
+    const { accessToken } = generateTokens(res, user._id);
 
-    if (!isMatch) {
-      return res.status(400).json({ message: "Old password is incorrect" });
-    }
-
-    // Set new password
-    user.password = newPassword;
-    await user.save(); // bcryptjs will hash it in pre-save
-
-    res.json({ message: "Password updated successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error updating password" });
+    res.status(200).json({
+      status: "success",
+      token: accessToken,
+    });
+  } catch (err) {
+    return next(new AppError("Invalid or expired refresh token", 401));
   }
-};
+});
 
-export default {
-  registerPatient,
-  registerDoctor,
-  loginUser,
-  logoutUser,
-  changePassword,
-};
+// 5. FORGOT PASSWORD
+export const forgotPassword = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(new AppError("No user found with that email", 404));
+  }
+
+  const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
+
+  user.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  user.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  await user.save({ validateBeforeSave: false });
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "Password Reset Code (Valid for 10 minutes)",
+      message: `Your reset code is: ${resetToken}`,
+    });
+
+    res.status(200).json({
+      status: "success",
+      message: "Reset code sent to email",
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new AppError("Failed to send email, try again later", 500));
+  }
+});
+
+// 6. RESET PASSWORD
+export const resetPassword = catchAsync(async (req, res, next) => {
+  const { token, password } = req.body;
+
+  if (!token || !password) {
+    return next(new AppError("Please provide token and new password", 400));
+  }
+
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new AppError("Invalid or expired reset token", 400));
+  }
+
+  user.password = password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
+  res.status(200).json({
+    status: "success",
+    message: "Password changed successfully",
+  });
+});
