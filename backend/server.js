@@ -44,6 +44,7 @@
 //     console.error("Failed to connect to database:", err);
 //     process.exit(1);
 //   });
+
 import app from "./app.js";
 import connectDB from "./src/config/db.js";
 import dotenv from "dotenv";
@@ -55,7 +56,8 @@ dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const UPLOADS_PATH = process.env.UPLOADS_PATH || path.join(__dirname, "Uploads");
+const UPLOADS_PATH =
+  process.env.UPLOADS_PATH || path.join(__dirname, "Uploads");
 
 const uploadDir = path.join(UPLOADS_PATH, "Certificates");
 const personalPhotoDir = path.join(UPLOADS_PATH, "PersonalPhoto");
@@ -72,7 +74,9 @@ connectDB()
   .then(() => {
     const PORT = process.env.PORT || 3000;
     const server = app.listen(PORT, () => {
-      console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+      console.log(
+        `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
+      );
     });
 
     process.on("SIGTERM", () => {

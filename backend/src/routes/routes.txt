@@ -1,18 +1,18 @@
-localhost:3000/api/v1/auth/signup-patient
-localhost:3000/api/v1/auth/signup-doctor
-localhost:3000/api/v1/auth/login
-localhost:3000/api/v1/auth/refresh-token
-localhost:3000/api/v1/auth/forgot-password
-localhost:3000/api/v1/auth/reset-password/:token
-localhost:3000/api/v1/admin/users
-localhost:3000/api/v1/admin/activate-doctor/:id
-localhost:3000/api/v1/admin/users/:id
-localhost:3000/api/v1/admin/users/:id
+https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/signup-patient
+https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/signup-doctor
+https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/login
+https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/refresh-token
+https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/forgot-password
+https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/reset-password/:token
+https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/admin/users
+https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/admin/activate-doctor/:id
+https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/admin/users/:id
+https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/admin/users/:id
 
 === AUTHENTICATION ROUTES ===
 
 1. PATIENT SIGNUP
-POST localhost:3000/api/v1/auth/signup-patient
+POST https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/signup-patient
 Fields:
 {
     "fullName": "string (required)",
@@ -34,7 +34,7 @@ Files:
 ---
 
 2. DOCTOR SIGNUP
-POST localhost:3000/api/v1/auth/signup-doctor
+POST https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/signup-doctor
 Fields:
 {
     "fullName": "string (required)",
@@ -53,7 +53,7 @@ Files:
 ---
 
 3. LOGIN
-POST localhost:3000/api/v1/auth/login
+POST https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/login
 Body:
 {
     "email": "example@example.com",
@@ -69,7 +69,7 @@ Response:
 ---
 
 4. REFRESH TOKEN
-POST localhost:3000/api/v1/auth/refresh-token
+POST https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/refresh-token
 Headers:
 - Cookie: refreshToken=<token>
 Response:
@@ -81,7 +81,7 @@ Response:
 ---
 
 5. FORGOT PASSWORD
-POST localhost:3000/api/v1/auth/forgot-password
+POST https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/forgot-password
 Body:
 {
     "email": "example@example.com"
@@ -95,7 +95,7 @@ Response:
 ---
 
 6. RESET PASSWORD
-PATCH localhost:3000/api/v1/auth/reset-password/:token
+PATCH https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/auth/reset-password/:token
 Body:
 {
     "token": "123456",
@@ -113,7 +113,7 @@ Response:
 (Requires Authentication & Admin Role)
 
 1. ADD USER
-POST localhost:3000/api/v1/admin/users
+POST https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/admin/users
 Headers:
 - Authorization: Bearer <token>
 Body:
@@ -126,14 +126,14 @@ Body:
 ---
 
 2. ACTIVATE DOCTOR
-PATCH localhost:3000/api/v1/admin/activate-doctor/:id
+PATCH https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/admin/activate-doctor/:id
 Headers:
 - Authorization: Bearer <token>
 
 ---
 
 3. UPDATE USER
-PATCH localhost:3000/api/v1/admin/users/:id
+PATCH https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/admin/users/:id
 Headers:
 - Authorization: Bearer <token>
 Body:
@@ -145,6 +145,6 @@ Body:
 ---
 
 4. DELETE USER
-DELETE localhost:3000/api/v1/admin/users/:id
+DELETE https://watery-trude-axon-graduation-project-2e06dc0f.koyeb.app/api/v1/admin/users/:id
 Headers:
 - Authorization: Bearer <token>
