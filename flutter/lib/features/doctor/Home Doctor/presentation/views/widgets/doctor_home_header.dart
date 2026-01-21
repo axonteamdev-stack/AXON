@@ -1,8 +1,8 @@
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/doctor/presentation/manager/home/doctor_home_cubit.dart';
-import 'package:Axon/features/doctor/presentation/views/widgets/header_icons.dart';
+import 'package:Axon/features/doctor/Home%20Doctor/presentation/manager/home/doctor_home_cubit.dart';
+import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/widgets/header_icons.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/widgets/notification_icon.dart'
     as patient_notification;
 import 'package:flutter/material.dart';

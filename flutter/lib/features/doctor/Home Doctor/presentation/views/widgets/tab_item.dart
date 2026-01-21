@@ -52,7 +52,7 @@ class TabItem extends StatelessWidget {
                     vertical: 2.h,
                   ),
                   decoration: const BoxDecoration(
-                    color: AppColors.primaryColor,
+                    color: Colors.red,
                     shape: BoxShape.circle,
                   ),
                   child: Text(

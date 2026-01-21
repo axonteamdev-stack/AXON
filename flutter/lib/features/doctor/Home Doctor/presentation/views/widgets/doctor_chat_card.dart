@@ -1,3 +1,4 @@
+import 'package:Axon/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -6,27 +7,29 @@ import 'package:Axon/core/widgets/text_app.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 
 class DoctorChatCard extends StatelessWidget {
-  const DoctorChatCard({super.key});
+  final String name;
+  final String description;
+  final String image;
+
+  const DoctorChatCard({
+    super.key,
+    required this.name,
+    required this.description,
+    required this.image,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 16.w,
-        vertical: 14.h,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(
-          color: AppColors.grey.withOpacity(0.15),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.grey.withOpacity(0.15)),
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withOpacity(0.08),
             blurRadius: 18,
-            spreadRadius: 2,
             offset: const Offset(0, 8),
           ),
         ],
@@ -35,40 +38,43 @@ class DoctorChatCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 26.r,
-            backgroundColor:
-                AppColors.primaryColor.withOpacity(0.12),
-            child: Icon(
-              Icons.person,
-              color: AppColors.primaryColor,
-              size: 22.sp,
-            ),
+            backgroundImage: AssetImage(image),
           ),
           SizedBox(width: 14.w),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextApp(
-                  text: 'Abdallah Hassan',
-                  color: AppColors.black,
+                  text: name,
                   weight: AppTextWeight.semiBold,
                 ),
-                SizedBox(height: 6),
+                SizedBox(height: 6.h),
                 TextApp(
-                  text: 'Back pain and spinal discomfort',
-                  color: AppColors.grey,
+                  text: description,
                   fontSize: 12,
+                  color: AppColors.grey,
+                  maxLines: 1,
                 ),
               ],
             ),
           ),
-          SizedBox(width: 7.w),
           CustomButton(
             text: 'Chat',
             width: 82.w,
             height: 36.h,
             fontSize: 13,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                AppRoutes.doctorChat,
+                arguments: {
+                  'name': name,
+                  'description': description,
+                  'image': image,
+                },
+              );
+            },
           ),
         ],
       ),

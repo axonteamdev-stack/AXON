@@ -1,3 +1,4 @@
+import 'package:Axon/core/style/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/home_bottom_nav_bar.dart';
@@ -26,12 +27,19 @@ class _PatientMainViewState extends State<PatientMainView> {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: pages[currentIndex],
-      bottomNavigationBar: HomeBottomNavBar(
-        currentIndex: currentIndex,
-        onTap: (index) {
-          setState(() => currentIndex = index);
-        },
-      ),
+      bottomNavigationBar:HomeBottomNavBar(
+  currentIndex: currentIndex,
+  onTap: (index) {
+    setState(() => currentIndex = index);
+  },
+  items: const [
+    NavItem(icon: AppImages.home, label: 'Home'),
+    NavItem(icon: AppImages.chat, label: 'Chats'),
+    NavItem(icon: AppImages.community, label: 'Community'),
+    NavItem(icon: AppImages.profile, label: 'Profile'),
+  ],
+)
+
     );
   }
 }

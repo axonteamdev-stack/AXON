@@ -15,7 +15,9 @@ import 'package:Axon/features/auth/Presentation/views/patient/patient_medical_pr
 import 'package:Axon/features/auth/Presentation/views/patient/patient_radiology_view.dart';
 import 'package:Axon/features/auth/Presentation/views/registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/select_role_view.dart';
-import 'package:Axon/features/doctor/presentation/views/doctor_main_view.dart';
+import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_chat_view.dart';
+import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/doctor_main_view.dart';
+import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/doctor_edit_profile_view.dart';
 import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/home_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/patient_main_view.dart';
@@ -85,6 +87,11 @@ static const patientMain = 'patientMain';
 static const doctorMain = 'doctorMain';
 //doctor Auth Success
   static const accountCreatedDoctor = 'accountCreatedDoctor';
+  //doctor edit profile
+  static const doctorEditProfile = 'doctorEditProfile';
+
+static const doctorChat = 'doctorChat';
+
 
 
 
@@ -236,6 +243,24 @@ case doctorMain:
   return BaseRoute(page: const DoctorMainView());
 case accountCreatedDoctor:
   return BaseRoute(page: const AccountDoctorCreatedView());
+
+  // Doctor edit profile
+
+case doctorEditProfile:
+  return BaseRoute(page: const DoctorEditProfileView());
+
+case doctorChat:
+  final args = settings.arguments as Map<String, dynamic>;
+  return BaseRoute(
+    page: DoctorChatView(
+      name: args['name'] as String,
+      image: args['image'] as String,
+      description: args['description'] as String,
+    ),
+  );
+
+
+
 
 
 

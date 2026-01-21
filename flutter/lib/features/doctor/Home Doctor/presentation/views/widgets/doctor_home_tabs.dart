@@ -1,5 +1,5 @@
-import 'package:Axon/features/doctor/presentation/manager/home/doctor_home_cubit.dart';
-import 'package:Axon/features/doctor/presentation/views/widgets/tab_item.dart';
+import 'package:Axon/features/doctor/Home%20Doctor/presentation/manager/home/doctor_home_cubit.dart';
+import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/widgets/tab_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

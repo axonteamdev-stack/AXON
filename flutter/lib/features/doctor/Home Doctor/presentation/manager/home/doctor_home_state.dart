@@ -2,17 +2,12 @@ part of 'doctor_home_cubit.dart';
 
 enum DoctorHomeTab { chats, requests }
 
-enum DoctorHomeStatus {
-  initial,
-  loading,
-  success,
-  error,
-}
+enum DoctorHomeStatus { initial, loading, success, error }
 
 class DoctorHomeState {
   final DoctorHomeTab currentTab;
   final DoctorHomeStatus status;
-  final List<dynamic> chatPatients;
+  final List<ChatPatient> chatPatients;
   final List<dynamic> requestPatients;
   final String? errorMessage;
 
@@ -36,7 +31,7 @@ class DoctorHomeState {
   DoctorHomeState copyWith({
     DoctorHomeTab? currentTab,
     DoctorHomeStatus? status,
-    List<dynamic>? chatPatients,
+    List<ChatPatient>? chatPatients,
     List<dynamic>? requestPatients,
     String? errorMessage,
   }) {
