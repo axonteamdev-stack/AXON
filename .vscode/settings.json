@@ -15,5 +15,6 @@
         "**/build/": true,
         ".dart_tool": true,
         ".mule": true
-    }
+    },
+    "cmake.sourceDirectory": "D:/body/AXON/flutter/linux"
 }
