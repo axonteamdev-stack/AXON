@@ -16,6 +16,12 @@ import 'package:Axon/features/auth/Presentation/views/patient/patient_radiology_
 import 'package:Axon/features/auth/Presentation/views/registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/select_role_view.dart';
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_chat_view.dart';
+import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_show_patient_profile_view.dart';
+import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_view_patient_allergies_view.dart';
+import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_view_patient_basic_info_view.dart';
+import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_view_patient_health_conditions_view.dart';
+import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_view_patient_lab_tests_view.dart';
+import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_view_patient_radiology_view.dart';
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/doctor_main_view.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/doctor_edit_profile_view.dart';
 import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart';
@@ -91,6 +97,13 @@ static const doctorMain = 'doctorMain';
   static const doctorEditProfile = 'doctorEditProfile';
 
 static const doctorChat = 'doctorChat';
+static const doctorShowPatientProfile = 'doctorShowPatientProfile';
+
+static const doctorViewPatientBasicInfo = '/doctorViewPatientBasicInfo';
+static const doctorViewPatientHealthConditions = '/doctorViewPatientHealthConditions';
+static const doctorViewPatientAllergies = '/doctorViewPatientAllergies';
+static const doctorViewPatientRadiology = '/doctorViewPatientRadiology';
+static const doctorViewPatientLabTests = '/doctorViewPatientLabTests';
 
 
 
@@ -261,9 +274,34 @@ case doctorChat:
 
 
 
+case doctorShowPatientProfile:
+  final args = settings.arguments as Map<String, dynamic>;
+
+  return BaseRoute(
+    page: DoctorShowPatientProfileView(
+      name: args['name'],
+      image: args['image'],
+    
+    ),
+    
+  );
 
 
 
+case AppRoutes.doctorViewPatientBasicInfo:
+  return BaseRoute(page: DoctorViewPatientBasicInfoView());
+
+case AppRoutes.doctorViewPatientHealthConditions:
+  return BaseRoute(page: DoctorViewPatientHealthConditionsView());
+
+case AppRoutes.doctorViewPatientAllergies:
+  return BaseRoute(page: DoctorViewPatientAllergiesView());
+
+case AppRoutes.doctorViewPatientRadiology:
+  return BaseRoute(page: DoctorViewPatientRadiologyView());
+
+case AppRoutes.doctorViewPatientLabTests:
+  return BaseRoute(page: DoctorViewPatientLabTestsView());
 
 
 

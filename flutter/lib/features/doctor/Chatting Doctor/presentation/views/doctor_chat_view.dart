@@ -61,7 +61,7 @@ class _DoctorChatViewState extends State<DoctorChatView> {
   onTap: () {
     Navigator.pushNamed(
       context,
-      AppRoutes.patientProfile, 
+      AppRoutes.doctorShowPatientProfile, 
       arguments: {
         'name': widget.name,
         'image': widget.image,
