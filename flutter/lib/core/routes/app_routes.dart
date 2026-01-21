@@ -1,6 +1,7 @@
 import 'package:Axon/core/routes/base_routes.dart';
 import 'package:Axon/features/auth/Presentation/manager/doctor%20registration/doctor_registration_cubit.dart';
 import 'package:Axon/features/auth/Presentation/manager/patient_registration/patient_registration_cubit.dart';
+import 'package:Axon/features/auth/Presentation/views/doctor/account_doctor_created_view.dart';
 import 'package:Axon/features/auth/Presentation/views/doctor/doctor_registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/forget%20password/forgot_password_email_view.dart';
 import 'package:Axon/features/auth/Presentation/views/forget%20password/forgot_password_otp_view.dart';
@@ -14,6 +15,7 @@ import 'package:Axon/features/auth/Presentation/views/patient/patient_medical_pr
 import 'package:Axon/features/auth/Presentation/views/patient/patient_radiology_view.dart';
 import 'package:Axon/features/auth/Presentation/views/registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/select_role_view.dart';
+import 'package:Axon/features/doctor/presentation/views/doctor_main_view.dart';
 import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/home_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/patient_main_view.dart';
@@ -78,6 +80,11 @@ static const deleteAccount = 'deleteAccount';
 
 // Patient Main
 static const patientMain = 'patientMain';
+
+// doctor Main
+static const doctorMain = 'doctorMain';
+//doctor Auth Success
+  static const accountCreatedDoctor = 'accountCreatedDoctor';
 
 
 
@@ -224,6 +231,19 @@ case AppRoutes.changePassword:
 case patientMain:
   return BaseRoute(page: const PatientMainView());
 
+// Doctor Main
+case doctorMain:
+  return BaseRoute(page: const DoctorMainView());
+case accountCreatedDoctor:
+  return BaseRoute(page: const AccountDoctorCreatedView());
+
+
+
+
+
+
+
+
       
 
       default:
@@ -234,4 +254,9 @@ case patientMain:
         );
     }
   }
+
+
+
+
+
 }

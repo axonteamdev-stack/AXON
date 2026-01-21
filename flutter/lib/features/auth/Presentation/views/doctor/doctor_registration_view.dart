@@ -1,3 +1,4 @@
+import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -84,10 +85,10 @@ class DoctorRegistrationView extends StatelessWidget {
               height: 50.h,
               onPressed: () {
                 cubit.submit();
-                // Navigator.pushNamed(
-                //               context,
-                //               AppRoutes.patientMedicalProfile,
-                //             );
+                Navigator.pushNamed(
+                              context,
+                              AppRoutes.accountCreatedDoctor,
+                            );
               },
             ),
 
