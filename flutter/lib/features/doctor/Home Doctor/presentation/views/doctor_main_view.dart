@@ -3,6 +3,7 @@ import 'package:Axon/features/doctor/Articles%20Doctor/presentation/views/doctor
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/doctor_home_view.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/doctor_profile_view.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/widgets/doctor_profile_body.dart';
+import 'package:Axon/features/doctor/Reviews%20Doctor/presentation/views/doctor_reviews_view.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/home_bottom_nav_bar.dart';
@@ -20,6 +21,8 @@ class _DoctorMainViewState extends State<DoctorMainView> {
   final pages = const [
     DoctorHomeView(),
     DoctorArticlesView(),
+    DoctorReviewsView(),
+
     DoctorProfileView(), 
   ];
 
@@ -36,6 +39,7 @@ class _DoctorMainViewState extends State<DoctorMainView> {
   items: const [
     NavItem(icon: AppImages.home, label: 'Home'),
     NavItem(icon: AppImages.book, label: 'Articles'),
+    NavItem(icon: AppImages.review, label: 'Reviews'), 
     NavItem(icon: AppImages.profile, label: 'Profile'),
   ],
 )

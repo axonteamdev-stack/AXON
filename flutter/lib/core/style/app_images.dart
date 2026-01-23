@@ -2,6 +2,7 @@ class AppImages {
   static const String logoPath = 'assets/logo';
   static const String IconsPath = 'assets/icons';
   static const String ImagesPath = 'assets/images';
+  
 
   // App Logo
   static const String logoApp = '$logoPath/logo_app.png';
@@ -29,6 +30,7 @@ class AppImages {
   static const String chat = '$IconsPath/chat.png';
   static const String profile = '$IconsPath/profile.png';
   static const String community = '$IconsPath/community.png';
+  static const String review = '$IconsPath/review.png';
 
 
 // quick access
