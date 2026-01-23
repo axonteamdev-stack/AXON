@@ -22,8 +22,11 @@ class ChangePasswordView extends StatelessWidget {
           final cubit = context.read<ChangePasswordCubit>();
 
           return Scaffold(
+            
             backgroundColor: AppColors.white,
             appBar: AppBar(
+                  scrolledUnderElevation: 0, 
+  surfaceTintColor: Colors.transparent, 
               backgroundColor: AppColors.white,
               elevation: 0,
               titleSpacing: 0,

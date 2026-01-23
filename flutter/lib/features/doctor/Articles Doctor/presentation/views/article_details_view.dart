@@ -24,6 +24,8 @@ class ArticleDetailsView extends StatelessWidget {
             slivers: [
               SliverAppBar(
                 backgroundColor: AppColors.white,
+                    scrolledUnderElevation: 0, 
+  surfaceTintColor: Colors.transparent, 
                 expandedHeight: 300.h,
                 pinned: true,
                 elevation: 0,

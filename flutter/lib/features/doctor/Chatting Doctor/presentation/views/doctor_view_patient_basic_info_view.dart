@@ -14,6 +14,9 @@ class DoctorViewPatientBasicInfoView extends StatelessWidget {
       backgroundColor: AppColors.white,
 
       appBar: AppBar(
+        
+            scrolledUnderElevation: 0, 
+  surfaceTintColor: Colors.transparent, 
         backgroundColor: AppColors.white,
         elevation: 1,
         leading: IconButton(

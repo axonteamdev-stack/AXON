@@ -47,6 +47,8 @@ class _DoctorChatViewState extends State<DoctorChatView> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FA),
       appBar: AppBar(
+            scrolledUnderElevation: 0, 
+  surfaceTintColor: Colors.transparent, 
         backgroundColor: AppColors.white,
         elevation: 1,
         leading: IconButton(
