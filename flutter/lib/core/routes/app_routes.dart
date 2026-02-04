@@ -37,6 +37,8 @@ import 'package:Axon/features/patient/comunity_patient/presentation/views/patien
 import 'package:Axon/features/patient/home_patient/presentation/views/home_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/patient_main_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/widgets/patient_article_details_view.dart';
+import 'package:Axon/features/patient/medicine/presentation/view/add_medicine_view.dart';
+import 'package:Axon/features/patient/medicine/presentation/view/view_all_medicine._view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient%20edit/patient_edit_profile_cubit.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/change_password_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_allergies_view.dart';
@@ -124,6 +126,10 @@ static const doctorViewPatientLabTests = '/doctorViewPatientLabTests';
   static const patientArticleDetails = 'patientarticleDetails';
 // Patient Community
 static const patientCommunity = 'patientCommunity';
+
+static const addMedicine = 'addMedicine';
+static const viewAll = 'viewAll';
+
 
   
 
@@ -373,6 +379,14 @@ case AppRoutes.bookDoctor:
 case AppRoutes.patientCommunity:
   return BaseRoute(
     page: const PatientCommunityView(),
+  );
+case AppRoutes.addMedicine:
+  return BaseRoute(
+    page: const AddMedicineView(),
+  );
+case AppRoutes.viewAll:
+  return BaseRoute(
+    page: const ViewAllMedicine(),
   );
 
       
