@@ -6,7 +6,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MedicineCard extends StatelessWidget {
-  const MedicineCard({super.key});
+  final String name;
+  final String frequency;
+  final String nextTime;
+
+  const MedicineCard({
+    super.key,
+    required this.name,
+    required this.frequency,
+    required this.nextTime,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,20 +34,18 @@ class MedicineCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.12),
-            blurRadius: 24, 
-            spreadRadius: 2, 
-            offset: const Offset(0, 8), 
+            blurRadius: 24,
+            spreadRadius: 2,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
         children: [
-          // -------- Top Section --------
           SizedBox(
             height: 90.h,
             child: Row(
               children: [
-                // Icon Container
                 Container(
                   height: 80.h,
                   width: 70.w,
@@ -52,30 +59,22 @@ class MedicineCard extends StatelessWidget {
                     height: 40.h,
                     width: 40.h,
                   ),
-                  //  Icon(
-                  //   FontAwesomeIcons.pills,
-                  //   size: 35,
-                  //   color: AppColors.primaryColor,
-                  // ),
                 ),
-
                 SizedBox(width: 32.w),
-
-                // Info Section
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextApp(
-                        text: "Vitamin D3",
+                        text: name,
                         color: AppColors.primaryColor,
                         fontSize: 16,
                         weight: AppTextWeight.bold,
                       ),
                       SizedBox(height: 8.h),
                       TextApp(
-                        text: "Once Daily",
+                        text: frequency,
                         color: AppColors.grey,
                         fontSize: 12,
                         weight: AppTextWeight.semiBold,
@@ -90,7 +89,7 @@ class MedicineCard extends StatelessWidget {
                           ),
                           SizedBox(width: 4.w),
                           TextApp(
-                            text: "Next: 09:00 PM",
+                            text: "Next: $nextTime",
                             color: AppColors.grey,
                             fontSize: 12,
                             weight: AppTextWeight.semiBold,
@@ -103,10 +102,7 @@ class MedicineCard extends StatelessWidget {
               ],
             ),
           ),
-
           SizedBox(height: 16.h),
-
-          // -------- Buttons Section --------
           Expanded(
             child: Row(
               children: [

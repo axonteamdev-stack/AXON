@@ -3,6 +3,7 @@ import 'package:Axon/features/doctor/Profile%20Doctor/presentation/manager/profi
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+
 class DoctorProfileCubit extends Cubit<DoctorProfileState> {
   DoctorProfileCubit()
       : super(
@@ -14,16 +15,22 @@ class DoctorProfileCubit extends Cubit<DoctorProfileState> {
             experience: '8',
             licenseNumber: 'ML-123456',
             licenseImage: AppImages.onboarding2,
+            about: 'Experienced neurologist with a strong background in patient care',
+            price: '300',
           ),
         ) {
     emailCtrl.text = state.email;
     phoneCtrl.text = state.phone;
     expCtrl.text = state.experience;
+    aboutCtrl.text = state.about;
+    priceCtrl.text = state.price;
   }
 
   final emailCtrl = TextEditingController();
   final phoneCtrl = TextEditingController();
   final expCtrl = TextEditingController();
+  final aboutCtrl = TextEditingController();
+  final priceCtrl = TextEditingController();
 
   void toggleEdit() {
     emit(state.copyWith(isEdit: !state.isEdit));
@@ -35,6 +42,8 @@ class DoctorProfileCubit extends Cubit<DoctorProfileState> {
         email: emailCtrl.text,
         phone: phoneCtrl.text,
         experience: expCtrl.text,
+        about: aboutCtrl.text,
+        price: priceCtrl.text,
         isEdit: false,
       ),
     );
@@ -53,6 +62,8 @@ class DoctorProfileCubit extends Cubit<DoctorProfileState> {
     emailCtrl.dispose();
     phoneCtrl.dispose();
     expCtrl.dispose();
+    aboutCtrl.dispose();
+    priceCtrl.dispose();
     return super.close();
   }
 }

@@ -12,7 +12,6 @@ import 'package:Axon/features/patient/profile_patient/presentation/views/widgets
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
-
 class DoctorProfileBody extends StatelessWidget {
   final DoctorProfileState state;
 
@@ -28,8 +27,7 @@ class DoctorProfileBody extends StatelessWidget {
         SliverPersistentHeader(
           pinned: true,
           delegate: DoctorProfileHeaderDelegate(
-            child:DoctorProfileHeader()
-
+            child: DoctorProfileHeader(),
           ),
         ),
         SliverList(
@@ -40,19 +38,18 @@ class DoctorProfileBody extends StatelessWidget {
                 title: 'Edit Profile',
                 dense: true,
                 onTap: () {
-                 Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) => BlocProvider.value(
-      value: context.read<DoctorProfileCubit>(),
-      child: const DoctorEditProfileView(),
-    ),
-  ),
-);
-
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider.value(
+                        value: context.read<DoctorProfileCubit>(),
+                        child: const DoctorEditProfileView(),
+                      ),
+                    ),
+                  );
                 },
               ),
-            PatientProfileMenuItem(
+              PatientProfileMenuItem(
                 icon: Icons.lock_outline,
                 title: 'Change Password',
                 dense: true,
@@ -63,14 +60,12 @@ class DoctorProfileBody extends StatelessWidget {
                   );
                 },
               ),
-
               PatientProfileMenuItem(
                 icon: Icons.notifications_none,
                 title: 'Notification Settings',
                 dense: true,
                 onTap: () {},
               ),
-
               PatientProfileMenuItem(
                 icon: Icons.logout,
                 title: 'Logout',
@@ -93,7 +88,6 @@ class DoctorProfileBody extends StatelessWidget {
                   );
                 },
               ),
-
               PatientProfileMenuItem(
                 icon: Icons.delete_outline,
                 title: 'Delete Account',
@@ -118,7 +112,6 @@ class DoctorProfileBody extends StatelessWidget {
                   );
                 },
               ),
-
               const SizedBox(height: 32),
             ],
           ),

@@ -22,9 +22,8 @@ class DoctorEditProfileView extends StatelessWidget {
         return Scaffold(
           backgroundColor: AppColors.white,
           appBar: AppBar(
-            
-            scrolledUnderElevation: 0, 
-  surfaceTintColor: Colors.transparent, 
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
             backgroundColor: AppColors.white,
             elevation: 0,
             leading: IconButton(
@@ -45,7 +44,6 @@ class DoctorEditProfileView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 24.h),
-
                 Center(
                   child: GestureDetector(
                     onTap: state.isEdit ? cubit.pickImage : null,
@@ -69,7 +67,6 @@ class DoctorEditProfileView extends StatelessWidget {
                                   ) as ImageProvider,
                           ),
                         ),
-
                         if (state.isEdit)
                           Container(
                             width: 30.w,
@@ -92,87 +89,79 @@ class DoctorEditProfileView extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 SizedBox(height: 32.h),
-
                 const FormLabel(text: 'Full Name'),
                 CustomTextField(
                   enabled: false,
                   controller: TextEditingController(text: state.name),
                 ),
-
                 SizedBox(height: 20.h),
-
                 const FormLabel(text: 'Email'),
                 CustomTextField(
                   controller: cubit.emailCtrl,
-                  enabled: state.isEdit,
+                  enabled: false,
                 ),
-
                 SizedBox(height: 20.h),
-
                 const FormLabel(text: 'Phone Number'),
                 CustomTextField(
                   controller: cubit.phoneCtrl,
                   enabled: state.isEdit,
                 ),
-
                 SizedBox(height: 20.h),
-
                 const FormLabel(text: 'Years of Experience'),
                 CustomTextField(
                   controller: cubit.expCtrl,
                   enabled: state.isEdit,
                   keyboardType: TextInputType.number,
                 ),
-
                 SizedBox(height: 20.h),
-
+                const FormLabel(text: 'Price'),
+                CustomTextField(
+                  controller: cubit.priceCtrl,
+                  enabled: state.isEdit,
+                  keyboardType: TextInputType.number,
+                ),
+                SizedBox(height: 20.h),
                 const FormLabel(text: 'Specialization'),
                 CustomTextField(
                   enabled: false,
-                  controller:
-                      TextEditingController(text: state.profession),
+                  controller: TextEditingController(text: state.profession),
                 ),
-
                 SizedBox(height: 20.h),
-
                 const FormLabel(text: 'License Number'),
                 CustomTextField(
                   enabled: false,
-                  controller: TextEditingController(
-                    text: state.licenseNumber,
+                  controller:
+                      TextEditingController(text: state.licenseNumber),
+                ),
+                SizedBox(height: 20.h),
+                const FormLabel(text: 'About'),
+                CustomTextField(
+                  controller: cubit.aboutCtrl,
+                  enabled: state.isEdit,
+                  maxLines: 4,
+                ),
+                SizedBox(height: 12.h),
+                const FormLabel(text: 'Medical License'),
+                SizedBox(height: 8.h),
+                Container(
+                  width: double.infinity,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.grey.shade300,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      state.licenseImage,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-
-                SizedBox(height: 12.h),
-
-const FormLabel(text: 'Medical License'),
-
-SizedBox(height: 8.h),
-
-Container(
-  width: double.infinity, 
-  height: 150,
-  decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(12),
-    border: Border.all(
-      color: Colors.grey.shade300,
-    ),
-  ),
-  child: ClipRRect(
-    borderRadius: BorderRadius.circular(12),
-    child: Image.asset(
-      state.licenseImage,
-      fit: BoxFit.cover,
-    ),
-  ),
-),
-
-
-
                 SizedBox(height: 40.h),
-
                 CustomButton(
                   text: state.isEdit ? 'Save' : 'Edit',
                   onPressed: () {

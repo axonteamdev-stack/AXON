@@ -29,16 +29,12 @@ class DoctorRegistrationView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 55.h),
-
             const CenterIconHeader(
               imagePath: AppImages.Stethoscope,
               title: "Doctor Registration",
               subtitle: "Create your professional account",
             ),
-
             SizedBox(height: 30.h),
-
-            /// Specialization
             const FormLabel(text: "Specialization"),
             BlocBuilder<DoctorRegistrationCubit, DoctorRegistrationState>(
               builder: (context, state) {
@@ -55,45 +51,50 @@ class DoctorRegistrationView extends StatelessWidget {
                 );
               },
             ),
-
             SizedBox(height: 20.h),
-
             const FormLabel(text: "Years of Experience"),
             CustomTextField(
               controller: cubit.experienceCtrl,
               hintText: "Enter number years of experience",
               keyboardType: TextInputType.number,
             ),
-
             SizedBox(height: 20.h),
-
             const FormLabel(text: "Medical License Number"),
             CustomTextField(
               controller: cubit.licenseCtrl,
               hintText: "ML-123456",
             ),
-
             SizedBox(height: 20.h),
+            const FormLabel(text: "About"),
+            CustomTextField(
+              controller: cubit.aboutCtrl,
+              hintText: "Tell us about your experience and background",
+              maxLines: 4,
+            ),
+            SizedBox(height: 20.h),
+            const FormLabel(text: "Session Price"),
+CustomTextField(
+  controller: cubit.priceCtrl,
+  hintText: "Enter session price",
+  keyboardType: TextInputType.number,
+),
+SizedBox(height: 20.h),
 
             const FormLabel(text: "Upload Medical License"),
             const UploadMedicalLicenseBox(),
-
             SizedBox(height: 30.h),
-
             CustomButton(
-              text: "Submit for Verification",
+              text: "Create Account",
               height: 50.h,
               onPressed: () {
                 cubit.submit();
                 Navigator.pushNamed(
-                              context,
-                              AppRoutes.accountCreatedDoctor,
-                            );
+                  context,
+                  AppRoutes.accountCreatedDoctor,
+                );
               },
             ),
-
             SizedBox(height: 25.h),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -104,7 +105,6 @@ class DoctorRegistrationView extends StatelessWidget {
                 TextApp(text: "Login", color: AppColors.primaryColor),
               ],
             ),
-
             SizedBox(height: 40.h),
           ],
         ),

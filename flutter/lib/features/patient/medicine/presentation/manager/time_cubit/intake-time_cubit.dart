@@ -5,25 +5,20 @@ class IntakeTimeCubit extends Cubit<IntakeTimeState> {
   IntakeTimeCubit()
       : super(const IntakeTimeState(hour: 8, minute: 30, isAm: true));
 
-  // HOUR
-  void increaseHour() {
-    emit(state.copyWith(hour: state.hour == 12 ? 1 : state.hour + 1));
+  void setPickedTime({
+    required int hour,
+    required int minute,
+    required bool isAm,
+  }) {
+    emit(
+      state.copyWith(
+        hour: hour,
+        minute: minute,
+        isAm: isAm,
+      ),
+    );
   }
 
-  void decreaseHour() {
-    emit(state.copyWith(hour: state.hour == 1 ? 12 : state.hour - 1));
-  }
-
-  // MINUTE (step = 5)
-  void increaseMinute() {
-    emit(state.copyWith(minute: (state.minute + 5) % 60));
-  }
-
-  void decreaseMinute() {
-    emit(state.copyWith(minute: state.minute == 0 ? 55 : state.minute - 5));
-  }
-
-  // AM / PM
   void setAm() => emit(state.copyWith(isAm: true));
   void setPm() => emit(state.copyWith(isAm: false));
 }
