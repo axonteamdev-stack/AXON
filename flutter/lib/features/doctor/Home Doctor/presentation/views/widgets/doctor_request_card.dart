@@ -11,26 +11,26 @@ class DoctorRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 16.w,
-        vertical: 14.h,
+  padding: EdgeInsets.symmetric(
+    horizontal: 16.w,
+    vertical: 14.h,
+  ),
+  decoration: BoxDecoration(
+    color: AppColors.white,
+    borderRadius: BorderRadius.circular(18.r),
+    border: Border.all(
+      color: AppColors.grey.withOpacity(0.15),
+      width: 1,
+    ),
+    boxShadow: [
+      BoxShadow(
+        color: AppColors.black.withOpacity(0.08),
+        blurRadius: 18,
+        spreadRadius: 2,
+        offset: const Offset(0, 8),
       ),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(
-          color: AppColors.grey.withOpacity(0.15),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withOpacity(0.08),
-            blurRadius: 18,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
+    ],
+  ),
       child: Column(
         children: [
           Row(

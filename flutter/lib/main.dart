@@ -29,7 +29,7 @@ class Axon extends StatelessWidget {
           title: 'Axon',
           debugShowCheckedModeBanner: false,
 
-          initialRoute: AppRoutes.splash,
+          initialRoute: AppRoutes.patientMain,
           onGenerateRoute: AppRoutes.onGenerateRoute,
         );
       },
