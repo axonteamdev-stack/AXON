@@ -19,13 +19,19 @@ class ArticleItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ArticleDetailsView(article: article),
-          ),
-        );
-      },
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => ArticleDetailsView(
+        title: article.title,
+        content: article.content,
+        imagePath: article.imagePath ?? '',
+        isFileImage: true,
+      ),
+    ),
+  );
+},
+
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 2.w),
         decoration: BoxDecoration(
@@ -63,7 +69,7 @@ class ArticleItemCard extends StatelessWidget {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      AppColors.white.withOpacity(0.92),
+                      AppColors.white.withOpacity(0.5),
                       AppColors.white.withOpacity(0.0),
                     ],
                   ),

@@ -54,6 +54,7 @@ class ForgotPasswordEmailView extends StatelessWidget {
                     ),
                     SizedBox(height: 35.h),
                     CustomButton(
+                      
                       text: 'Send Code',
                       height: 50.h,
                       isLoading: state is ForgotPasswordLoading,

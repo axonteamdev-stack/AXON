@@ -1,12 +1,20 @@
+import 'package:Axon/core/bloc_observer.dart';
 import 'package:Axon/core/routes/app_routes.dart';
+import 'package:Axon/core/service/shared_pref/shared_pref.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-void main() {
+void main() async {
+    WidgetsFlutterBinding.ensureInitialized();
+     await SharedPref.preferences.instantiatePreferences();
+
+  Bloc.observer = AppBlocObserver();
   runApp(const Axon());
 }
 
 class Axon extends StatelessWidget {
+
   const Axon({super.key});
 
   @override

@@ -37,6 +37,10 @@ class AppImages {
   static const String hospital = '$IconsPath/hospital.png';
   static const String Med = '$IconsPath/Med.png';
   static const String History = '$IconsPath/History.png';
+    static const String chatBot = '$IconsPath/ai_chatbot.png';
+      static const String hospital1 = '$IconsPath/hospital1.png';
+  static const String Med1 = '$IconsPath/med1.png';
+  static const String doctors1 = '$IconsPath/doctor1.png';
  
 
 

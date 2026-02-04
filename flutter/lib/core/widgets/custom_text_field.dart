@@ -13,10 +13,12 @@ class CustomTextField extends StatefulWidget {
     this.prefixIcon,
     this.isPassword = false,
     this.keyboardType,
-    this.enabled, 
+    this.enabled, this.maxLines, 
   });
 
   final TextEditingController controller;
+  final int? maxLines;
+
   final String? hintText;
   final String? Function(String?)? validator;
   final Function(String)? onChanged;
@@ -43,6 +45,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     final bool isEnabled = widget.enabled ?? true;
 
     return TextFormField(
+      maxLines: widget.maxLines ?? 1,
       controller: widget.controller,
       validator: widget.validator,
       onChanged: isEnabled ? widget.onChanged : null,

@@ -1,4 +1,5 @@
 import 'package:Axon/core/style/app_images.dart';
+import 'package:Axon/features/patient/comunity_patient/presentation/views/patient_community_view.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/home_bottom_nav_bar.dart';
@@ -17,8 +18,10 @@ class _PatientMainViewState extends State<PatientMainView> {
 
   final pages = const [
     HomeView(),
-    SizedBox(),
+  
+
     SizedBox(), 
+      PatientCommunityView(),
     PatientProfileView(),
   ];
 

@@ -15,6 +15,7 @@ import 'package:Axon/features/auth/Presentation/views/patient/patient_medical_pr
 import 'package:Axon/features/auth/Presentation/views/patient/patient_radiology_view.dart';
 import 'package:Axon/features/auth/Presentation/views/registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/select_role_view.dart';
+import 'package:Axon/features/doctor/Articles%20Doctor/presentation/views/article_details_view.dart';
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_chat_view.dart';
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_show_patient_profile_view.dart';
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_view_patient_allergies_view.dart';
@@ -25,8 +26,17 @@ import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/doctor_main_view.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/doctor_edit_profile_view.dart';
 import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart';
+import 'package:Axon/features/patient/book_doctor/data/models/doctor_model.dart';
+import 'package:Axon/features/patient/book_doctor/data/repo/doctor_repository.dart';
+import 'package:Axon/features/patient/book_doctor/prsentation/manager/doctors_cubit.dart';
+import 'package:Axon/features/patient/book_doctor/prsentation/view/book_doctor_view.dart';
+import 'package:Axon/features/patient/book_doctor/prsentation/view/doctor_details_view.dart';
+import 'package:Axon/features/patient/book_doctor/prsentation/view/doctors_tabs_view.dart';
+import 'package:Axon/features/patient/chat%20bot/presentation/views/chat_bot_view.dart';
+import 'package:Axon/features/patient/comunity_patient/presentation/views/patient_community_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/home_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/patient_main_view.dart';
+import 'package:Axon/features/patient/home_patient/presentation/views/widgets/patient_article_details_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient%20edit/patient_edit_profile_cubit.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/change_password_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_allergies_view.dart';
@@ -74,6 +84,12 @@ class AppRoutes {
 
   // Patient Profile
   static const patientProfile = 'patientProfile';
+
+
+  static const bookDoctorTabs = 'bookDoctorTabs';
+static const doctorDetails = 'doctorDetails';
+static const bookDoctor = 'bookDoctor';
+
   
   // Patient Edit Pages
 static const patientEditBasicInfo = 'patientEditBasicInfo';
@@ -104,6 +120,13 @@ static const doctorViewPatientHealthConditions = '/doctorViewPatientHealthCondit
 static const doctorViewPatientAllergies = '/doctorViewPatientAllergies';
 static const doctorViewPatientRadiology = '/doctorViewPatientRadiology';
 static const doctorViewPatientLabTests = '/doctorViewPatientLabTests';
+  static const chatBot = 'chatBot';
+  static const patientArticleDetails = 'patientarticleDetails';
+// Patient Community
+static const patientCommunity = 'patientCommunity';
+
+  
+
 
 
 
@@ -304,8 +327,53 @@ case AppRoutes.doctorViewPatientLabTests:
   return BaseRoute(page: DoctorViewPatientLabTestsView());
 
 
+case chatBot:
+        return BaseRoute(
+          page: ChatBotView(),
+        );
+
+   
 
 
+
+
+ case AppRoutes.bookDoctorTabs:
+  return BaseRoute(
+    page: BlocProvider(
+      create: (_) => DoctorsCubit(DoctorRepository()),
+      child: const DoctorsTabsView(),
+    ),
+  );
+
+
+
+
+case AppRoutes.doctorDetails:
+  final doctor = settings.arguments as DoctorModel;
+  return BaseRoute(
+    page: DoctorDetailsView(doctor: doctor),
+  );
+
+case AppRoutes.bookDoctor:
+  final doctor = settings.arguments as DoctorModel;
+  return BaseRoute(
+    page: BookDoctorView(doctor: doctor),
+  );
+  case AppRoutes.patientArticleDetails:
+  final articleId = settings.arguments as String;
+
+  return BaseRoute(
+    page: PatientArticleDetailsView(
+      articleId: articleId,
+    ),
+  );
+
+
+
+case AppRoutes.patientCommunity:
+  return BaseRoute(
+    page: const PatientCommunityView(),
+  );
 
       
 
