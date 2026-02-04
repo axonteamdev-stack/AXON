@@ -2,7 +2,6 @@ import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/features/doctor/Articles%20Doctor/presentation/views/doctor_articles_view.dart';
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/doctor_home_view.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/doctor_profile_view.dart';
-import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/widgets/doctor_profile_body.dart';
 import 'package:Axon/features/doctor/Reviews%20Doctor/presentation/views/doctor_reviews_view.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/style/colors.dart';

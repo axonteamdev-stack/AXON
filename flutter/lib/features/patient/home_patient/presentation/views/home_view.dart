@@ -23,7 +23,7 @@ class HomeView extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               }
 
-             return Column(
+              return Column(
       children: [
         const HomeHeader(
           name: "Abdullah",

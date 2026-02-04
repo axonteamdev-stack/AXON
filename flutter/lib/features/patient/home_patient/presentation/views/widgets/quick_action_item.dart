@@ -9,7 +9,8 @@ class QuickActionItem extends StatelessWidget {
   final VoidCallback onTap;
   Color  ? colorIcon;
 
-   QuickActionItem({
+
+    QuickActionItem({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -41,8 +42,10 @@ class QuickActionItem extends StatelessWidget {
             child: Center(
               child: Image.asset(
                 icon,
+
                 width: 23.w,
                 height: 23.w,
+
                 color: colorIcon,
               ),
             ),

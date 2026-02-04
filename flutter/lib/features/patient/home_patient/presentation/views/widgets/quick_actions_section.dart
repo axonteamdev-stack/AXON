@@ -13,17 +13,27 @@ class QuickActionsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> items = [
-      QuickActionItem(icon: AppImages.doctors1, label: 'Doctors', onTap: () {context.pushName(AppRoutes.bookDoctorTabs);
-},
-      
-      
+      QuickActionItem(
+        icon: AppImages.doctors1,
+        label: 'Doctors',
+        onTap: () {
+          context.pushName(AppRoutes.bookDoctorTabs);
+        },
       ),
+
       QuickActionItem(
         icon: AppImages.hospital1,
         label: 'Hospitals',
         onTap: () {},
       ),
-      QuickActionItem(icon: AppImages.Med1, label: 'Medicine', onTap: () {}),
+
+      QuickActionItem(
+        icon: AppImages.Med1,
+        label: 'Medicine',
+        onTap: () {
+          context.pushName(AppRoutes.addMedicine);
+        },
+      ),
       QuickActionItem(
         icon: AppImages.chatBot,
         label: "As'alny",

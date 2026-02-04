@@ -1,5 +1,3 @@
-import 'package:Axon/core/style/app_images.dart';
-import 'package:Axon/core/style/colors.dart';
 import 'package:flutter/material.dart';
 
 extension ContextExt on BuildContext {

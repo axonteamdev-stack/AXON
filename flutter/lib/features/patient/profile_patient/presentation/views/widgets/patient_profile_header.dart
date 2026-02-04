@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient/patient_profile_cubit.dart';
 
 class PatientProfileHeader extends StatelessWidget {
   final PatientProfileState state;

@@ -32,7 +32,7 @@ class DoctorProfileHeader extends StatelessWidget {
           ),
           child: Column(
             children: [
-             GestureDetector(
+              GestureDetector(
   onTap: null,
   child: Stack(
     alignment: Alignment.bottomRight,
