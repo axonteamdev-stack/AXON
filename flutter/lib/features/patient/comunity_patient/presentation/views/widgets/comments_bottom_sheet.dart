@@ -55,7 +55,6 @@ class _PatientCommentsSheetState
               ),
               SizedBox(height: 12.h),
 
-              /// ================= Comments =================
               Expanded(
                 child: ListView.separated(
                   itemCount: post.comments.length,
@@ -142,7 +141,6 @@ class _PatientCommentsSheetState
                           ],
                         ),
 
-                        /// ================= Inline Reply =================
 AnimatedSwitcher(
   duration: const Duration(milliseconds: 220),
   child: replyingToCommentId == comment.id
@@ -177,10 +175,8 @@ AnimatedSwitcher(
                 ),
               ),
 
-              /// 👈 المسافة الصغيرة اللي انتي عايزاها
               SizedBox(width: 6.w),
 
-              /// Send icon (في النص)
               SizedBox(
                 height: 32,
                 width: 32,
@@ -215,11 +211,10 @@ AnimatedSwitcher(
 ),
 
 
-                        /// ================= Replies =================
                         if (comment.replies.isNotEmpty)
   Padding(
     padding: EdgeInsets.only(
-      left: 20.w,   // indent أوضح شوية
+      left: 20.w,   
       top: 8.h,
     ),
     child: Column(
@@ -233,7 +228,7 @@ AnimatedSwitcher(
             padding: EdgeInsets.only(
               bottom: index == comment.replies.length - 1
                   ? 0
-                  : 8.h, // مسافة بين كل Reply والتاني
+                  : 8.h, 
             ),
             child: TextApp(
               text: reply.text,
@@ -254,7 +249,6 @@ AnimatedSwitcher(
 
               SizedBox(height: 10.h),
 
-              /// ================= Add Comment (OLD STYLE) =================
               Row(
                 children: [
                   Expanded(

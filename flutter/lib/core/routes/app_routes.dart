@@ -33,6 +33,7 @@ import 'package:Axon/features/patient/book_doctor/prsentation/view/book_doctor_v
 import 'package:Axon/features/patient/book_doctor/prsentation/view/doctor_details_view.dart';
 import 'package:Axon/features/patient/book_doctor/prsentation/view/doctors_tabs_view.dart';
 import 'package:Axon/features/patient/chat%20bot/presentation/views/chat_bot_view.dart';
+import 'package:Axon/features/patient/chatting_patient/presntation/views/patient_doctor_private_chat_view.dart';
 import 'package:Axon/features/patient/comunity_patient/presentation/views/patient_community_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/home_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/patient_main_view.dart';
@@ -131,7 +132,9 @@ static const addMedicine = 'addMedicine';
 static const viewAll = 'viewAll';
 
 
-  
+  static const patientDoctorPrivateChat =
+    'patientDoctorPrivateChat';
+
 
 
 
@@ -315,6 +318,15 @@ case doctorShowPatientProfile:
     
   );
 
+case AppRoutes.patientDoctorPrivateChat:
+  final args = settings.arguments as Map<String, dynamic>;
+  return BaseRoute(
+    page: PatientDoctorPrivateChatView(
+      name: args['name'],
+      image: args['image'],
+      description: args['description'],
+    ),
+  );
 
 
 case AppRoutes.doctorViewPatientBasicInfo:

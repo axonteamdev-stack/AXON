@@ -1,4 +1,5 @@
 import 'package:Axon/core/style/app_images.dart';
+import 'package:Axon/features/patient/chatting_patient/presntation/views/patient_doctor_chats_view.dart';
 import 'package:Axon/features/patient/comunity_patient/presentation/views/patient_community_view.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/style/colors.dart';
@@ -20,7 +21,7 @@ class _PatientMainViewState extends State<PatientMainView> {
     HomeView(),
   
 
-    SizedBox(), 
+   PatientDoctorChatsView(), 
       PatientCommunityView(),
     PatientProfileView(),
   ];
