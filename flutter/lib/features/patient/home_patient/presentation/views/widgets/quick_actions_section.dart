@@ -1,3 +1,5 @@
+import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
@@ -10,23 +12,15 @@ class QuickActionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> items = const [
-      QuickActionItem(
-        icon: AppImages.book,
-        label: 'Book',
-      ),
+    final List<Widget> items = [
+      QuickActionItem(icon: AppImages.book, label: 'Book', onTap: () {}),
       QuickActionItem(
         icon: AppImages.hospital,
         label: 'Hospitals',
+        onTap: () {},
       ),
-      QuickActionItem(
-        icon: AppImages.Med,
-        label: 'Medicals',
-      ),
-      QuickActionItem(
-        icon: AppImages.History,
-        label: 'History',
-      ),
+      QuickActionItem(icon: AppImages.Med, label: 'Medicine', onTap: () {context.pushName(AppRoutes.addMedicine);}),
+      QuickActionItem(icon: AppImages.History, label: 'History', onTap: () {}),
     ];
 
     return Column(
@@ -45,10 +39,7 @@ class QuickActionsSection extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 10.h,
-              horizontal: 12.w,
-            ),
+            padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 12.w),
             decoration: BoxDecoration(
               color: AppColors.white,
               borderRadius: BorderRadius.circular(16.r),

@@ -27,6 +27,8 @@ import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/doctor_
 import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/home_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/patient_main_view.dart';
+import 'package:Axon/features/patient/medicine/presentation/view/add_medicine_view.dart';
+import 'package:Axon/features/patient/medicine/presentation/view/view_all_medicine._view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient%20edit/patient_edit_profile_cubit.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/change_password_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_allergies_view.dart';
@@ -71,6 +73,9 @@ class AppRoutes {
 
   // Home
   static const home = 'home';
+  // Medicine
+  static const viewAll = 'viewAll';
+  static const addMedicine = 'addMedicine';
 
   // Patient Profile
   static const patientProfile = 'patientProfile';
@@ -303,11 +308,11 @@ case AppRoutes.doctorViewPatientRadiology:
 case AppRoutes.doctorViewPatientLabTests:
   return BaseRoute(page: DoctorViewPatientLabTestsView());
 
+case AppRoutes.viewAll:
+  return BaseRoute(page: ViewAllMedicine());
 
-
-
-
-      
+case AppRoutes.addMedicine:
+  return BaseRoute(page: AddMedicineView());
 
       default:
         return BaseRoute(

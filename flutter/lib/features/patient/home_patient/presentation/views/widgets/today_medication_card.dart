@@ -1,3 +1,5 @@
+import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/core/widgets/text_app.dart';
@@ -64,8 +66,7 @@ class TodayMedicationCard extends StatelessWidget {
                           child: CircularProgressIndicator(
                             value: total == 0 ? 0 : taken / total,
                             strokeWidth: 5.w,
-                            backgroundColor:
-                                AppColors.grey.withOpacity(.25),
+                            backgroundColor: AppColors.grey.withOpacity(.25),
                             color: AppColors.primaryColor,
                           ),
                         ),
@@ -143,11 +144,12 @@ class TodayMedicationCard extends StatelessWidget {
                         color: AppColors.white,
                         textColor: AppColors.primaryColor,
                         border: BorderSide(
-                          color:
-                              AppColors.primaryColor.withOpacity(.8),
+                          color: AppColors.primaryColor.withOpacity(.8),
                           width: 1,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          context.pushName(AppRoutes.viewAll);
+                        },
                       ),
                     ],
                   ),
