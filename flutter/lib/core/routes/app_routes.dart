@@ -15,6 +15,7 @@ import 'package:Axon/features/auth/Presentation/views/patient/patient_medical_pr
 import 'package:Axon/features/auth/Presentation/views/patient/patient_radiology_view.dart';
 import 'package:Axon/features/auth/Presentation/views/registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/select_role_view.dart';
+import 'package:Axon/features/doctor/Articles%20Doctor/presentation/views/article_details_view.dart';
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_chat_view.dart';
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_show_patient_profile_view.dart';
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_view_patient_allergies_view.dart';
@@ -36,8 +37,6 @@ import 'package:Axon/features/patient/comunity_patient/presentation/views/patien
 import 'package:Axon/features/patient/home_patient/presentation/views/home_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/patient_main_view.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/widgets/patient_article_details_view.dart';
-import 'package:Axon/features/patient/medicine/presentation/view/add_medicine_view.dart';
-import 'package:Axon/features/patient/medicine/presentation/view/view_all_medicine._view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient%20edit/patient_edit_profile_cubit.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/change_password_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_allergies_view.dart';
@@ -82,9 +81,6 @@ class AppRoutes {
 
   // Home
   static const home = 'home';
-  // Medicine
-  static const viewAll = 'viewAll';
-  static const addMedicine = 'addMedicine';
 
   // Patient Profile
   static const patientProfile = 'patientProfile';
@@ -330,20 +326,18 @@ case AppRoutes.doctorViewPatientRadiology:
 case AppRoutes.doctorViewPatientLabTests:
   return BaseRoute(page: DoctorViewPatientLabTestsView());
 
-case AppRoutes.viewAll:
-  return BaseRoute(page: ViewAllMedicine());
-
 
 case chatBot:
         return BaseRoute(
           page: ChatBotView(),
         );
 
+   
 
 
 
 
-case AppRoutes.bookDoctorTabs:
+  case AppRoutes.bookDoctorTabs:
   return BaseRoute(
     page: BlocProvider(
       create: (_) => DoctorsCubit(DoctorRepository()),
@@ -382,9 +376,6 @@ case AppRoutes.patientCommunity:
   );
 
       
-
-case AppRoutes.addMedicine:
-  return BaseRoute(page: AddMedicineView());
 
       default:
         return BaseRoute(
