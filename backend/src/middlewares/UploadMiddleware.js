@@ -1,60 +1,70 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// 1. الحصول على المسار المطلق لجذر المشروع (D:\...\MediCAlProV2)
+const rootPath = process.cwd();
 
+// 2. تعريف المجلدات باستخدام المسار المطلق الكامل
+const uploadDirs = {
+    radiology: path.join(rootPath, "Uploads", "Radiology"),
+    certificates: path.join(rootPath, "Uploads", "Certificates"),
+    personal: path.join(rootPath, "Uploads", "PersonalPhoto")
+};
+
+// 3. التحقق الذكي: نمر على كل المجلدات ونتأكد من وجودها
+Object.values(uploadDirs).forEach((absolutePath) => {
+    if (!fs.existsSync(absolutePath)) {
+        // لن يدخل هنا ولن يطبع شيئاً إلا إذا كان المجلد مفقوداً فعلياً من الهارد ديسك
+        fs.mkdirSync(absolutePath, { recursive: true });
+        console.log(`✅ Created missing directory: ${absolutePath}`);
+    }
+});
+
+// 4. إعدادات التخزين باستخدام المسارات المطلقة التي تم التحقق منها
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    let folder = "Uploads/";
+    destination: (req, file, cb) => {
+        let targetDir = path.join(rootPath, "Uploads");
 
-    // تحديد المجلد بناءً على اسم الحقل (fieldname) المرسل من الفرونت إند
-    if (file.fieldname === "radiologyImage") {
-      folder = "Uploads/Radiology/";
-    } else if (file.fieldname === "licenseImage") {
-      folder = "Uploads/Certificates/";
-    } else if (file.fieldname === "personalPhoto") {
-      folder = "Uploads/PersonalPhoto/";
-    }
+        if (file.fieldname === "radiologyImage") {
+            targetDir = uploadDirs.radiology;
+        } else if (file.fieldname === "licenseImage") {
+            targetDir = uploadDirs.certificates;
+        } else if (file.fieldname === "personalPhoto") {
+            targetDir = uploadDirs.personal;
+        }
 
-    // التأكد من وجود المجلد برمجياً لزيادة الأمان
-    if (!fs.existsSync(folder)) {
-      fs.mkdirSync(folder, { recursive: true });
-    }
-
-    cb(null, folder);
-  },
-  filename: (req, file, cb) => {
-    // استخدام timestamp مع الاسم الأصلي لتجنب تكرار الأسماء
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, `${uniqueSuffix}-${file.originalname}`);
-  },
+        cb(null, targetDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        const cleanFileName = file.originalname.replace(/\s+/g, "_");
+        cb(null, `${uniqueSuffix}-${cleanFileName}`);
+    },
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Invalid file type. Only JPEG and PNG are allowed."), false);
-  }
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error("Invalid file type. Only JPG/PNG allowed."), false);
+    }
 };
 
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+export const upload = multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 },
 });
 
 export default {
-  patient: upload.fields([
-    { name: "radiologyImage", maxCount: 1 },
-    { name: "personalPhoto", maxCount: 1 },
-  ]),
-  doctor: upload.fields([
-    { name: "licenseImage", maxCount: 1 },
-    { name: "personalPhoto", maxCount: 1 },
-  ]),
+    patient: upload.fields([
+        { name: "radiologyImage", maxCount: 1 },
+        { name: "personalPhoto", maxCount: 1 },
+    ]),
+    doctor: upload.fields([
+        { name: "licenseImage", maxCount: 1 },
+        { name: "personalPhoto", maxCount: 1 },
+    ]),
 };
