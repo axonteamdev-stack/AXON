@@ -15,13 +15,7 @@ import adminRouter from './src/routes/AdminRoutes.js';
 
 const app = express();
 
-// --- 1. الإعدادات الأمنية (Global Middlewares) ---
 
-// إعدادات الـ CORS للربط مع React
-// app.use(cors({
-//   origin: 'http://localhost:3000', // ضع رابط تطبيق React هنا
-//   credentials: true // للسماح بإرسال الـ Refresh Token عبر الكوكيز
-// }));
 
 
 app.use(cors({
@@ -97,4 +91,5 @@ app.use((err, req, res, next) => {
 });
 
 export default app;
+
 
