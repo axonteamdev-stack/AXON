@@ -67,6 +67,15 @@ app.use(express.static('public'));
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/admin', adminRouter);
 
+
+
+app.get('/', (req, res) => {
+    res.status(200).json({
+        status: "success",
+        message: "Welcome to MeddioDoc API - Server is live and runninggggg!"
+    });
+});
+
 app.use((req, res, next) => {
     // الخيار الثاني: تمرير الخطأ لـ AppError ليتم معالجته في ملف الأخطاء الموحد
     const error = new AppError(`Can't find ${req.originalUrl} on this server!`, 404);
@@ -89,46 +98,3 @@ app.use((err, req, res, next) => {
 
 export default app;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // --- General Security and Middleware ---
-
-// // Set security HTTP headers
-// app.use(helmet());
-
-
-// app.use(cors());
-
-// // Body parser middleware to handle raw JSON data
-// app.use(express.urlencoded({ extended: true })); // لمعالجة بيانات الـ form
-
-
-// app.use(express.json());
-
-// // Cookie parser middleware
-// app.use(cookieParser());
-
-// // Rate Limiting to prevent brute-force attacks
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 100, // Limit each IP to 100 requests per windowMs
-//   message: 'Too many requests from this IP, please try again after 15 minutes',
-// });
-// app.use(limiter);
-
-
-// // --- Default Error Handling (404) ---
-// app.use((req, res, next) => {
-//   res.status(404).json({ message: `Not Found: ${req.originalUrl}` });
-// });
