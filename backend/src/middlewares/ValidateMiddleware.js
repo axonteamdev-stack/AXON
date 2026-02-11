@@ -1,43 +1,65 @@
 import Joi from "joi";
 
 // --- Schemas ---
+
+// 1. Patient Registration Schema
 const patientSchema = Joi.object({
   fullName: Joi.string().min(3).max(50).required().label("Full Name"),
   email: Joi.string().email().required().label("Email"),
   password: Joi.string().min(6).required().label("Password"),
-  phoneNumber: Joi.string().required(),
+  phoneNumber: Joi.string().required().label("Phone Number"),
   gender: Joi.string().valid("Male", "Female").required(),
+  
+  // حقول الملف الطبي (مهمة لكي لا يتم حذفها)
+  bloodType: Joi.string().valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-").allow("", null),
+  height: Joi.number().min(30).max(300).allow(null),
+  weight: Joi.number().min(2).max(500).allow(null),
+  
+  // الحقول التي تُعالج بـ safeParse في الكنترولر
+  conditions: Joi.any().label("Conditions"), 
+  allergies: Joi.any().label("Allergies"),
+  
+  // الحقل الذي كان يسبب المشكلة
+  radiologyDescription: Joi.string().max(1000).allow("").label("Radiology Description"),
+  
+  // السماح بمسارات الصور التي قد يضيفها Multer للـ Body
+  personalPhoto: Joi.any(),
+  radiologyImage: Joi.any(),
 });
 
+// 2. Doctor Registration Schema
 const doctorSchema = Joi.object({
   fullName: Joi.string().min(3).max(50).required().label("Full Name"),
   email: Joi.string().email().required().label("Email"),
   password: Joi.string().min(6).required().label("Password"),
   phoneNumber: Joi.string().required().label("Phone Number"),
   gender: Joi.string().valid("Male", "Female").required(),
+  about: Joi.string().min(5).max(2000).required().label("About"),
+  price: Joi.number().min(0).required().label("Consultation Price"),
   specialization: Joi.string().min(3).required().label("Specialization"),
-  yearsExperience: Joi.number()
-    .integer()
-    .min(0)
-    .required()
-    .label("Years Experience"),
+  yearsExperience: Joi.number().integer().min(0).required().label("Years Experience"),
   medicalLicenseNumber: Joi.string().required().label("Medical License Number"),
+  
+  // السماح بمسارات الصور
+  licenseImage: Joi.any(),
+  personalPhoto: Joi.any(),
 });
 
+// 3. Login Schema
 const loginSchema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().required(),
-  role: Joi.string().valid("patient", "doctor").required(),
+  email: Joi.string().email().required().label("Email"),
+  password: Joi.string().required().label("Password"),
+  role: Joi.string().valid("patient", "doctor", "admin").optional(),
 });
 
 // --- The Factory Function ---
 const validate = (schema) => {
   return (req, res, next) => {
-    // Note: Multer must run BEFORE this so req.body is populated
+    // التحقق من البيانات مع تفعيل التنظيف (StripUnknown)
     const { error, value } = schema.validate(req.body, {
       abortEarly: false,
-      allowUnknown: true,
-      stripUnknown: true,
+      allowUnknown: true, // للسماح بوجود ملفات (files) في الطلب دون اعتراض
+      stripUnknown: true, // حذف أي حقل غير معرف في الـ Schema (للحماية)
     });
 
     if (error) {
@@ -48,12 +70,13 @@ const validate = (schema) => {
       });
     }
 
-    req.body = value; // Cleaned data passed to controller
+    // استبدال body الملوث بـ value النظيف الذي وافق عليه Joi
+    req.body = value;
     next();
   };
 };
 
-// --- Exporting the Object ---
+// --- Exporting ---
 const validateMiddleware = {
   patientRegister: validate(patientSchema),
   doctorRegister: validate(doctorSchema),
