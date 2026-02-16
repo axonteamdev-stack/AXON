@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
-<<<<<<< HEAD
     // البيانات الأساسية (الشاشة 1)
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true, lowercase: true },
@@ -11,40 +10,38 @@ const userSchema = new mongoose.Schema(
     gender: { type: String, enum: ["Male", "Female"], required: true },
     password: { type: String, required: true, select: false },
     profileImage: String, // Add this field
-=======
     // --- البيانات الأساسية ---
-    fullName: { 
-      type: String, 
+    fullName: {
+      type: String,
       required: [true, "الاسم الكامل مطلوب"],
-      trim: true 
+      trim: true,
     },
-    email: { 
-      type: String, 
-      required: [true, "البريد الإلكتروني مطلوب"], 
-      unique: true, 
+    email: {
+      type: String,
+      required: [true, "البريد الإلكتروني مطلوب"],
+      unique: true,
       lowercase: true,
-      trim: true
+      trim: true,
     },
-    phoneNumber: { 
-      type: String, 
-      required: [true, "رقم الهاتف مطلوب"] 
+    phoneNumber: {
+      type: String,
+      required: [true, "رقم الهاتف مطلوب"],
     },
-    gender: { 
-      type: String, 
-      enum: ["Male", "Female"], 
-      required: [true, "الجنس مطلوب"] 
+    gender: {
+      type: String,
+      enum: ["Male", "Female"],
+      required: [true, "الجنس مطلوب"],
     },
-    password: { 
-      type: String, 
-      required: [true, "كلمة المرور مطلوبة"], 
-      select: false // لن تظهر في استعلامات البحث العادية
+    password: {
+      type: String,
+      required: [true, "كلمة المرور مطلوبة"],
+      select: false, // لن تظهر في استعلامات البحث العادية
     },
->>>>>>> c14f17e55e7cea92b340af07faa2542f98c003fc
 
     // --- الصورة الشخصية (متاحة للطبيب والمريض) ---
-    personalPhoto: { 
-      type: String, 
-      default: null 
+    personalPhoto: {
+      type: String,
+      default: null,
     },
 
     // --- التحكم في الصلاحيات ---
@@ -53,28 +50,32 @@ const userSchema = new mongoose.Schema(
       enum: ["patient", "doctor", "admin"],
       default: "patient",
     },
-    isVerified: { 
-      type: Boolean, 
-      default: false 
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
 
     // --- بروفايل الطبيب (يُملأ فقط إذا كان الدور doctor) ---
     doctorProfile: {
       specialization: String,
       yearsExperience: Number,
-      medicalLicenseNumber: { 
-        type: String, 
-        unique: true, 
-        sparse: true // يسمح بوجود قيم null مكررة للمرضى
+      medicalLicenseNumber: {
+        type: String,
+        unique: true,
+        sparse: true, // يسمح بوجود قيم null مكررة للمرضى
       },
       licenseImage: String,
-      about: { 
-        type: String, 
-        required: function() { return this.role === 'doctor'; } 
+      about: {
+        type: String,
+        required: function () {
+          return this.role === "doctor";
+        },
       },
-      price: { 
-        type: Number, 
-        required: function() { return this.role === 'doctor'; } 
+      price: {
+        type: Number,
+        required: function () {
+          return this.role === "doctor";
+        },
       },
     },
 
@@ -85,11 +86,11 @@ const userSchema = new mongoose.Schema(
       weight: Number,
       conditions: {
         type: [String],
-        default: []
+        default: [],
       },
       allergies: {
         type: [String],
-        default: []
+        default: [],
       },
       radiologyImage: String,
       radiologyDescription: String,
@@ -99,24 +100,21 @@ const userSchema = new mongoose.Schema(
     passwordResetToken: { type: String, select: false },
     passwordResetExpires: { type: Date, select: false },
   },
-<<<<<<< HEAD
   { timestamps: true },
-=======
-  { 
+  {
     timestamps: true,
     // تحويل البيانات عند إرسالها كـ JSON (لإخفاء البيانات الحساسة)
     toJSON: {
-      transform: function(doc, ret) {
+      transform: function (doc, ret) {
         delete ret.password;
         delete ret.passwordResetToken;
         delete ret.passwordResetExpires;
         delete ret.__v;
         return ret;
-      }
+      },
     },
-    toObject: { transform: true }
-  }
->>>>>>> c14f17e55e7cea92b340af07faa2542f98c003fc
+    toObject: { transform: true },
+  },
 );
 
 /**

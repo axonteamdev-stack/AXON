@@ -9,19 +9,24 @@ const patientSchema = Joi.object({
   password: Joi.string().min(6).required().label("Password"),
   phoneNumber: Joi.string().required().label("Phone Number"),
   gender: Joi.string().valid("Male", "Female").required(),
-  
+
   // حقول الملف الطبي (مهمة لكي لا يتم حذفها)
-  bloodType: Joi.string().valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-").allow("", null),
+  bloodType: Joi.string()
+    .valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
+    .allow("", null),
   height: Joi.number().min(30).max(300).allow(null),
   weight: Joi.number().min(2).max(500).allow(null),
-  
+
   // الحقول التي تُعالج بـ safeParse في الكنترولر
-  conditions: Joi.any().label("Conditions"), 
+  conditions: Joi.any().label("Conditions"),
   allergies: Joi.any().label("Allergies"),
-  
+
   // الحقل الذي كان يسبب المشكلة
-  radiologyDescription: Joi.string().max(1000).allow("").label("Radiology Description"),
-  
+  radiologyDescription: Joi.string()
+    .max(1000)
+    .allow("")
+    .label("Radiology Description"),
+
   // السماح بمسارات الصور التي قد يضيفها Multer للـ Body
   personalPhoto: Joi.any(),
   radiologyImage: Joi.any(),
@@ -37,16 +42,18 @@ const doctorSchema = Joi.object({
   about: Joi.string().min(5).max(2000).required().label("About"),
   price: Joi.number().min(0).required().label("Consultation Price"),
   specialization: Joi.string().min(3).required().label("Specialization"),
-  yearsExperience: Joi.number().integer().min(0).required().label("Years Experience"),
+  yearsExperience: Joi.number()
+    .integer()
+    .min(0)
+    .required()
+    .label("Years Experience"),
   medicalLicenseNumber: Joi.string().required().label("Medical License Number"),
-  
+
   // السماح بمسارات الصور
   licenseImage: Joi.any(),
   personalPhoto: Joi.any(),
 });
 
-<<<<<<< HEAD
-=======
 // 3. Login Schema
 const loginSchema = Joi.object({
   email: Joi.string().email().required().label("Email"),
@@ -54,7 +61,6 @@ const loginSchema = Joi.object({
   role: Joi.string().valid("patient", "doctor", "admin").optional(),
 });
 
->>>>>>> c14f17e55e7cea92b340af07faa2542f98c003fc
 // --- The Factory Function ---
 const validate = (schema) => {
   return (req, res, next) => {

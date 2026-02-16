@@ -7,7 +7,7 @@ import crypto from "crypto";
 import fs from "fs";
 
 /**
- * دالة مساعدة ذكية: 
+ * دالة مساعدة ذكية:
  * إذا كانت البيانات نصاً عادياً (مثل الذي تكتبه في بوستمان) تحوله لمصفوفة.
  * إذا كانت JSON تحولها لمصفوفة.
  */
@@ -46,8 +46,10 @@ export const signupPatient = catchAsync(async (req, res, next) => {
   }
 
   // معالجة مسارات الصور
-  const radiologyImagePath = req.files?.radiologyImage?.[0]?.path?.replace(/\\/g, "/") || null;
-  const personalPhotoPath = req.files?.personalPhoto?.[0]?.path?.replace(/\\/g, "/") || null;
+  const radiologyImagePath =
+    req.files?.radiologyImage?.[0]?.path?.replace(/\\/g, "/") || null;
+  const personalPhotoPath =
+    req.files?.personalPhoto?.[0]?.path?.replace(/\\/g, "/") || null;
 
   // إنشاء المستخدم مع التأكد من تمرير كل حقل لمكانه في الـ Schema
   const newUser = await User.create({
@@ -57,13 +59,10 @@ export const signupPatient = catchAsync(async (req, res, next) => {
     phoneNumber,
     gender,
     role: "patient",
-<<<<<<< HEAD
     isVerified: true,
     profileImage: personalPhotoPath, // Add this
-=======
-    isVerified: true, 
+    isVerified: true,
     personalPhoto: personalPhotoPath,
->>>>>>> c14f17e55e7cea92b340af07faa2542f98c003fc
     medicalProfile: {
       bloodType,
       height,
@@ -71,7 +70,7 @@ export const signupPatient = catchAsync(async (req, res, next) => {
       conditions: safeParse(conditions),
       allergies: safeParse(allergies),
       radiologyImage: radiologyImagePath,
-      radiologyDescription: radiologyDescription // حفظ الوصف هنا
+      radiologyDescription: radiologyDescription, // حفظ الوصف هنا
     },
   });
 
@@ -89,29 +88,41 @@ export const signupPatient = catchAsync(async (req, res, next) => {
 // 2. DOCTOR SIGNUP - Add personal photo to response
 export const signupDoctor = catchAsync(async (req, res, next) => {
   const {
-    fullName, email, password, phoneNumber, gender,
-    specialization, yearsExperience, medicalLicenseNumber, about, price,
+    fullName,
+    email,
+    password,
+    phoneNumber,
+    gender,
+    specialization,
+    yearsExperience,
+    medicalLicenseNumber,
+    about,
+    price,
   } = req.body;
 
   const existingUser = await User.findOne({ email });
-  if (existingUser) return next(new AppError("البريد الإلكتروني مسجل بالفعل", 400));
+  if (existingUser)
+    return next(new AppError("البريد الإلكتروني مسجل بالفعل", 400));
 
-  const licenseImagePath = req.files?.licenseImage?.[0]?.path?.replace(/\\/g, "/") || null;
-  const personalPhotoPath = req.files?.personalPhoto?.[0]?.path?.replace(/\\/g, "/") || null;
+  const licenseImagePath =
+    req.files?.licenseImage?.[0]?.path?.replace(/\\/g, "/") || null;
+  const personalPhotoPath =
+    req.files?.personalPhoto?.[0]?.path?.replace(/\\/g, "/") || null;
 
   if (!licenseImagePath) {
     return next(new AppError("صورة ترخيص المزاولة مطلوبة للطبيب", 400));
   }
 
   const newUser = await User.create({
-    fullName, email, password, phoneNumber, gender,
+    fullName,
+    email,
+    password,
+    phoneNumber,
+    gender,
     role: "doctor",
     isVerified: false,
-<<<<<<< HEAD
     profileImage: personalPhotoPath, // Add this
-=======
     personalPhoto: personalPhotoPath,
->>>>>>> c14f17e55e7cea92b340af07faa2542f98c003fc
     doctorProfile: {
       specialization,
       yearsExperience,
@@ -125,14 +136,15 @@ export const signupDoctor = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: "success",
     message: "تم إرسال طلب التسجيل لمراجعة الإدارة",
-    data: { id: newUser._id, email: newUser.email, role: newUser.role }
+    data: { id: newUser._id, email: newUser.email, role: newUser.role },
   });
 });
 
 // 3. LOGIN
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-  if (!email || !password) return next(new AppError("يرجى إدخال البريد وكلمة المرور", 400));
+  if (!email || !password)
+    return next(new AppError("يرجى إدخال البريد وكلمة المرور", 400));
 
   const user = await User.findOne({ email }).select("+password");
 
@@ -167,7 +179,9 @@ export const refreshAccessToken = catchAsync(async (req, res, next) => {
     const { accessToken } = generateTokens(res, user._id);
     res.status(200).json({ status: "success", token: accessToken });
   } catch (err) {
-    return next(new AppError("انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً", 401));
+    return next(
+      new AppError("انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً", 401),
+    );
   }
 });
 
@@ -177,9 +191,12 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   if (!user) return next(new AppError("لا يوجد مستخدم بهذا البريد", 404));
 
   const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
-  user.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-  user.passwordResetExpires = Date.now() + 10 * 60 * 1000; 
-  
+  user.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  user.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
   await user.save({ validateBeforeSave: false });
 
   try {
@@ -188,7 +205,9 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
       subject: "رمز إعادة تعيين كلمة المرور",
       message: `كود التحقق الخاص بك هو: ${resetToken}`,
     });
-    res.status(200).json({ status: "success", message: "تم إرسال الكود للبريد الإلكتروني" });
+    res
+      .status(200)
+      .json({ status: "success", message: "تم إرسال الكود للبريد الإلكتروني" });
   } catch (err) {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
@@ -214,5 +233,7 @@ export const resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpires = undefined;
   await user.save();
 
-  res.status(200).json({ status: "success", message: "تم تغيير كلمة المرور بنجاح" });
+  res
+    .status(200)
+    .json({ status: "success", message: "تم تغيير كلمة المرور بنجاح" });
 });
