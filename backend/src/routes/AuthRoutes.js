@@ -1,7 +1,7 @@
 import express from "express";
 import * as auth from "../controllers/AuthController.js";
-import upload from "../middlewares/UploadMiddleware.js";
-import validate from "../middlewares/ValidateMiddleware.js";
+import upload from "../Middlewares/UploadMiddleware.js";
+import validate from "../Middlewares/ValidateMiddleware.js";
 
 const router = express.Router();
 

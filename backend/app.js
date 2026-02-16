@@ -12,6 +12,7 @@ import adminRouter from "./src/routes/AdminRoutes.js";
 
 const app = express();
 
+<<<<<<< HEAD
 // --- 1. Security Middleware ---
 
 // CORS Configuration
@@ -24,6 +25,9 @@ app.use(
     credentials: true,
   }),
 );
+=======
+
+>>>>>>> c14f17e55e7cea92b340af07faa2542f98c003fc
 
 // Helmet - Security headers (use once, not twice)
 app.use(
@@ -55,7 +59,19 @@ app.use(express.static("public"));
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
 
+<<<<<<< HEAD
 // --- 5. 404 Handler ---
+=======
+
+
+app.get('/', (req, res) => {
+    res.status(200).json({
+        status: "success",
+        message: "Welcome to MeddioDoc API - Server is live and runninggggg!"
+    });
+});
+
+>>>>>>> c14f17e55e7cea92b340af07faa2542f98c003fc
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
@@ -73,3 +89,8 @@ app.use((err, req, res, next) => {
 });
 
 export default app;
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> c14f17e55e7cea92b340af07faa2542f98c003fc
