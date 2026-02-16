@@ -1,30 +1,25 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url"; // Add this line
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 1. Absolute path setup
 const rootPath = process.cwd();
 
-// 2. Directory definitions
 const uploadDirs = {
   radiology: path.join(rootPath, "Uploads", "Radiology"),
   certificates: path.join(rootPath, "Uploads", "Certificates"),
   personal: path.join(rootPath, "Uploads", "PersonalPhoto"),
 };
 
-// 3. Ensure directories exist
 Object.values(uploadDirs).forEach((absolutePath) => {
   if (!fs.existsSync(absolutePath)) {
     fs.mkdirSync(absolutePath, { recursive: true });
-    console.log(`✅ Created missing directory: ${absolutePath}`);
   }
 });
 
-// 4. Storage configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let targetDir = path.join(rootPath, "Uploads");

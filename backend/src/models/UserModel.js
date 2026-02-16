@@ -4,45 +4,18 @@ import bcrypt from "bcryptjs";
 const userSchema = new mongoose.Schema(
   {
     // البيانات الأساسية (الشاشة 1)
-    fullName: { type: String, required: true },
-    email: { type: String, required: true, unique: true, lowercase: true },
-    phoneNumber: { type: String, required: true },
-    gender: { type: String, enum: ["Male", "Female"], required: true },
-    password: { type: String, required: true, select: false },
-    profileImage: String, // Add this field
-    // --- البيانات الأساسية ---
-    fullName: {
-      type: String,
-      required: [true, "الاسم الكامل مطلوب"],
-      trim: true,
-    },
+    fullName: { type: String, required: true, trim: true },
     email: {
       type: String,
-      required: [true, "البريد الإلكتروني مطلوب"],
+      required: true,
       unique: true,
       lowercase: true,
       trim: true,
     },
-    phoneNumber: {
-      type: String,
-      required: [true, "رقم الهاتف مطلوب"],
-    },
-    gender: {
-      type: String,
-      enum: ["Male", "Female"],
-      required: [true, "الجنس مطلوب"],
-    },
-    password: {
-      type: String,
-      required: [true, "كلمة المرور مطلوبة"],
-      select: false, // لن تظهر في استعلامات البحث العادية
-    },
-
-    // --- الصورة الشخصية (متاحة للطبيب والمريض) ---
-    personalPhoto: {
-      type: String,
-      default: null,
-    },
+    phoneNumber: { type: String, required: true },
+    gender: { type: String, enum: ["Male", "Female"], required: true },
+    password: { type: String, required: true, select: false },
+    profileImage: String, // Add this field
 
     // --- التحكم في الصلاحيات ---
     role: {
@@ -50,20 +23,13 @@ const userSchema = new mongoose.Schema(
       enum: ["patient", "doctor", "admin"],
       default: "patient",
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
+    isVerified: { type: Boolean, default: false },
 
     // --- بروفايل الطبيب (يُملأ فقط إذا كان الدور doctor) ---
     doctorProfile: {
       specialization: String,
       yearsExperience: Number,
-      medicalLicenseNumber: {
-        type: String,
-        unique: true,
-        sparse: true, // يسمح بوجود قيم null مكررة للمرضى
-      },
+      medicalLicenseNumber: { type: String, unique: true, sparse: true },
       licenseImage: String,
       about: {
         type: String,
@@ -84,14 +50,8 @@ const userSchema = new mongoose.Schema(
       bloodType: String,
       height: Number,
       weight: Number,
-      conditions: {
-        type: [String],
-        default: [],
-      },
-      allergies: {
-        type: [String],
-        default: [],
-      },
+      conditions: { type: [String], default: [] },
+      allergies: { type: [String], default: [] },
       radiologyImage: String,
       radiologyDescription: String,
     },
@@ -100,7 +60,6 @@ const userSchema = new mongoose.Schema(
     passwordResetToken: { type: String, select: false },
     passwordResetExpires: { type: Date, select: false },
   },
-  { timestamps: true },
   {
     timestamps: true,
     // تحويل البيانات عند إرسالها كـ JSON (لإخفاء البيانات الحساسة)
@@ -113,19 +72,16 @@ const userSchema = new mongoose.Schema(
         return ret;
       },
     },
-    toObject: { transform: true },
   },
 );
 
 /**
  * تشفير كلمة المرور قبل الحفظ (Middleware)
  */
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 /**

@@ -4,54 +4,35 @@ import Joi from "joi";
 
 // 1. Patient Registration Schema
 const patientSchema = Joi.object({
-  fullName: Joi.string().min(3).max(50).required().label("Full Name"),
-  email: Joi.string().email().required().label("Email"),
-  password: Joi.string().min(6).required().label("Password"),
-  phoneNumber: Joi.string().required().label("Phone Number"),
+  fullName: Joi.string().min(3).max(50).required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).required(),
+  phoneNumber: Joi.string().required(),
   gender: Joi.string().valid("Male", "Female").required(),
-
-  // حقول الملف الطبي (مهمة لكي لا يتم حذفها)
-  bloodType: Joi.string()
-    .valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
-    .allow("", null),
+  bloodType: Joi.string().optional().allow("", null),
   height: Joi.number().min(30).max(300).allow(null),
   weight: Joi.number().min(2).max(500).allow(null),
-
-  // الحقول التي تُعالج بـ safeParse في الكنترولر
-  conditions: Joi.any().label("Conditions"),
-  allergies: Joi.any().label("Allergies"),
-
-  // الحقل الذي كان يسبب المشكلة
-  radiologyDescription: Joi.string()
-    .max(1000)
-    .allow("")
-    .label("Radiology Description"),
-
-  // السماح بمسارات الصور التي قد يضيفها Multer للـ Body
-  personalPhoto: Joi.any(),
-  radiologyImage: Joi.any(),
+  conditions: Joi.any().optional(),
+  allergies: Joi.any().optional(),
+  radiologyDescription: Joi.string().max(1000).allow("").optional(),
+  personalPhoto: Joi.any().optional(),
+  radiologyImage: Joi.any().optional(),
 });
 
 // 2. Doctor Registration Schema
 const doctorSchema = Joi.object({
-  fullName: Joi.string().min(3).max(50).required().label("Full Name"),
-  email: Joi.string().email().required().label("Email"),
-  password: Joi.string().min(6).required().label("Password"),
-  phoneNumber: Joi.string().required().label("Phone Number"),
+  fullName: Joi.string().min(3).max(50).required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).required(),
+  phoneNumber: Joi.string().required(),
   gender: Joi.string().valid("Male", "Female").required(),
-  about: Joi.string().min(5).max(2000).required().label("About"),
-  price: Joi.number().min(0).required().label("Consultation Price"),
-  specialization: Joi.string().min(3).required().label("Specialization"),
-  yearsExperience: Joi.number()
-    .integer()
-    .min(0)
-    .required()
-    .label("Years Experience"),
-  medicalLicenseNumber: Joi.string().required().label("Medical License Number"),
-
-  // السماح بمسارات الصور
-  licenseImage: Joi.any(),
-  personalPhoto: Joi.any(),
+  about: Joi.string().min(5).max(2000).required(),
+  price: Joi.number().min(0).required(),
+  specialization: Joi.string().min(3).required(),
+  yearsExperience: Joi.number().integer().min(0).required(),
+  medicalLicenseNumber: Joi.string().required(),
+  licenseImage: Joi.any().optional(),
+  personalPhoto: Joi.any().optional(),
 });
 
 // 3. Login Schema

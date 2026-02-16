@@ -1,4 +1,3 @@
-
 import app from "./app.js";
 import connectDB from "./src/config/db.js";
 import dotenv from "dotenv";
@@ -22,8 +21,7 @@ const uploadDirs = [
 const createDirIfNotExists = (dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
-    console.log(`Created directory: ${dir}`);
-    console.log(`✅ Created directory: ${dir}`); // الآن لن تظهر إلا عند الحاجة
+    console.log(`✅ Created directory: ${dir}`);
   }
 };
 
@@ -31,7 +29,7 @@ uploadDirs.forEach(createDirIfNotExists);
 
 connectDB()
   .then(() => {
-    const PORT = process.env.PORT;
+    const PORT = process.env.PORT || 3000;
     const server = app.listen(PORT, () => {
       console.log(
         `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`,
