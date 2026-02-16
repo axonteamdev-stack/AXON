@@ -22,11 +22,8 @@ const uploadDirs = [
 const createDirIfNotExists = (dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
-<<<<<<< HEAD
     console.log(`Created directory: ${dir}`);
-=======
     console.log(`✅ Created directory: ${dir}`); // الآن لن تظهر إلا عند الحاجة
->>>>>>> c14f17e55e7cea92b340af07faa2542f98c003fc
   }
 };
 
