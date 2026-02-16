@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
     phoneNumber: { type: String, required: true },
     gender: { type: String, enum: ["Male", "Female"], required: true },
     password: { type: String, required: true, select: false },
+    profileImage: String, // Add this field
 
     // التحكم في الصلاحيات
     role: {
@@ -40,7 +41,7 @@ const userSchema = new mongoose.Schema(
     passwordResetToken: String,
     passwordResetExpires: Date,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Hash password before saving (using async/await)

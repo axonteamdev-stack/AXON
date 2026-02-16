@@ -15,7 +15,7 @@ const safeParse = (data) => {
   }
 };
 
-// 1. PATIENT SIGNUP
+// 1. PATIENT SIGNUP - Add personal photo to response
 export const signupPatient = catchAsync(async (req, res, next) => {
   const {
     fullName,
@@ -50,6 +50,7 @@ export const signupPatient = catchAsync(async (req, res, next) => {
     gender,
     role: "patient",
     isVerified: true,
+    profileImage: personalPhotoPath, // Add this
     medicalProfile: {
       bloodType,
       height,
@@ -71,7 +72,7 @@ export const signupPatient = catchAsync(async (req, res, next) => {
   });
 });
 
-// 2. DOCTOR SIGNUP
+// 2. DOCTOR SIGNUP - Add personal photo to response
 export const signupDoctor = catchAsync(async (req, res, next) => {
   const {
     fullName,
@@ -110,6 +111,7 @@ export const signupDoctor = catchAsync(async (req, res, next) => {
     gender,
     role: "doctor",
     isVerified: false,
+    profileImage: personalPhotoPath, // Add this
     doctorProfile: {
       specialization,
       yearsExperience,

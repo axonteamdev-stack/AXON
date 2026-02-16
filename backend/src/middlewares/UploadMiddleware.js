@@ -5,18 +5,20 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const UPLOADS_BASE =
+  process.env.UPLOADS_PATH || path.join(__dirname, "../../Uploads");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    let folder = "Uploads/";
+    let folder = UPLOADS_BASE;
 
     // تحديد المجلد بناءً على اسم الحقل (fieldname) المرسل من الفرونت إند
     if (file.fieldname === "radiologyImage") {
-      folder = "Uploads/Radiology/";
+      folder = path.join(UPLOADS_BASE, "Radiology");
     } else if (file.fieldname === "licenseImage") {
-      folder = "Uploads/Certificates/";
+      folder = path.join(UPLOADS_BASE, "Certificates");
     } else if (file.fieldname === "personalPhoto") {
-      folder = "Uploads/PersonalPhoto/";
+      folder = path.join(UPLOADS_BASE, "PersonalPhoto");
     }
 
     // التأكد من وجود المجلد برمجياً لزيادة الأمان

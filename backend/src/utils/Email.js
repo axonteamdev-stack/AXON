@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 const sendEmail = async (options) => {
   const transporter = nodemailer.createTransport({
@@ -11,7 +11,7 @@ const sendEmail = async (options) => {
   });
 
   const mailOptions = {
-    from: 'MeddioDoc <support@meddiodoc.com>',
+    from: process.env.EMAIL_FROM,
     to: options.email,
     subject: options.subject,
     text: options.message,

@@ -5,7 +5,7 @@ const patientSchema = Joi.object({
   fullName: Joi.string().min(3).max(50).required().label("Full Name"),
   email: Joi.string().email().required().label("Email"),
   password: Joi.string().min(6).required().label("Password"),
-  phoneNumber: Joi.string().required(),
+  phoneNumber: Joi.string().required().label("Phone Number"),
   gender: Joi.string().valid("Male", "Female").required(),
 });
 
@@ -22,12 +22,6 @@ const doctorSchema = Joi.object({
     .required()
     .label("Years Experience"),
   medicalLicenseNumber: Joi.string().required().label("Medical License Number"),
-});
-
-const loginSchema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().required(),
-  role: Joi.string().valid("patient", "doctor").required(),
 });
 
 // --- The Factory Function ---
@@ -57,7 +51,6 @@ const validate = (schema) => {
 const validateMiddleware = {
   patientRegister: validate(patientSchema),
   doctorRegister: validate(doctorSchema),
-  login: validate(loginSchema),
 };
 
 export default validateMiddleware;
