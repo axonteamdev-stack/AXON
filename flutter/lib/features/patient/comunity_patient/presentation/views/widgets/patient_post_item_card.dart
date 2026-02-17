@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -71,10 +72,13 @@ class _PatientPostItemCardState extends State<PatientPostItemCard> {
             Padding(
               padding: EdgeInsets.only(top: 4.h),
               child: TextApp(
-                text: expanded ? 'Show less' : 'Read more',
-                fontSize: 11,
-                color: AppColors.primaryColor,
-              ),
+  text: expanded
+      ? context.l10n.show_less
+      : context.l10n.read_more,
+  fontSize: 11,
+  color: AppColors.primaryColor,
+),
+
             ),
 
           if (post.imagePath != null) ...[

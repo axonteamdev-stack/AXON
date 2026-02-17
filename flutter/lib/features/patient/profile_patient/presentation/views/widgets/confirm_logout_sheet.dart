@@ -1,7 +1,9 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/core/widgets/text_app.dart';
+import 'package:Axon/core/extensions/context_extension.dart';
 
 class ConfirmLogoutSheet extends StatelessWidget {
   final VoidCallback onConfirm;
@@ -24,14 +26,14 @@ class ConfirmLogoutSheet extends StatelessWidget {
             color: Colors.grey,
           ),
           const SizedBox(height: 8),
-          const TextApp(
-            text: 'Logout',
+          TextApp(
+            text: context.l10n.logout,
             fontSize: 16,
             weight: AppTextWeight.semiBold,
           ),
           const SizedBox(height: 6),
-          const TextApp(
-            text: 'Are you sure you want to logout?',
+          TextApp(
+            text: context.l10n.logout_confirm,
             fontSize: 13,
             color: Colors.grey,
             textAlign: TextAlign.center,
@@ -54,7 +56,7 @@ class ConfirmLogoutSheet extends StatelessWidget {
                     ),
                     child: Center(
                       child: TextApp(
-                        text: 'Cancel',
+                        text: context.l10n.cancel,
                         fontSize: 14,
                         weight: AppTextWeight.semiBold,
                         color: AppColors.primaryColor,
@@ -66,7 +68,7 @@ class ConfirmLogoutSheet extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: CustomButton(
-                  text: 'Logout',
+                  text: context.l10n.logout,
                   height: 44,
                   borderRadius: 10,
                   color: AppColors.primaryColor,

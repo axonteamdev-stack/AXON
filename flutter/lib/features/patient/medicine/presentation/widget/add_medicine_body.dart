@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/helpers/snackbar.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -14,7 +15,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class AddMedicineBody extends StatelessWidget {
   AddMedicineBody({super.key});
 
-  final TextEditingController nameController = TextEditingController();
+  final TextEditingController nameController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class AddMedicineBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextApp(
-            text: "Medicine Name",
+            text: context.l10n.medicine_name,
             color: AppColors.primaryColor,
             fontSize: 14,
             weight: AppTextWeight.semiBold,
@@ -32,47 +34,53 @@ class AddMedicineBody extends StatelessWidget {
           SizedBox(height: 12.h),
           CustomTextField(
             controller: nameController,
-            hintText: "ex: Vitamin D",
+            hintText: context.l10n.medicine_example,
           ),
+
           SizedBox(height: 24.h),
           TextApp(
-            text: "Frequency",
+            text: context.l10n.frequency,
             color: AppColors.primaryColor,
             fontSize: 14,
             weight: AppTextWeight.semiBold,
           ),
           SizedBox(height: 12.h),
           FrequencyMedicineMenu(),
+
           SizedBox(height: 24.h),
           TextApp(
-            text: "Intake Time",
+            text: context.l10n.intake_time,
             color: AppColors.primaryColor,
             fontSize: 14,
             weight: AppTextWeight.semiBold,
           ),
           SizedBox(height: 12.h),
           const IntakeTime(),
+
           SizedBox(height: 24.h),
           TextApp(
-            text: "Duration",
+            text: context.l10n.duration,
             color: AppColors.primaryColor,
             fontSize: 14,
             weight: AppTextWeight.semiBold,
           ),
           SizedBox(height: 12.h),
           const DurationWidget(),
+
           SizedBox(height: 32.h),
           CustomButton(
-            text: "SAVE",
+            text: context.l10n.save,
             onPressed: () {
               context.read<MedicineCubit>().addMedicine({
                 'name': nameController.text,
                 'date': DateTime.now(),
               });
+
               Snackbar.showSuccess(
                 context,
-                message: "Medicine saved successfully",
+                message: context.l10n.medicine_saved_successfully,
               );
+
               Navigator.pop(context);
             },
           ),

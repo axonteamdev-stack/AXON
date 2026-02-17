@@ -1,7 +1,9 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 import 'package:Axon/features/patient/comunity_patient/presentation/manager/community_patient/patient_community_cubit.dart';
@@ -22,10 +24,7 @@ class PatientCommunityView extends StatelessWidget {
             backgroundColor: AppColors.white,
             floatingActionButton: FloatingActionButton(
               backgroundColor: AppColors.primaryColor,
-              child: const Icon(
-                Icons.add,
-                color: AppColors.white,
-              ),
+              child: const Icon(Icons.add, color: AppColors.white),
               onPressed: () {
                 final cubit =
                     context.read<PatientCommunityCubit>();
@@ -36,8 +35,7 @@ class PatientCommunityView extends StatelessWidget {
                   backgroundColor: Colors.transparent,
                   builder: (_) => BlocProvider.value(
                     value: cubit,
-                    child:
-                        const CreatePatientPostBottomSheet(),
+                    child: const CreatePatientPostBottomSheet(),
                   ),
                 );
               },
@@ -47,8 +45,8 @@ class PatientCommunityView extends StatelessWidget {
                 padding: EdgeInsets.all(16.w),
                 child: Column(
                   children: [
-                    const TextApp(
-                      text: 'Community',
+                    TextApp(
+                      text: context.l10n.community,
                       weight: AppTextWeight.bold,
                       fontSize: 18,
                       color: AppColors.primaryColor,
@@ -102,14 +100,14 @@ class _EmptyCommunityState extends StatelessWidget {
             color: AppColors.grey.withOpacity(0.7),
           ),
           SizedBox(height: 14.h),
-          const TextApp(
-            text: 'No posts yet',
+          TextApp(
+            text: context.l10n.no_posts,
             weight: AppTextWeight.semiBold,
             color: AppColors.grey,
           ),
           SizedBox(height: 6.h),
-          const TextApp(
-            text: 'Be the first to share something',
+          TextApp(
+            text: context.l10n.be_first_post,
             fontSize: 12,
             color: AppColors.grey,
           ),

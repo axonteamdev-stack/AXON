@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -45,10 +46,7 @@ class PatientDoctorConnectionCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextApp(
-                  text: name,
-                  weight: AppTextWeight.semiBold,
-                ),
+                TextApp(text: name, weight: AppTextWeight.semiBold),
                 SizedBox(height: 6.h),
                 TextApp(
                   text: description,
@@ -60,7 +58,7 @@ class PatientDoctorConnectionCard extends StatelessWidget {
             ),
           ),
           CustomButton(
-            text: 'Chat',
+            text: context.l10n.chat,
             width: 82.w,
             height: 36.h,
             fontSize: 13,

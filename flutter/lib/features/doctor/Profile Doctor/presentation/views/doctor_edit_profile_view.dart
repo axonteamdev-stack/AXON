@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/manager/profile%20doctor/doctor_profile_state.dartdoctor_profile_state.dart';
 import 'package:flutter/material.dart';
@@ -33,9 +34,9 @@ class DoctorEditProfileView extends StatelessWidget {
               ),
               onPressed: () => Navigator.pop(context),
             ),
-            title: const Text(
-              'Edit Profile',
-              style: TextStyle(color: AppColors.black),
+            title: Text(
+              context.l10n.edit_profile,
+              style: const TextStyle(color: AppColors.black),
             ),
           ),
           body: SingleChildScrollView(
@@ -90,59 +91,68 @@ class DoctorEditProfileView extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 32.h),
-                const FormLabel(text: 'Full Name'),
+
+                FormLabel(text: context.l10n.full_name),
                 CustomTextField(
                   enabled: false,
                   controller: TextEditingController(text: state.name),
                 ),
+
                 SizedBox(height: 20.h),
-                const FormLabel(text: 'Email'),
+                FormLabel(text: context.l10n.email),
                 CustomTextField(
                   controller: cubit.emailCtrl,
                   enabled: false,
                 ),
+
                 SizedBox(height: 20.h),
-                const FormLabel(text: 'Phone Number'),
+                FormLabel(text: context.l10n.phone_number),
                 CustomTextField(
                   controller: cubit.phoneCtrl,
                   enabled: state.isEdit,
                 ),
+
                 SizedBox(height: 20.h),
-                const FormLabel(text: 'Years of Experience'),
+                FormLabel(text: context.l10n.years_experience),
                 CustomTextField(
                   controller: cubit.expCtrl,
                   enabled: state.isEdit,
                   keyboardType: TextInputType.number,
                 ),
+
                 SizedBox(height: 20.h),
-                const FormLabel(text: 'Price'),
+                FormLabel(text: context.l10n.price),
                 CustomTextField(
                   controller: cubit.priceCtrl,
                   enabled: state.isEdit,
                   keyboardType: TextInputType.number,
                 ),
+
                 SizedBox(height: 20.h),
-                const FormLabel(text: 'Specialization'),
+                FormLabel(text: context.l10n.specialization),
                 CustomTextField(
                   enabled: false,
                   controller: TextEditingController(text: state.profession),
                 ),
+
                 SizedBox(height: 20.h),
-                const FormLabel(text: 'License Number'),
+                FormLabel(text: context.l10n.license_number),
                 CustomTextField(
                   enabled: false,
                   controller:
                       TextEditingController(text: state.licenseNumber),
                 ),
+
                 SizedBox(height: 20.h),
-                const FormLabel(text: 'About'),
+                FormLabel(text: context.l10n.about),
                 CustomTextField(
                   controller: cubit.aboutCtrl,
                   enabled: state.isEdit,
                   maxLines: 4,
                 ),
+
                 SizedBox(height: 12.h),
-                const FormLabel(text: 'Medical License'),
+                FormLabel(text: context.l10n.medical_license),
                 SizedBox(height: 8.h),
                 Container(
                   width: double.infinity,
@@ -161,15 +171,19 @@ class DoctorEditProfileView extends StatelessWidget {
                     ),
                   ),
                 ),
+
                 SizedBox(height: 40.h),
                 CustomButton(
-                  text: state.isEdit ? 'Save' : 'Edit',
+                  text: state.isEdit
+                      ? context.l10n.save
+                      : context.l10n.edit,
                   onPressed: () {
                     state.isEdit
                         ? cubit.updateProfile()
                         : cubit.toggleEdit();
                   },
                 ),
+
                 SizedBox(height: 40.h),
               ],
             ),

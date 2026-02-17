@@ -1,4 +1,5 @@
 import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -29,20 +30,19 @@ class ForgotPasswordOtpView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 80.h),
-                  const TextApp(
-                    text: 'Verification Code',
+                  TextApp(
+                    text: context.l10n.verification_code,
                     fontSize: 22,
                     weight: AppTextWeight.semiBold,
                   ),
                   SizedBox(height: 12.h),
-                  const TextApp(
-                    text:
-                        'Enter the 4-digit code sent to your email address',
+                  TextApp(
+                    text: context.l10n.verification_code_desc,
                     fontSize: 14,
                     color: AppColors.grey,
                   ),
                   SizedBox(height: 35.h),
-                  const FormLabel(text: 'OTP Code'),
+                  FormLabel(text: context.l10n.otp_code),
                   SizedBox(height: 12.h),
                   PinCodeTextField(
                     appContext: context,
@@ -73,7 +73,7 @@ class ForgotPasswordOtpView extends StatelessWidget {
                   ),
                   SizedBox(height: 40.h),
                   CustomButton(
-                    text: 'Verify',
+                    text: context.l10n.verify,
                     height: 50.h,
                     onPressed: () {
                       context.pushName(AppRoutes.resetPassword);
@@ -83,8 +83,8 @@ class ForgotPasswordOtpView extends StatelessWidget {
                   Center(
                     child: GestureDetector(
                       onTap: () {},
-                      child: const TextApp(
-                        text: 'Resend Code',
+                      child: TextApp(
+                        text: context.l10n.resend_code,
                         fontSize: 14,
                         color: AppColors.primaryColor,
                       ),

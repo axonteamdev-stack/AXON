@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
@@ -29,62 +30,68 @@ class DoctorRegistrationView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 55.h),
-            const CenterIconHeader(
+            CenterIconHeader(
               imagePath: AppImages.Stethoscope,
-              title: "Doctor Registration",
-              subtitle: "Create your professional account",
+              title: context.l10n.doctor_registration,
+              subtitle: context.l10n.create_professional_account,
             ),
             SizedBox(height: 30.h),
-            const FormLabel(text: "Specialization"),
+
+            FormLabel(text: context.l10n.specialization),
             BlocBuilder<DoctorRegistrationCubit, DoctorRegistrationState>(
               builder: (context, state) {
                 return ReusableDropdown(
-                  hint: "Select Specialization",
+                  hint: context.l10n.select_specialization,
                   value: state.selectedSpecialization,
-                  items: const [
-                    "Cardiology",
-                    "Neurology",
-                    "Pediatrics",
-                    "Dentistry",
+                  items: [
+                    context.l10n.cardiology,
+                    context.l10n.neurology,
+                    context.l10n.pediatrics,
+                    context.l10n.dentistry,
                   ],
                   onChanged: (v) => cubit.changeSpecialization(v!),
                 );
               },
             ),
+
             SizedBox(height: 20.h),
-            const FormLabel(text: "Years of Experience"),
+            FormLabel(text: context.l10n.years_experience),
             CustomTextField(
               controller: cubit.experienceCtrl,
-              hintText: "Enter number years of experience",
+              hintText: context.l10n.enter_years_experience,
               keyboardType: TextInputType.number,
             ),
+
             SizedBox(height: 20.h),
-            const FormLabel(text: "Medical License Number"),
+            FormLabel(text: context.l10n.medical_license_number),
             CustomTextField(
               controller: cubit.licenseCtrl,
               hintText: "ML-123456",
             ),
+
             SizedBox(height: 20.h),
-            const FormLabel(text: "About"),
+            FormLabel(text: context.l10n.about),
             CustomTextField(
               controller: cubit.aboutCtrl,
-              hintText: "Tell us about your experience and background",
+              hintText: context.l10n.about_hint,
               maxLines: 4,
             ),
-            SizedBox(height: 20.h),
-            const FormLabel(text: "Session Price"),
-CustomTextField(
-  controller: cubit.priceCtrl,
-  hintText: "Enter session price",
-  keyboardType: TextInputType.number,
-),
-SizedBox(height: 20.h),
 
-            const FormLabel(text: "Upload Medical License"),
+            SizedBox(height: 20.h),
+            FormLabel(text: context.l10n.session_price),
+            CustomTextField(
+              controller: cubit.priceCtrl,
+              hintText: context.l10n.enter_session_price,
+              keyboardType: TextInputType.number,
+            ),
+
+            SizedBox(height: 20.h),
+            FormLabel(text: context.l10n.upload_medical_license),
             const UploadMedicalLicenseBox(),
+
             SizedBox(height: 30.h),
             CustomButton(
-              text: "Create Account",
+              text: context.l10n.create_account,
               height: 50.h,
               onPressed: () {
                 cubit.submit();
@@ -94,17 +101,22 @@ SizedBox(height: 20.h),
                 );
               },
             ),
+
             SizedBox(height: 25.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextApp(
-                  text: "Already have an account? ",
+                  text: context.l10n.already_have_account,
                   color: AppColors.grey,
                 ),
-                TextApp(text: "Login", color: AppColors.primaryColor),
+                TextApp(
+                  text: context.l10n.login,
+                  color: AppColors.primaryColor,
+                ),
               ],
             ),
+
             SizedBox(height: 40.h),
           ],
         ),

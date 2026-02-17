@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/features/patient/chatting_patient/presntation/widgets/patient_doctor_connection_card.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class PatientDoctorChatsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final doctors = [
-      {
+       {
         'name': 'Dr. Ahmed Hassan',
         'description': 'Cardiology Specialist',
         'image': AppImages.onboarding1,
@@ -45,14 +46,15 @@ class PatientDoctorChatsView extends StatelessWidget {
       },
     ];
 
+
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
         centerTitle: true,
-        title: const TextApp(
-          text: 'My Doctors',
+        title: TextApp(
+          text: context.l10n.my_doctors,
           weight: AppTextWeight.bold,
           color: AppColors.primaryColor,
         ),

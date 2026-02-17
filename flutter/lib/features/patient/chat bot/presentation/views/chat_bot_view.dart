@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/widgets/custom_app_bar.dart';
 import 'package:Axon/features/patient/chat%20bot/data/data_sources/chat_bot_remote_data_source.dart';
@@ -47,7 +48,7 @@ class _ChatBotViewState extends State<ChatBotView> {
             backgroundColor: AppColors.white,
             body: Column(
               children: [
-                 CustomAppBar(title: "As'alny" ,
+                 CustomAppBar(title: context.l10n.chat_bot_title ,
                 trailing: Image.asset(
     AppImages.chatBot,
     width: 45.w,
@@ -131,13 +132,13 @@ class _ChatBotViewState extends State<ChatBotView> {
                       return Padding(
                         padding: EdgeInsets.only(left: 16.w, bottom: 6.h),
                         child: Row(
-                          children: const [
+                          children:  [
                             _Dot(),
                             _Dot(),
                             _Dot(),
                             SizedBox(width: 8),
                             TextApp(
-                              text: 'AI is typing...',
+                             text: context.l10n.ai_typing,
                               fontSize: 12,
                               color: AppColors.grey,
                             ),
@@ -162,7 +163,7 @@ class _ChatBotViewState extends State<ChatBotView> {
                       Expanded(
                         child: CustomTextField(
                           controller: messageController,
-                          hintText: 'Type your message...',
+                           hintText: context.l10n.type_your_message,
                         ),
                       ),
                       SizedBox(width: 10.w),

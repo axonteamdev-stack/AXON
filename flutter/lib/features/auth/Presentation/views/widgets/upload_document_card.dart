@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 
@@ -57,8 +58,8 @@ class UploadDocumentCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const TextApp(
-                  text: 'Description',
+                TextApp(
+                  text: context.l10n.description,
                   fontSize: 14,
                   weight: AppTextWeight.semiBold,
                 ),
@@ -72,15 +73,15 @@ class UploadDocumentCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       child: Row(
-                        children: const [
-                          Icon(
+                        children: [
+                          const Icon(
                             Icons.delete_outline,
                             size: 16,
                             color: Colors.grey,
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           TextApp(
-                            text: 'Remove',
+                            text: context.l10n.remove,
                             fontSize: 12,
                             color: Colors.grey,
                             weight: AppTextWeight.semiBold,

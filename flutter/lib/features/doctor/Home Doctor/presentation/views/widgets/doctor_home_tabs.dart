@@ -3,6 +3,8 @@ import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/widgets/ta
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
+
 
 
 class DoctorHomeTabs extends StatelessWidget {
@@ -19,7 +21,7 @@ class DoctorHomeTabs extends StatelessWidget {
         return Row(
           children: [
             TabItem(
-              title: 'Chats',
+              title: context.l10n.chats,
               selected:
                   state.currentTab == DoctorHomeTab.chats,
               onTap: () {
@@ -30,7 +32,7 @@ class DoctorHomeTabs extends StatelessWidget {
             ),
             SizedBox(width: 12.w),
             TabItem(
-              title: 'Requests',
+              title: context.l10n.requests,
               count: requestsCount,
               selected:
                   state.currentTab == DoctorHomeTab.requests,

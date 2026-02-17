@@ -1,4 +1,5 @@
 import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
@@ -18,19 +19,19 @@ class QuickActionsSection extends StatelessWidget {
     final List<Widget> items = [
       QuickActionItem(
         icon: AppImages.doctors1,
-        label: 'Doctors',
+        label: context.l10n.doctors,
         onTap: () {
           context.pushName(AppRoutes.bookDoctorTabs);
         },
       ),
       QuickActionItem(
         icon: AppImages.hospital1,
-        label: 'Hospitals',
+        label: context.l10n.hospitals,
         onTap: () {},
       ),
       QuickActionItem(
         icon: AppImages.Med1,
-        label: 'Medicine',
+        label: context.l10n.medicine,
         onTap: () {
           Navigator.push(
             context,
@@ -45,7 +46,7 @@ class QuickActionsSection extends StatelessWidget {
       ),
       QuickActionItem(
         icon: AppImages.chatBot,
-        label: "As'alny",
+        label: context.l10n.asaly,
         onTap: () {
           context.pushName(AppRoutes.chatBot);
         },
@@ -58,7 +59,7 @@ class QuickActionsSection extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: TextApp(
-            text: "Quick Actions",
+            text: context.l10n.quick_actions,
             weight: AppTextWeight.semiBold,
             fontSize: 15.sp,
             color: AppColors.black,

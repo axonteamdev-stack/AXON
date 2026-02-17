@@ -1,10 +1,11 @@
 import 'dart:io';
-
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_text_field.dart';
 import 'package:Axon/core/widgets/text_app.dart';
@@ -22,7 +23,6 @@ class _CreatePatientPostBottomSheetState
     extends State<CreatePatientPostBottomSheet> {
   final titleController = TextEditingController();
   final contentController = TextEditingController();
-
   String? imagePath;
 
   Future<void> _pickImage() async {
@@ -47,26 +47,23 @@ class _CreatePatientPostBottomSheetState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const TextApp(
-              text: 'Create Post',
+            TextApp(
+              text: context.l10n.create_post,
               weight: AppTextWeight.bold,
             ),
             SizedBox(height: 12.h),
 
-            /// Title
             CustomTextField(
               controller: titleController,
-              hintText: 'Post title',
+              hintText: context.l10n.post_title,
             ),
             SizedBox(height: 10.h),
 
-            /// Content
             CustomTextField(
               controller: contentController,
-              hintText: 'Write something...',
+              hintText: context.l10n.write_something,
             ),
 
-            /// Image preview
             if (imagePath != null) ...[
               SizedBox(height: 12.h),
               Stack(
@@ -82,11 +79,9 @@ class _CreatePatientPostBottomSheetState
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close,
-                        color: Colors.white),
-                    onPressed: () {
-                      setState(() => imagePath = null);
-                    },
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () =>
+                        setState(() => imagePath = null),
                   ),
                 ],
               ),
@@ -94,19 +89,18 @@ class _CreatePatientPostBottomSheetState
 
             SizedBox(height: 12.h),
 
-            /// Actions
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
                   onTap: _pickImage,
                   child: Row(
-                    children: const [
-                      Icon(Icons.image,
+                    children: [
+                      const Icon(Icons.image,
                           color: AppColors.primaryColor),
-                      SizedBox(width: 6),
+                      const SizedBox(width: 6),
                       TextApp(
-                        text: 'Add Image',
+                        text: context.l10n.add_image,
                         color: AppColors.primaryColor,
                       ),
                     ],
@@ -135,8 +129,8 @@ class _CreatePatientPostBottomSheetState
                       vertical: 10.h,
                     ),
                   ),
-                  child: const TextApp(
-                    text: 'Share',
+                  child: TextApp(
+                    text: context.l10n.share,
                     color: AppColors.white,
                   ),
                 ),

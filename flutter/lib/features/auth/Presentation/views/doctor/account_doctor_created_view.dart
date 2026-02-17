@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
@@ -8,7 +9,8 @@ class AccountDoctorCreatedView extends StatefulWidget {
   const AccountDoctorCreatedView({super.key});
 
   @override
-  State<AccountDoctorCreatedView> createState() => _AccountDoctorCreatedViewState();
+  State<AccountDoctorCreatedView> createState() =>
+      _AccountDoctorCreatedViewState();
 }
 
 class _AccountDoctorCreatedViewState extends State<AccountDoctorCreatedView>
@@ -75,16 +77,16 @@ class _AccountDoctorCreatedViewState extends State<AccountDoctorCreatedView>
                   ),
                 ),
                 const SizedBox(height: 24),
-                const TextApp(
-                  text: "Account Created Successfully 🎉",
+                TextApp(
+                  text: context.l10n.account_created,
                   weight: AppTextWeight.bold,
                   fontSize: 20,
                   color: AppColors.black,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const TextApp(
-                  text: "Welcome! Redirecting to home...",
+                TextApp(
+                  text: context.l10n.redirecting_home,
                   fontSize: 14,
                   color: Colors.grey,
                   textAlign: TextAlign.center,

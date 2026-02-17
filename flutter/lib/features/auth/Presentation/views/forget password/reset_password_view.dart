@@ -1,4 +1,5 @@
 import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/helpers/validation_helper.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
@@ -32,24 +33,24 @@ class ResetPasswordView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 80.h),
-                    const TextApp(
-                      text: 'Create New Password',
+                    TextApp(
+                      text: context.l10n.create_new_password,
                       fontSize: 22,
                       weight: AppTextWeight.semiBold,
                     ),
                     SizedBox(height: 30.h),
-                    const FormLabel(text: 'New Password'),
+                    FormLabel(text: context.l10n.new_password),
                     CustomTextField(
                       controller: cubit.passwordController,
-                      hintText: 'Enter new password',
+                      hintText: context.l10n.enter_new_password,
                       isPassword: true,
                       validator: ValidationHelper.validatePassword,
                     ),
                     SizedBox(height: 22.h),
-                    const FormLabel(text: 'Confirm Password'),
+                    FormLabel(text: context.l10n.confirm_new_password),
                     CustomTextField(
                       controller: cubit.confirmPasswordController,
-                      hintText: 'Confirm password',
+                      hintText: context.l10n.confirm_new_password,
                       isPassword: true,
                       validator: (value) =>
                           ValidationHelper.validateConfirmPassword(
@@ -59,7 +60,7 @@ class ResetPasswordView extends StatelessWidget {
                     ),
                     SizedBox(height: 35.h),
                     CustomButton(
-                      text: 'Reset Password',
+                      text: context.l10n.reset_password,
                       height: 50.h,
                       onPressed: () {
                         context.pushNamedAndRemoveUntil(AppRoutes.login);

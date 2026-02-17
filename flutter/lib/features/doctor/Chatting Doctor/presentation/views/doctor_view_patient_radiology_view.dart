@@ -2,6 +2,7 @@ import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/widget
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Axon/core/style/colors.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
 
 class DoctorViewPatientRadiologyView extends StatelessWidget {
   const DoctorViewPatientRadiologyView({super.key});
@@ -10,37 +11,33 @@ class DoctorViewPatientRadiologyView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-
       appBar: AppBar(
-            scrolledUnderElevation: 0, 
-  surfaceTintColor: Colors.transparent, 
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         backgroundColor: AppColors.white,
         elevation: 1,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Radiology',
-          style: TextStyle(color: AppColors.black),
+        title: Text(
+          context.l10n.radiology,
+          style: const TextStyle(color: AppColors.black),
         ),
       ),
-
       body: Column(
         children: [
-      
-
           Expanded(
             child: ListView(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               children: [
                 DocumentPreviewCard(
-                  title: 'Chest X-Ray',
+                  title: context.l10n.chest_xray,
                   image: 'assets/images/onboarding1.png',
                 ),
                 SizedBox(height: 16.h),
                 DocumentPreviewCard(
-                  title: 'MRI Scan',
+                  title: context.l10n.mri_scan,
                   image: 'assets/images/onboarding2.png',
                 ),
               ],

@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/manager/profile%20doctor/doctor_profile_cubit.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/manager/profile%20doctor/doctor_profile_state.dartdoctor_profile_state.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/doctor_edit_profile_view.dart';
@@ -35,7 +36,7 @@ class DoctorProfileBody extends StatelessWidget {
             [
               PatientProfileMenuItem(
                 icon: Icons.edit_outlined,
-                title: 'Edit Profile',
+                title: context.l10n.edit_profile,
                 dense: true,
                 onTap: () {
                   Navigator.push(
@@ -51,7 +52,7 @@ class DoctorProfileBody extends StatelessWidget {
               ),
               PatientProfileMenuItem(
                 icon: Icons.lock_outline,
-                title: 'Change Password',
+                title: context.l10n.change_password,
                 dense: true,
                 onTap: () {
                   Navigator.pushNamed(
@@ -62,13 +63,13 @@ class DoctorProfileBody extends StatelessWidget {
               ),
               PatientProfileMenuItem(
                 icon: Icons.notifications_none,
-                title: 'Notification Settings',
+                title: context.l10n.notification_settings,
                 dense: true,
                 onTap: () {},
               ),
               PatientProfileMenuItem(
                 icon: Icons.logout,
-                title: 'Logout',
+                title: context.l10n.logout,
                 dense: true,
                 onTap: () {
                   showModalBottomSheet(
@@ -90,7 +91,7 @@ class DoctorProfileBody extends StatelessWidget {
               ),
               PatientProfileMenuItem(
                 icon: Icons.delete_outline,
-                title: 'Delete Account',
+                title: context.l10n.delete_account,
                 dense: true,
                 onTap: () {
                   showModalBottomSheet(

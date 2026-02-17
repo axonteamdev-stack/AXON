@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_app_bar.dart';
 import 'package:Axon/core/widgets/custom_text_field.dart';
@@ -28,14 +29,14 @@ class _ViewAllMedicineState extends State<ViewAllMedicine> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => MedicineFilterCubit(),
-      child: Builder( // ✅ مهم جدًا
+      child: Builder(
         builder: (context) {
           return Scaffold(
             backgroundColor: AppColors.white,
             body: Column(
               children: [
                 CustomAppBar(
-                  title: "All Medicine",
+                  title: context.l10n.all_medicine,
                   trailing: Row(
                     children: [
                       IconButton(
@@ -72,7 +73,7 @@ class _ViewAllMedicineState extends State<ViewAllMedicine> {
                         const EdgeInsets.fromLTRB(16, 12, 16, 8),
                     child: CustomTextField(
                       controller: searchCtrl,
-                      hintText: "Search medicine",
+                      hintText: context.l10n.search_medicine,
                       prefixIcon: const Icon(Icons.search),
                       onChanged: (v) {
                         context

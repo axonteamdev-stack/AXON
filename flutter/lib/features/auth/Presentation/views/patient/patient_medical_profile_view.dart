@@ -1,4 +1,5 @@
 import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
@@ -32,19 +33,18 @@ class PatientMedicalProfileView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 55.h),
-                  const CenterIconHeader(
+                  CenterIconHeader(
                     imagePath: AppImages.medicalProfile,
-                    title: 'Medical Profile',
-                    subtitle:
-                        'Help us understand your health better',
+                    title: context.l10n.medical_profile,
+                    subtitle: context.l10n.medical_profile_desc,
                   ),
                   SizedBox(height: 25.h),
-                  const FormLabel(text: 'Blood Type'),
+                  FormLabel(text: context.l10n.blood_type),
                   BlocBuilder<PatientRegistrationCubit,
                       PatientRegistrationState>(
                     builder: (context, state) {
                       return ReusableDropdown(
-                        hint: 'Select Blood Type',
+                        hint: context.l10n.select_blood_type,
                         value: state.bloodType,
                         items: const [
                           'A+',
@@ -69,8 +69,8 @@ class PatientMedicalProfileView extends StatelessWidget {
                           crossAxisAlignment:
                               CrossAxisAlignment.start,
                           children: [
-                            const FormLabel(
-                                text: 'Height (cm)'),
+                            FormLabel(
+                                text: context.l10n.height),
                             CustomTextField(
                               controller: cubit.heightCtrl,
                               hintText: '170',
@@ -92,8 +92,8 @@ class PatientMedicalProfileView extends StatelessWidget {
                           crossAxisAlignment:
                               CrossAxisAlignment.start,
                           children: [
-                            const FormLabel(
-                                text: 'Weight (kg)'),
+                            FormLabel(
+                                text: context.l10n.weight),
                             CustomTextField(
                               controller: cubit.weightCtrl,
                               hintText: '62.5',
@@ -130,10 +130,9 @@ class PatientMedicalProfileView extends StatelessWidget {
                           size: 20.sp,
                         ),
                         SizedBox(width: 10.w),
-                        const Expanded(
+                        Expanded(
                           child: TextApp(
-                            text:
-                                'Your medical information helps doctors provide better care.',
+                            text: context.l10n.medical_info_hint,
                             fontSize: 13,
                             color: AppColors.blue,
                           ),
@@ -150,7 +149,7 @@ class PatientMedicalProfileView extends StatelessWidget {
             padding:
                 EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
             child: CustomButton(
-              text: 'Next',
+              text: context.l10n.next,
               height: 50.h,
               onPressed: () {
                 context.pushName(

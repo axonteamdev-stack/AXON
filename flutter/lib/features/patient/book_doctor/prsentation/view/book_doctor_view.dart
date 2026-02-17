@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../data/models/doctor_model.dart';
-import 'package:Axon/core/widgets/custom_text_field.dart';
-import 'package:Axon/core/widgets/text_app.dart';
+
+import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_app_bar.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
-import 'package:Axon/core/style/colors.dart';
+import 'package:Axon/core/widgets/custom_text_field.dart';
+import 'package:Axon/core/widgets/text_app.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
+
+import '../../data/models/doctor_model.dart';
 
 class BookDoctorView extends StatelessWidget {
   final DoctorModel doctor;
@@ -21,10 +24,10 @@ class BookDoctorView extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-           CustomAppBar(
-  title: 'Book Consultation',
-),
-
+            /// ===== App Bar =====
+            CustomAppBar(
+              title: context.l10n.book_consultation,
+            ),
 
             Expanded(
               child: SingleChildScrollView(
@@ -32,75 +35,49 @@ class BookDoctorView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // /// Doctor info
-                    // Container(
-                    //   padding: EdgeInsets.all(14.w),
-                    //   decoration: BoxDecoration(
-                    //     color: AppColors.white,
-                    //     borderRadius: BorderRadius.circular(16.r),
-                    //     border: Border.all(
-                    //       color: AppColors.primaryColor.withOpacity(0.15),
-                    //     ),
-                    //   ),
-                    //   child: Row(
-                    //     children: [
-                    //       CircleAvatar(
-                    //         radius: 26.r,
-                    //         backgroundImage: AssetImage(doctor.image),
-                    //       ),
-                    //       SizedBox(width: 12.w),
-                    //       Column(
-                    //         crossAxisAlignment: CrossAxisAlignment.start,
-                    //         children: [
-                    //           TextApp(
-                    //             text: doctor.name,
-                    //             weight: AppTextWeight.semiBold,
-                    //           ),
-                    //           SizedBox(height: 4.h),
-                    //           TextApp(
-                    //             text: doctor.specialty,
-                    //             fontSize: 12,
-                    //             color: AppColors.grey,
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-
                     SizedBox(height: 24.h),
 
-                    /// Complaint
+                    /// ===== Complaint =====
                     TextApp(
-                      text: 'Describe your complaint',
+                      text: context.l10n.describe_complaint,
                       weight: AppTextWeight.semiBold,
                       fontSize: 14,
                     ),
+
                     SizedBox(height: 15.h),
 
                     CustomTextField(
                       controller: complaintController,
-                      hintText: 'Write your symptoms or problem here...',
+                      hintText:
+                          context.l10n.write_symptoms_hint,
                       maxLines: 10,
                     ),
 
                     SizedBox(height: 24.h),
 
-                    /// Price card
+                    /// ===== Price Card =====
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal:   16.w , vertical: 20),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 20,
+                      ),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryColor.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16.r),
+                        color:
+                            AppColors.primaryColor.withOpacity(0.05),
+                        borderRadius:
+                            BorderRadius.circular(16.r),
                         border: Border.all(
-                          color: AppColors.primaryColor.withOpacity(0.2),
+                          color: AppColors.primaryColor
+                              .withOpacity(0.2),
                         ),
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
                         children: [
                           TextApp(
-                            text: 'Consultation Price',
+                            text:
+                                context.l10n.consultation_price,
                             fontSize: 15,
                             color: AppColors.grey,
                           ),
@@ -117,10 +94,11 @@ class BookDoctorView extends StatelessWidget {
               ),
             ),
 
+            /// ===== Bottom Button =====
             Padding(
               padding: EdgeInsets.all(16.w),
               child: CustomButton(
-                text: 'Proceed to Payment',
+                text: context.l10n.proceed_to_payment,
                 height: 52.h,
                 borderRadius: 12.r,
                 onPressed: () {

@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -49,8 +50,8 @@ class _PatientCommentsSheetState
 
           return Column(
             children: [
-              const TextApp(
-                text: 'Comments',
+               TextApp(
+                text: context.l10n.comments,
                 weight: AppTextWeight.bold,
               ),
               SizedBox(height: 12.h),
@@ -129,7 +130,7 @@ class _PatientCommentsSheetState
                                 });
                               },
                               child: TextApp(
-                                text: 'Reply',
+                                text: context.l10n.comments,
                                 fontSize: 11,
                                 color:
                                     replyingToCommentId ==
@@ -160,8 +161,8 @@ AnimatedSwitcher(
                     fontSize: 13.sp,
                     color: AppColors.black,
                   ),
-                  decoration: const InputDecoration(
-                    hintText: 'Write a reply...',
+                  decoration:  InputDecoration(
+                    hintText:context.l10n.write_comment,
                     hintStyle: TextStyle(
                       fontSize: 12,
                       color: AppColors.grey,
@@ -254,7 +255,7 @@ AnimatedSwitcher(
                   Expanded(
                     child: CustomTextField(
                       controller: commentController,
-                      hintText: 'Write a comment...',
+                      hintText: context.l10n.write_comment,
                     ),
                   ),
                   SizedBox(width: 6.w),

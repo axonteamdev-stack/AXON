@@ -1,4 +1,5 @@
 import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/helpers/validation_helper.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
@@ -32,30 +33,28 @@ class ForgotPasswordEmailView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 80.h),
-                    const TextApp(
-                      text: 'Forgot Password',
+                    TextApp(
+                      text: context.l10n.forgot_password_title,
                       fontSize: 22,
                       weight: AppTextWeight.semiBold,
                     ),
                     SizedBox(height: 12.h),
-                    const TextApp(
-                      text:
-                          'Enter your email to receive a verification code',
+                    TextApp(
+                      text: context.l10n.forgot_password_desc,
                       fontSize: 14,
                       color: AppColors.grey,
                     ),
                     SizedBox(height: 30.h),
-                    const FormLabel(text: 'Email'),
+                    FormLabel(text: context.l10n.email),
                     SizedBox(height: 8.h),
                     CustomTextField(
                       controller: cubit.emailController,
-                      hintText: 'Enter your email',
+                      hintText: context.l10n.enter_email,
                       validator: ValidationHelper.validateEmail,
                     ),
                     SizedBox(height: 35.h),
                     CustomButton(
-                      
-                      text: 'Send Code',
+                      text: context.l10n.send_code,
                       height: 50.h,
                       isLoading: state is ForgotPasswordLoading,
                       onPressed: () {

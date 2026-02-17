@@ -14,6 +14,8 @@ import 'widgets/form_label.dart';
 import 'widgets/gender_selector.dart';
 import 'widgets/registration_profile_image.dart';
 import 'widgets/terms_checkbox.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
+
 
 class RegistrationView extends StatelessWidget {
   const RegistrationView({super.key});
@@ -50,35 +52,35 @@ class RegistrationView extends StatelessWidget {
 
                     SizedBox(height: 25.h),
 
-                    FormLabel(text: "Full Name"),
+                    FormLabel(text: context.l10n.full_name),
                     CustomTextField(
                       controller: regCubit.fullNameController,
-                      hintText: "Enter your full name",
+                      hintText: context.l10n.enter_full_name,
                       validator: ValidationHelper.validateName,
                     ),
 
                     SizedBox(height: 22.h),
 
-                    FormLabel(text: "Email"),
+                    FormLabel(text: context.l10n.email),
                     SizedBox(height: 8.h),
                     CustomTextField(
                       controller: regCubit.emailController,
-                      hintText: "Enter your email",
+                      hintText: context.l10n.enter_email,
                       validator: ValidationHelper.validateEmail,
                     ),
 
                     SizedBox(height: 22.h),
 
-                    FormLabel(text: "Phone Number"),
+                    FormLabel(text: context.l10n.phone_number),
                     CustomTextField(
                       controller: regCubit.phoneController,
-                      hintText: "Enter your phone number",
+                      hintText: context.l10n.enter_phone,
                       validator: ValidationHelper.validatePhone,
                     ),
 
                     SizedBox(height: 22.h),
 
-                    FormLabel(text: "Gender"),
+                    FormLabel(text: context.l10n.gender),
                     GenderSelector(
                       selected: regCubit.selectedGender,
                       onSelect: regCubit.pickGender,
@@ -86,10 +88,10 @@ class RegistrationView extends StatelessWidget {
 
                     SizedBox(height: 22.h),
 
-                    FormLabel(text: "Password"),
+                    FormLabel(text: context.l10n.password),
                     CustomTextField(
                       controller: regCubit.passwordController,
-                      hintText: "Create a strong password",
+                      hintText: context.l10n.create_password,
                       isPassword: true,
                       validator: ValidationHelper.validatePassword,
                     ),
@@ -104,7 +106,7 @@ class RegistrationView extends StatelessWidget {
                     SizedBox(height: 20.h),
 
                     CustomButton(
-                      text: "Next",
+                      text: context.l10n.next,
                       height: 50.h,
                       borderRadius: 10,
                       onPressed: () {
@@ -118,7 +120,7 @@ class RegistrationView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextApp(
-                          text: "Already have an account?",
+                          text: context.l10n.already_have_account,
                           fontSize: 14.sp,
                           color: Colors.grey,
                         ),
@@ -128,7 +130,7 @@ class RegistrationView extends StatelessWidget {
                             Navigator.pushNamed(context, AppRoutes.login);
                           },
                           child: TextApp(
-                            text: "Login",
+                            text: context.l10n.login,
                             fontSize: 14.sp,
                             weight: AppTextWeight.regular,
                             color: AppColors.primaryColor,

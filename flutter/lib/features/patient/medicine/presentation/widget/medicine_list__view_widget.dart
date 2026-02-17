@@ -1,3 +1,6 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
+import 'package:Axon/core/style/colors.dart';
+import 'package:Axon/core/widgets/text_app.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/medicine_filter/medicine_filter_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/medicine_filter/medicine_filter_state.dart';
 import 'package:Axon/features/patient/medicine/presentation/widget/medicine_card.dart';
@@ -18,21 +21,6 @@ class MedicineList extends StatelessWidget {
           {'name': 'Aspirin', 'date': DateTime.now()},
           {'name': 'Omega 3', 'date': DateTime.now()},
           {'name': 'Cataflam', 'date': DateTime.now()},
-          {'name': 'Brufen', 'date': DateTime.now()},
-          {'name': 'Augmentin', 'date': DateTime.now()},
-          {'name': 'Amoxicillin', 'date': DateTime.now()},
-          {'name': 'Zyrtec', 'date': DateTime.now()},
-          {'name': 'Claritin', 'date': DateTime.now()},
-          {'name': 'Ventolin', 'date': DateTime.now()},
-          {'name': 'Neuroton', 'date': DateTime.now()},
-          {'name': 'Calcium D', 'date': DateTime.now()},
-          {'name': 'Fucidin', 'date': DateTime.now()},
-          {'name': 'Flagyl', 'date': DateTime.now()},
-          {'name': 'Otrivin', 'date': DateTime.now()},
-          {'name': 'Eucarbon', 'date': DateTime.now()},
-          {'name': 'Spasfon', 'date': DateTime.now()},
-          {'name': 'Congestal', 'date': DateTime.now()},
-          {'name': 'Antinal', 'date': DateTime.now()},
         ];
 
         final selectedDate = state.date ?? DateTime.now();
@@ -46,10 +34,21 @@ class MedicineList extends StatelessWidget {
               date.year == selectedDate.year;
 
           final matchSearch =
-              m['name'].toString().toLowerCase().contains(state.search);
+              m['name'].toString().toLowerCase().contains(
+                    state.search,
+                  );
 
           return sameDay && matchSearch;
         }).toList();
+
+        if (filtered.isEmpty) {
+          return Center(
+            child: TextApp(
+              text: context.l10n.no_medicine_today,
+              color: AppColors.grey,
+            ),
+          );
+        }
 
         return ListView.separated(
           padding: EdgeInsets.only(top: 8.h),
@@ -58,11 +57,11 @@ class MedicineList extends StatelessWidget {
             final item = filtered[index];
             return MedicineCard(
               name: item['name'] as String,
-              frequency: 'Once Daily',
+              frequency: context.l10n.once_daily,
               nextTime: '09:00 PM',
             );
           },
-          separatorBuilder: (context, index) =>
+          separatorBuilder: (_, __) =>
               SizedBox(height: 12.h),
         );
       },

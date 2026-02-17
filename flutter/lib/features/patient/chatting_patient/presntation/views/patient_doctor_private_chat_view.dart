@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,7 +37,8 @@ class _PatientDoctorPrivateChatViewState
     super.initState();
     messages = [
       {
-        'text': 'What is your complaint?',
+               'text': "What is your complaint?",
+
         'isMe': false,
       },
     ];
@@ -152,7 +154,7 @@ class _PatientDoctorPrivateChatViewState
                 Expanded(
                   child: CustomTextField(
                     controller: messageController,
-                    hintText: 'Type a message',
+                      hintText: context.l10n.type_message,
                   ),
                 ),
                 SizedBox(width: 10.w),

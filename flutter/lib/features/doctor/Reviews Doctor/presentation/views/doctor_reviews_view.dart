@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/features/doctor/Reviews%20Doctor/presentation/manager/doctor_reviews_cubit.dart';
 import 'package:Axon/features/doctor/Reviews%20Doctor/presentation/manager/doctor_reviews_state.dart';
 import 'package:Axon/features/doctor/Reviews%20Doctor/presentation/views/wedgits/patient_review_card.dart';
@@ -17,9 +18,9 @@ class DoctorReviewsView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBar(
-          title: const Text(
-            'Patient Reviews',
-            style: TextStyle(color: AppColors.black),
+          title: Text(
+            context.l10n.patient_reviews,
+            style: const TextStyle(color: AppColors.black),
           ),
           backgroundColor: AppColors.white,
           elevation: 0,

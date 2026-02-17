@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class TodayMedicationSection extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: TextApp(
-            text: "Today’s Medications",
+            text: context.l10n.todays_medications,
             weight: AppTextWeight.semiBold,
             fontSize: 15.sp,
             color: AppColors.black,

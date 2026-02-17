@@ -25,6 +25,7 @@ import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_view_patient_radiology_view.dart';
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/doctor_main_view.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/doctor_edit_profile_view.dart';
+import 'package:Axon/features/onboarding/presentation/views/intro_view.dart';
 import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:Axon/features/patient/book_doctor/data/models/doctor_model.dart';
 import 'package:Axon/features/patient/book_doctor/data/repo/doctor_repository.dart';
@@ -56,6 +57,7 @@ class AppRoutes {
   // Splash & Onboarding
   static const splash = '/';
   static const onBoarding = 'onBoarding';
+  static const intro = 'intro';
 
   // Auth
   static const login = 'login';
@@ -151,6 +153,9 @@ static const viewAll = 'viewAll';
       // Splash & Onboarding
       case splash:
         return BaseRoute(page: const SplashView());
+
+         case intro :
+        return BaseRoute(page: const IntroView());
 
       case onBoarding:
         return BaseRoute(page: const OnBoardingView());

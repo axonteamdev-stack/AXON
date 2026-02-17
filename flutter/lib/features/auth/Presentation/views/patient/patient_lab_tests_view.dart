@@ -1,4 +1,5 @@
 import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -35,35 +36,35 @@ class PatientLabTestsView extends StatelessWidget {
                           return Column(
                             children: [
                               SizedBox(height: 55.h),
-                              const CenterIconHeader(
+                              CenterIconHeader(
                                 icon: Icons.science_outlined,
-                                title: 'Lab Tests',
-                                subtitle:
-                                    'Upload your medical lab tests',
+                                title: context.l10n.lab_tests,
+                                subtitle: context.l10n.upload_lab_tests,
                               ),
+                               SizedBox(height: 25.h),
 
                               Expanded(
                                 child: state.documents.isEmpty
                                     ? Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                        children: const [
-                                          Icon(Icons.info_outline,
+                                        children: [
+                                          const Icon(Icons.info_outline,
                                               size: 56,
                                               color: Colors.grey),
-                                          SizedBox(height: 12),
+                                          const SizedBox(height: 12),
                                           Text(
-                                            'No lab tests added yet',
-                                            style: TextStyle(
+                                            context.l10n.no_articles,
+                                            style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 15,
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),
-                                          SizedBox(height: 6),
+                                          const SizedBox(height: 6),
                                           Text(
-                                            'Tap + to add one',
-                                            style: TextStyle(
+                                            context.l10n.tap_edit_add,
+                                            style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 13,
                                             ),
@@ -88,7 +89,8 @@ class PatientLabTestsView extends StatelessWidget {
                                               onLabelChanged: (v) =>
                                                   cubit.updateLabel(index, v),
                                               hintText:
-                                                  'Enter the type of medical scan', enabled: true,
+                                                  context.l10n.enter_scan_type,
+                                              enabled: true,
                                             ),
                                           ),
                                         ),
@@ -104,7 +106,7 @@ class PatientLabTestsView extends StatelessWidget {
                       padding:
                           EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
                       child: CustomButton(
-                        text: 'Finish',
+                        text: context.l10n.finish,
                         onPressed: () {
                           blocContext.pushNamedAndRemoveUntil(
                               AppRoutes.accountCreated);

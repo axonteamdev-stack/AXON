@@ -1,3 +1,5 @@
+import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
@@ -58,7 +60,7 @@ class HomeHeader extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextApp(
-                    text: "Good Evening, $name",
+                    text: context.l10n.greeting(name),
                     weight: AppTextWeight.bold,
                     fontSize: 15.sp,
                     color: AppColors.white,
@@ -67,7 +69,7 @@ class HomeHeader extends StatelessWidget {
                   ),
                   SizedBox(height: 6.h),
                   TextApp(
-                    text: "Your health matters",
+                    text: context.l10n.health_matters,
                     fontSize: 12.sp,
                     color: AppColors.white.withOpacity(.8),
                     maxLines: 1,

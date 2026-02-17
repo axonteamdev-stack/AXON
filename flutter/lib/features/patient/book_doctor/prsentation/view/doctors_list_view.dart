@@ -1,10 +1,13 @@
-import 'package:Axon/features/patient/book_doctor/prsentation/manager/doctors_cubit.dart';
-import 'package:Axon/features/patient/book_doctor/prsentation/manager/doctors_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
+
+import 'package:Axon/features/patient/book_doctor/prsentation/manager/doctors_cubit.dart';
+import 'package:Axon/features/patient/book_doctor/prsentation/manager/doctors_state.dart';
 import '../../data/models/doctor_model.dart';
 import 'doctor_details_view.dart';
 
@@ -15,15 +18,19 @@ class DoctorsListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
+
+      /// ===== AppBar =====
       appBar: AppBar(
-        title: const Text(
-          'Doctors',
-          style: TextStyle(color: AppColors.black),
+        title: Text(
+          context.l10n.doctors,
+          style: const TextStyle(color: AppColors.black),
         ),
         backgroundColor: AppColors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.black),
       ),
+
+      /// ===== Body =====
       body: BlocBuilder<DoctorsCubit, DoctorsState>(
         builder: (context, state) {
           if (state is DoctorsLoaded) {
@@ -32,7 +39,9 @@ class DoctorsListView extends StatelessWidget {
               itemCount: state.filteredDoctors.length,
               separatorBuilder: (_, __) => SizedBox(height: 14.h),
               itemBuilder: (_, i) {
-                DoctorModel doctor = state.filteredDoctors[i];
+                final DoctorModel doctor =
+                    state.filteredDoctors[i];
+
                 return Container(
                   padding: EdgeInsets.all(14.w),
                   decoration: BoxDecoration(
@@ -48,26 +57,35 @@ class DoctorsListView extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
+                      /// ===== Avatar =====
                       CircleAvatar(
                         radius: 28.r,
                         backgroundImage: AssetImage(doctor.image),
                       ),
+
                       SizedBox(width: 12.w),
+
+                      /// ===== Info =====
                       Expanded(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
                           children: [
                             TextApp(
                               text: doctor.name,
                               weight: AppTextWeight.semiBold,
                             ),
+
                             SizedBox(height: 4.h),
+
                             TextApp(
                               text: doctor.specialty,
                               color: AppColors.grey,
                               fontSize: 12,
                             ),
+
                             SizedBox(height: 6.h),
+
                             TextApp(
                               text: '${doctor.price} EGP',
                               color: AppColors.primaryColor,
@@ -77,13 +95,17 @@ class DoctorsListView extends StatelessWidget {
                           ],
                         ),
                       ),
+
+                      /// ===== More Button =====
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) =>
-                                  DoctorDetailsView(doctor: doctor),
+                                  DoctorDetailsView(
+                                doctor: doctor,
+                              ),
                             ),
                           );
                         },
@@ -94,11 +116,12 @@ class DoctorsListView extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.primaryColor,
-                            borderRadius: BorderRadius.circular(22.r),
+                            borderRadius:
+                                BorderRadius.circular(22.r),
                           ),
-                          child: const Text(
-                            'More',
-                            style: TextStyle(
+                          child: Text(
+                            context.l10n.more,
+                            style: const TextStyle(
                               color: AppColors.white,
                               fontWeight: FontWeight.w600,
                             ),
@@ -112,7 +135,7 @@ class DoctorsListView extends StatelessWidget {
             );
           }
 
-          return const SizedBox();
+          return const SizedBox.shrink();
         },
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/change_password/change_password_cubit.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/change_password/change_password_state.dart';
 import 'package:flutter/material.dart';
@@ -22,11 +23,10 @@ class ChangePasswordView extends StatelessWidget {
           final cubit = context.read<ChangePasswordCubit>();
 
           return Scaffold(
-            
             backgroundColor: AppColors.white,
             appBar: AppBar(
-                  scrolledUnderElevation: 0, 
-  surfaceTintColor: Colors.transparent, 
+              scrolledUnderElevation: 0,
+              surfaceTintColor: Colors.transparent,
               backgroundColor: AppColors.white,
               elevation: 0,
               titleSpacing: 0,
@@ -37,8 +37,8 @@ class ChangePasswordView extends StatelessWidget {
                 ),
                 onPressed: () => Navigator.pop(context),
               ),
-              title: const TextApp(
-                text: 'Change Password',
+              title: TextApp(
+                text: context.l10n.change_password,
                 fontSize: 16,
                 weight: AppTextWeight.semiBold,
                 color: AppColors.black,
@@ -53,28 +53,30 @@ class ChangePasswordView extends StatelessWidget {
                   children: [
                     SizedBox(height: 24.h),
 
-                    const FormLabel(text: 'Current Password'),
+                    FormLabel(text: context.l10n.current_password),
                     CustomTextField(
                       controller: cubit.currentCtrl,
-                      hintText: 'Enter current password',
+                      hintText: context.l10n.enter_current_password,
                       isPassword: true,
                       validator: (v) =>
-                          v == null || v.isEmpty ? 'Required' : null,
+                          v == null || v.isEmpty
+                              ? context.l10n.field_required
+                              : null,
                     ),
 
                     SizedBox(height: 22.h),
 
-                    const FormLabel(text: 'New Password'),
+                    FormLabel(text: context.l10n.new_password),
                     CustomTextField(
                       controller: cubit.newCtrl,
-                      hintText: 'Enter new password',
+                      hintText: context.l10n.enter_new_password,
                       isPassword: true,
                       validator: (v) {
                         if (v == null || v.isEmpty) {
-                          return 'Required';
+                          return context.l10n.password_required;
                         }
                         if (v.length < 8) {
-                          return 'At least 8 characters';
+                          return context.l10n.password_min;
                         }
                         return null;
                       },
@@ -82,17 +84,17 @@ class ChangePasswordView extends StatelessWidget {
 
                     SizedBox(height: 22.h),
 
-                    const FormLabel(text: 'Confirm New Password'),
+                    FormLabel(text: context.l10n.confirm_new_password),
                     CustomTextField(
                       controller: cubit.confirmCtrl,
-                      hintText: 'Confirm new password',
+                      hintText: context.l10n.confirm_new_password,
                       isPassword: true,
                       validator: (v) {
                         if (v == null || v.isEmpty) {
-                          return 'Required';
+                          return context.l10n.confirm_password_required;
                         }
                         if (v != cubit.newCtrl.text) {
-                          return 'Passwords do not match';
+                          return context.l10n.passwords_not_match;
                         }
                         return null;
                       },
@@ -101,7 +103,7 @@ class ChangePasswordView extends StatelessWidget {
                     SizedBox(height: 35.h),
 
                     CustomButton(
-                      text: 'Update Password',
+                      text: context.l10n.update_password,
                       height: 50.h,
                       onPressed: () => cubit.submit(context),
                     ),

@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/features/doctor/Articles%20Doctor/presentation/manager/doctor_articles_cubit.dart';
 import 'package:Axon/features/doctor/Articles%20Doctor/presentation/views/wedgits/article_header.dart';
 import 'package:Axon/features/doctor/Articles%20Doctor/presentation/views/wedgits/article_item_card.dart';
@@ -23,7 +24,7 @@ class DoctorArticlesView extends StatelessWidget {
             padding: EdgeInsets.all(16.w),
             child: Column(
               children: [
-                const ArticleHeader(),
+                // const ArticleHeader(),
                 SizedBox(height: 16.h),
                 const CreateArticleCard(),
                 SizedBox(height: 20.h),
@@ -32,9 +33,9 @@ class DoctorArticlesView extends StatelessWidget {
                       DoctorArticlesState>(
                     builder: (context, state) {
                       if (state.articles.isEmpty) {
-                        return const Center(
+                        return Center(
                           child: TextApp(
-                            text: 'No articles yet',
+                            text: context.l10n.no_articles,
                             color: AppColors.grey,
                           ),
                         );

@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -60,7 +61,7 @@ class DoctorChatCard extends StatelessWidget {
             ),
           ),
           CustomButton(
-            text: 'Chat',
+            text: context.l10n.chat,
             width: 82.w,
             height: 36.h,
             fontSize: 13,

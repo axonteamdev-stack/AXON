@@ -1,4 +1,5 @@
 import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -35,34 +36,34 @@ class PatientRadiologyView extends StatelessWidget {
                           return Column(
                             children: [
                               SizedBox(height: 55.h),
-                              const CenterIconHeader(
+                              CenterIconHeader(
                                 icon: Icons.monitor_heart_outlined,
-                                title: 'Radiology',
-                                subtitle: 'Upload your radiology images',
+                                title: context.l10n.radiology,
+                                subtitle: context.l10n.upload_radiology,
                               ),
-
+   SizedBox(height: 25.h),
                               Expanded(
                                 child: state.documents.isEmpty
                                     ? Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                        children: const [
-                                          Icon(Icons.info_outline,
+                                        children: [
+                                          const Icon(Icons.info_outline,
                                               size: 56,
                                               color: Colors.grey),
-                                          SizedBox(height: 12),
+                                          const SizedBox(height: 12),
                                           Text(
-                                            'No radiology images added yet',
-                                            style: TextStyle(
+                                            context.l10n.no_articles,
+                                            style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 15,
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),
-                                          SizedBox(height: 6),
+                                          const SizedBox(height: 6),
                                           Text(
-                                            'Tap + to add one',
-                                            style: TextStyle(
+                                            context.l10n.tap_edit_add,
+                                            style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 13,
                                             ),
@@ -87,7 +88,8 @@ class PatientRadiologyView extends StatelessWidget {
                                               onLabelChanged: (v) =>
                                                   cubit.updateLabel(index, v),
                                               hintText:
-                                                  'Enter the type of medical scan', enabled: true,
+                                                  context.l10n.enter_scan_type,
+                                              enabled: true,
                                             ),
                                           ),
                                         ),
@@ -103,7 +105,7 @@ class PatientRadiologyView extends StatelessWidget {
                       padding:
                           EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
                       child: CustomButton(
-                        text: 'Next',
+                        text: context.l10n.next,
                         onPressed: () {
                           blocContext.pushName(
                               AppRoutes.patientLabTests);

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
@@ -75,16 +76,16 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
                   ),
                 ),
                 const SizedBox(height: 24),
-                const TextApp(
-                  text: "Account Created Successfully 🎉",
+                TextApp(
+                  text: context.l10n.account_created,
                   weight: AppTextWeight.bold,
                   fontSize: 20,
                   color: AppColors.black,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const TextApp(
-                  text: "Welcome! Redirecting to home...",
+                TextApp(
+                  text: context.l10n.redirecting_home,
                   fontSize: 14,
                   color: Colors.grey,
                   textAlign: TextAlign.center,

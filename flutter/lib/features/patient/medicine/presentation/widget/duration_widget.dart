@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/duration_cubit/duration_cubit.dart';
@@ -18,7 +19,6 @@ class DurationWidget extends StatelessWidget {
           final cubit = context.read<DurationCubit>();
           final formatter = DateFormat('dd MMM yyyy');
 
-          // ---- SAFE PICKERS ----
           Future<void> pickStartDate() async {
             final date = await showDatePicker(
               context: context,
@@ -34,9 +34,10 @@ class DurationWidget extends StatelessWidget {
 
           Future<void> pickEndDate() async {
             final safeInitialDate =
-                state.endDate != null && state.endDate!.isAfter(state.startDate)
-                ? state.endDate!
-                : state.startDate;
+                state.endDate != null &&
+                        state.endDate!.isAfter(state.startDate)
+                    ? state.endDate!
+                    : state.startDate;
 
             final date = await showDatePicker(
               context: context,
@@ -55,13 +56,14 @@ class DurationWidget extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // ---- START DATE ----
+                  /// START DATE
                   Expanded(
                     child: GestureDetector(
                       onTap: pickStartDate,
                       child: _dateBox(
-                        title: "Start Date",
-                        value: formatter.format(state.startDate),
+                        title: context.l10n.start_date,
+                        value:
+                            formatter.format(state.startDate),
                         hasError: state.error != null,
                       ),
                     ),
@@ -69,15 +71,16 @@ class DurationWidget extends StatelessWidget {
 
                   const SizedBox(width: 12),
 
-                  // ---- END DATE ----
+                  /// END DATE
                   Expanded(
                     child: GestureDetector(
                       onTap: pickEndDate,
                       child: _dateBox(
-                        title: "End Date",
+                        title: context.l10n.end_date,
                         value: state.endDate != null
-                            ? formatter.format(state.endDate!)
-                            : "Tap to select",
+                            ? formatter
+                                .format(state.endDate!)
+                            : context.l10n.tap_to_select,
                         hasError: state.error != null,
                       ),
                     ),
@@ -85,12 +88,15 @@ class DurationWidget extends StatelessWidget {
                 ],
               ),
 
-              // ---- ERROR ----
+              /// ERROR
               if (state.error != null) ...[
                 const SizedBox(height: 8),
                 Text(
                   state.error!,
-                  style: const TextStyle(color: Colors.red, fontSize: 12),
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ],
@@ -109,10 +115,11 @@ class DurationWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: hasError ? Colors.red : Colors.grey.shade300),
+        border: Border.all(
+          color: hasError ? Colors.red : Colors.grey.shade300,
+        ),
       ),
       child: Column(
-        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextApp(
             text: title,
@@ -120,7 +127,6 @@ class DurationWidget extends StatelessWidget {
             fontSize: 12,
             weight: AppTextWeight.bold,
           ),
-
           const SizedBox(height: 8),
           TextApp(
             text: value,

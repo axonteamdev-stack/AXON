@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
@@ -89,7 +90,7 @@ class MedicineCard extends StatelessWidget {
                           ),
                           SizedBox(width: 4.w),
                           TextApp(
-                            text: "Next: $nextTime",
+                              text: "${context.l10n.next}: $nextTime",
                             color: AppColors.grey,
                             fontSize: 12,
                             weight: AppTextWeight.semiBold,
@@ -115,7 +116,7 @@ class MedicineCard extends StatelessWidget {
                       color: AppColors.white,
                     ),
                     label: TextApp(
-                      text: 'Taken',
+                      text: context.l10n.taken,
                       color: AppColors.white,
                       fontSize: 16,
                       weight: AppTextWeight.semiBold,
@@ -139,7 +140,7 @@ class MedicineCard extends StatelessWidget {
                       color: Colors.red,
                     ),
                     label: TextApp(
-                      text: 'Skip',
+                      text: context.l10n.skip,
                       fontSize: 16,
                       weight: AppTextWeight.semiBold,
                     ),

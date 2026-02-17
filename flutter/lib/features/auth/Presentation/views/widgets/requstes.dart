@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:flutter/material.dart';
 
 class Requstes extends StatelessWidget {
@@ -8,7 +9,7 @@ class Requstes extends StatelessWidget {
     return Container(
       color: Colors.blueAccent,
       child: Center(
-        child: Text('Requstes View'),
+        child: Text(context.l10n.requests),
 
       ),
     );

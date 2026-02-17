@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/features/doctor/Articles%20Doctor/presentation/views/doctor_articles_view.dart';
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/doctor_home_view.dart';
@@ -21,8 +22,7 @@ class _DoctorMainViewState extends State<DoctorMainView> {
     DoctorHomeView(),
     DoctorArticlesView(),
     DoctorReviewsView(),
-
-    DoctorProfileView(), 
+    DoctorProfileView(),
   ];
 
   @override
@@ -30,20 +30,30 @@ class _DoctorMainViewState extends State<DoctorMainView> {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: pages[currentIndex],
-      bottomNavigationBar:HomeBottomNavBar(
-  currentIndex: currentIndex,
-  onTap: (index) {
-    setState(() => currentIndex = index);
-  },
-  items: const [
-    NavItem(icon: AppImages.home, label: 'Home'),
-    NavItem(icon: AppImages.book, label: 'Articles'),
-    NavItem(icon: AppImages.review, label: 'Reviews'), 
-    NavItem(icon: AppImages.profile, label: 'Profile'),
-  ],
-)
-
-
+      bottomNavigationBar: HomeBottomNavBar(
+        currentIndex: currentIndex,
+        onTap: (index) {
+          setState(() => currentIndex = index);
+        },
+        items: [
+          NavItem(
+            icon: AppImages.home,
+            label: context.l10n.home, // Home
+          ),
+          NavItem(
+            icon: AppImages.book,
+            label: context.l10n.articles,
+          ),
+          NavItem(
+            icon: AppImages.review,
+            label: context.l10n.patient_reviews,
+          ),
+          NavItem(
+            icon: AppImages.profile,
+            label: context.l10n.edit_profile,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/features/patient/chatting_patient/presntation/views/patient_doctor_chats_view.dart';
 import 'package:Axon/features/patient/comunity_patient/presentation/views/patient_community_view.dart';
@@ -19,10 +20,8 @@ class _PatientMainViewState extends State<PatientMainView> {
 
   final pages = const [
     HomeView(),
-  
-
-   PatientDoctorChatsView(), 
-      PatientCommunityView(),
+    PatientDoctorChatsView(),
+    PatientCommunityView(),
     PatientProfileView(),
   ];
 
@@ -31,19 +30,30 @@ class _PatientMainViewState extends State<PatientMainView> {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: pages[currentIndex],
-      bottomNavigationBar:HomeBottomNavBar(
-  currentIndex: currentIndex,
-  onTap: (index) {
-    setState(() => currentIndex = index);
-  },
-  items: const [
-    NavItem(icon: AppImages.home, label: 'Home'),
-    NavItem(icon: AppImages.chat, label: 'Chats'),
-    NavItem(icon: AppImages.community, label: 'Community'),
-    NavItem(icon: AppImages.profile, label: 'Profile'),
-  ],
-)
-
+      bottomNavigationBar: HomeBottomNavBar(
+        currentIndex: currentIndex,
+        onTap: (index) {
+          setState(() => currentIndex = index);
+        },
+        items: [
+          NavItem(
+            icon: AppImages.home,
+            label: context.l10n.home,
+          ),
+          NavItem(
+            icon: AppImages.chat,
+            label: context.l10n.chats,
+          ),
+          NavItem(
+            icon: AppImages.community,
+            label: context.l10n.community,
+          ),
+          NavItem(
+            icon: AppImages.profile,
+            label: context.l10n.medical_profile,
+          ),
+        ],
+      ),
     );
   }
 }

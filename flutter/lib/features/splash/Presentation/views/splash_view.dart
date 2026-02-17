@@ -23,7 +23,7 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
       vsync: this,
       onFinished: () {
         if (!mounted) return;
-        Navigator.pushReplacementNamed(context, AppRoutes.onBoarding);
+        Navigator.pushReplacementNamed(context, AppRoutes.intro);
       },
     );
   }

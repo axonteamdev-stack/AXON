@@ -1,4 +1,5 @@
 import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -33,7 +34,7 @@ class PatientAllergiesView extends StatelessWidget {
             bottomNavigationBar: Padding(
               padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
               child: CustomButton(
-                text: 'Next',
+                text: context.l10n.next,
                 onPressed: () {
                   context.pushName(AppRoutes.patientRadiology);
                 },
@@ -48,17 +49,17 @@ class PatientAllergiesView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 55.h),
-                      const CenterIconHeader(
+                      CenterIconHeader(
                         icon: Icons.error_outline_rounded,
-                        title: 'Allergies',
-                        subtitle: 'Add your allergies',
+                        title: context.l10n.allergies,
+                        subtitle: context.l10n.add_allergies,
                       ),
                       SizedBox(height: 30.h),
                       ...List.generate(
                         state.items.length,
                         (index) => PatientDynamicInputCard(
                           controller: state.items[index].controller,
-                          hint: 'Enter allergy name',
+                          hint: context.l10n.enter_allergy,
                         ),
                       ),
                       SizedBox(height: 120.h),

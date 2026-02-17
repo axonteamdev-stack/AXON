@@ -33,7 +33,6 @@ class CustomDropdownField extends StatelessWidget {
           : null,
       dropdownColor: AppColors.white,
       menuMaxHeight: 220.h,
-      
       icon: Icon(
         Icons.keyboard_arrow_down_rounded,
         color: AppColors.primaryColor,
@@ -44,53 +43,65 @@ class CustomDropdownField extends StatelessWidget {
         color: AppColors.black,
       ),
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.w),
-
+        contentPadding: EdgeInsetsDirectional.symmetric(
+          vertical: 16.h,
+          horizontal: 12.w,
+        ),
         prefixIcon: prefixIcon != null
             ? Padding(
-                padding: EdgeInsets.only(left: 10.w, right: 4.w),
-                child: SizedBox(width: 16.w, height: 16.h, child: prefixIcon),
+                padding: EdgeInsetsDirectional.only(
+                  start: 10.w,
+                  end: 4.w,
+                ),
+                child: SizedBox(
+                  width: 16.w,
+                  height: 16.h,
+                  child: prefixIcon,
+                ),
               )
             : null,
-
-        prefixIconConstraints: BoxConstraints(minWidth: 28.w, minHeight: 28.h),
-
+        prefixIconConstraints:
+            BoxConstraints(minWidth: 40.w, minHeight: 40.h),
         hintText: hintText,
-        hintStyle: TextStyle(fontSize: 14.sp, color: Colors.grey.shade500),
-
+        hintStyle:
+            TextStyle(fontSize: 14.sp, color: Colors.grey.shade500),
         filled: true,
         fillColor: enabled ? AppColors.white : const Color(0xFFF5F6F8),
-
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Color(0xFFDCE1E6), width: 1.2),
+          borderSide:
+              const BorderSide(color: Color(0xFFDCE1E6), width: 1.2),
         ),
-
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(color: AppColors.primaryColor, width: 1.4),
+          borderSide:
+              BorderSide(color: AppColors.primaryColor, width: 1.4),
         ),
-
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Color(0xFFE3E6EA), width: 1.2),
+          borderSide:
+              const BorderSide(color: Color(0xFFE3E6EA), width: 1.2),
         ),
-
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Colors.red, width: 1.2),
+          borderSide:
+              const BorderSide(color: Colors.red, width: 1.2),
         ),
-
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Colors.red, width: 1.4),
+          borderSide:
+              const BorderSide(color: Colors.red, width: 1.4),
         ),
       ),
       items: items
           .map(
             (item) => DropdownMenuItem<String>(
               value: item,
-              child: TextApp(text: item, fontSize: 14),
+              child: TextApp(
+                text: item,
+                fontSize: 14,
+                textAlign: TextAlign.start,
+              ),
             ),
           )
           .toList(),

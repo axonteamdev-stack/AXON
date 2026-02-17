@@ -1,7 +1,9 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/core/widgets/text_app.dart';
+import 'package:Axon/core/extensions/context_extension.dart';
 
 class ConfirmDeleteAccountSheet extends StatelessWidget {
   final VoidCallback onConfirm;
@@ -24,14 +26,14 @@ class ConfirmDeleteAccountSheet extends StatelessWidget {
             color: Color(0xFFE53935),
           ),
           const SizedBox(height: 8),
-          const TextApp(
-            text: 'Delete Account',
+          TextApp(
+            text: context.l10n.delete_account,
             fontSize: 16,
             weight: AppTextWeight.semiBold,
           ),
           const SizedBox(height: 6),
-          const TextApp(
-            text: 'This action is permanent and cannot be undone.',
+          TextApp(
+            text: context.l10n.delete_account_confirm,
             fontSize: 13,
             color: Colors.grey,
             textAlign: TextAlign.center,
@@ -54,7 +56,7 @@ class ConfirmDeleteAccountSheet extends StatelessWidget {
                     ),
                     child: Center(
                       child: TextApp(
-                        text: 'Cancel',
+                        text: context.l10n.cancel,
                         fontSize: 14,
                         weight: AppTextWeight.semiBold,
                         color: AppColors.primaryColor,
@@ -66,7 +68,7 @@ class ConfirmDeleteAccountSheet extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: CustomButton(
-                  text: 'Delete',
+                  text: context.l10n.delete,
                   height: 44,
                   borderRadius: 10,
                   color: const Color(0xFFE53935),

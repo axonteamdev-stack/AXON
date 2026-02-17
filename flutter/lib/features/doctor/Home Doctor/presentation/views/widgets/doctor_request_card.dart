@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -11,26 +12,26 @@ class DoctorRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-  padding: EdgeInsets.symmetric(
-    horizontal: 16.w,
-    vertical: 14.h,
-  ),
-  decoration: BoxDecoration(
-    color: AppColors.white,
-    borderRadius: BorderRadius.circular(18.r),
-    border: Border.all(
-      color: AppColors.grey.withOpacity(0.15),
-      width: 1,
-    ),
-    boxShadow: [
-      BoxShadow(
-        color: AppColors.black.withOpacity(0.08),
-        blurRadius: 18,
-        spreadRadius: 2,
-        offset: const Offset(0, 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: 16.w,
+        vertical: 14.h,
       ),
-    ],
-  ),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(18.r),
+        border: Border.all(
+          color: AppColors.grey.withOpacity(0.15),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withOpacity(0.08),
+            blurRadius: 18,
+            spreadRadius: 2,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Column(
         children: [
           Row(
@@ -46,10 +47,9 @@ class DoctorRequestCard extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 14.w),
-              const Expanded(
+              Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextApp(
                       text: 'Abdallah Hasan',
@@ -58,7 +58,7 @@ class DoctorRequestCard extends StatelessWidget {
                     ),
                     SizedBox(height: 6),
                     TextApp(
-                      text: 'Chest pain and short breath',
+                      text: context.l10n.chest_pain_short_breath,
                       color: AppColors.grey,
                       fontSize: 12,
                     ),
@@ -72,7 +72,7 @@ class DoctorRequestCard extends StatelessWidget {
             children: [
               Expanded(
                 child: CustomButton(
-                  text: 'Reject',
+                  text: context.l10n.reject,
                   height: 42.h,
                   color: AppColors.white,
                   textColor: AppColors.primaryColor,
@@ -86,7 +86,7 @@ class DoctorRequestCard extends StatelessWidget {
               SizedBox(width: 12.w),
               Expanded(
                 child: CustomButton(
-                  text: 'Accept',
+                  text: context.l10n.accept,
                   height: 42.h,
                   onPressed: () {},
                 ),

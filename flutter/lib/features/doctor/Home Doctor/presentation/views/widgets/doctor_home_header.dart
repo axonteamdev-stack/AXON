@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
@@ -37,18 +38,18 @@ class DoctorHomeHeader extends StatelessWidget {
               ),
             ),
             SizedBox(width: 12.w),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextApp(
-                  text: 'Hi, Dr Abdallah',
+                  text: context.l10n.hi_doctor('Abdallah'),
                   weight: AppTextWeight.bold,
                   fontSize: 20,
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 TextApp(
                   maxLines: 2,
-                  text: 'Manage your patients easily',
+                  text: context.l10n.manage_patients,
                   color: AppColors.grey,
                   fontSize: 13,
                 ),
@@ -63,8 +64,10 @@ class DoctorHomeHeader extends StatelessWidget {
               onTap: () {},
             ),
             SizedBox(width: 10.w),
-            NotificationIcon(count: requestsCount, onTap: () {},)
-           
+            NotificationIcon(
+              count: requestsCount,
+              onTap: () {},
+            ),
           ],
         ),
       ],

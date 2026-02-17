@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -44,16 +45,16 @@ class _CreateArticleCardState extends State<CreateArticleCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const TextApp(
-            text: 'Create Article',
+          TextApp(
+            text: context.l10n.create_article,
             weight: AppTextWeight.semiBold,
             color: AppColors.primaryColor,
           ),
           SizedBox(height: 10.h),
           TextField(
             controller: titleController,
-            decoration: const InputDecoration(
-              hintText: 'Enter title',
+            decoration: InputDecoration(
+              hintText: context.l10n.enter_title,
               border: InputBorder.none,
               isDense: true,
             ),
@@ -62,8 +63,8 @@ class _CreateArticleCardState extends State<CreateArticleCard> {
           TextField(
             controller: contentController,
             maxLines: 3,
-            decoration: const InputDecoration(
-              hintText: 'Enter content',
+            decoration: InputDecoration(
+              hintText: context.l10n.enter_content,
               border: InputBorder.none,
               isDense: true,
             ),
@@ -94,15 +95,15 @@ class _CreateArticleCardState extends State<CreateArticleCard> {
                       color: AppColors.primaryColor,
                     ),
                     SizedBox(width: 6.w),
-                    const TextApp(
-                      text: 'Add Image',
+                    TextApp(
+                      text: context.l10n.add_image,
                       color: AppColors.primaryColor,
                     ),
                   ],
                 ),
               ),
               CustomButton(
-                text: 'Share',
+                text: context.l10n.share,
                 width: 90.w,
                 height: 34.h,
                 onPressed: () {
@@ -111,9 +112,7 @@ class _CreateArticleCardState extends State<CreateArticleCard> {
                     return;
                   }
 
-                  context
-                      .read<DoctorArticlesCubit>()
-                      .addArticle(
+                  context.read<DoctorArticlesCubit>().addArticle(
                         title: titleController.text,
                         content: contentController.text,
                         imagePath: imagePath,

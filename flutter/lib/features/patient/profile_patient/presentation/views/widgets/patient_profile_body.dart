@@ -1,4 +1,6 @@
-import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient/patient_profile_state.dart' show PatientProfileState;
+import 'package:Axon/core/extensions/localization_ext.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient/patient_profile_state.dart'
+    show PatientProfileState;
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/patient_profile_header.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/patient_profile_menu_item.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +37,7 @@ class PatientProfileBody extends StatelessWidget {
 
               PatientProfileMenuItem(
                 icon: Icons.person_outline,
-                title: 'Edit Basic Information',
+                title: context.l10n.edit_basic_information,
                 dense: true,
                 onTap: () {
                   Navigator.pushNamed(
@@ -48,7 +50,7 @@ class PatientProfileBody extends StatelessWidget {
 
               PatientProfileMenuItem(
                 icon: Icons.favorite_outline,
-                title: 'Edit Health Conditions',
+                title: context.l10n.edit_health_conditions,
                 dense: true,
                 onTap: () {
                   Navigator.pushNamed(
@@ -60,7 +62,7 @@ class PatientProfileBody extends StatelessWidget {
 
               PatientProfileMenuItem(
                 icon: Icons.error_outline,
-                title: 'Edit Allergies',
+                title: context.l10n.edit_allergies,
                 dense: true,
                 onTap: () {
                   Navigator.pushNamed(
@@ -72,7 +74,7 @@ class PatientProfileBody extends StatelessWidget {
 
               PatientProfileMenuItem(
                 icon: Icons.monitor_heart_outlined,
-                title: 'Edit Radiology',
+                title: context.l10n.edit_radiology,
                 dense: true,
                 onTap: () {
                   Navigator.pushNamed(
@@ -85,7 +87,7 @@ class PatientProfileBody extends StatelessWidget {
 
               PatientProfileMenuItem(
                 icon: Icons.science_outlined,
-                title: 'Edit Lab Tests',
+                title: context.l10n.edit_lab_tests,
                 dense: true,
                 onTap: () {
                   Navigator.pushNamed(
@@ -99,7 +101,7 @@ class PatientProfileBody extends StatelessWidget {
 
               PatientProfileMenuItem(
                 icon: Icons.lock_outline,
-                title: 'Change Password',
+                title: context.l10n.change_password,
                 dense: true,
                 onTap: () {
                   Navigator.pushNamed(
@@ -111,14 +113,14 @@ class PatientProfileBody extends StatelessWidget {
 
               PatientProfileMenuItem(
                 icon: Icons.notifications_none,
-                title: 'Notification Settings',
+                title: context.l10n.notification_settings,
                 dense: true,
                 onTap: () {},
               ),
 
               PatientProfileMenuItem(
                 icon: Icons.logout,
-                title: 'Logout',
+                title: context.l10n.logout,
                 dense: true,
                 onTap: () {
                   showModalBottomSheet(
@@ -141,7 +143,7 @@ class PatientProfileBody extends StatelessWidget {
 
               PatientProfileMenuItem(
                 icon: Icons.delete_outline,
-                title: 'Delete Account',
+                title: context.l10n.delete_account,
                 dense: true,
                 onTap: () {
                   showModalBottomSheet(

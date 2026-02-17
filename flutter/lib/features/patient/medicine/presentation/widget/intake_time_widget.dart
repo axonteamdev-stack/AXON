@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/time_cubit/intake-time_cubit.dart';
@@ -29,7 +30,7 @@ class IntakeTime extends StatelessWidget {
                 child: Column(
                   children: [
                     TextApp(
-                      text: "HOUR",
+                      text: context.l10n.hour,
                       color: AppColors.primaryColor,
                       weight: AppTextWeight.bold,
                       fontSize: 12,
@@ -48,7 +49,7 @@ class IntakeTime extends StatelessWidget {
                 child: Column(
                   children: [
                     TextApp(
-                      text: "MIN",
+                     text: context.l10n.minute,
                       color: AppColors.primaryColor,
                       weight: AppTextWeight.bold,
                       fontSize: 12,
@@ -63,12 +64,14 @@ class IntakeTime extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: cubit.setAm,
-                    child: _amPmBox("AM", state.isAm),
+                    child:_amPmBox(context.l10n.am, state.isAm),
+
+
                   ),
                   const SizedBox(height: 8),
                   GestureDetector(
                     onTap: cubit.setPm,
-                    child: _amPmBox("PM", !state.isAm),
+                    child: _amPmBox(context.l10n.pm, !state.isAm),
                   ),
                 ],
               ),
