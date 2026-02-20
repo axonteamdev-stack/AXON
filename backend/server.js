@@ -12,27 +12,26 @@ const __dirname = path.dirname(__filename);
 const UPLOADS_PATH =
   process.env.UPLOADS_PATH || path.join(__dirname, "Uploads");
 
-const uploadDirs = [
-  path.join(UPLOADS_PATH, "Certificates"),
-  path.join(UPLOADS_PATH, "PersonalPhoto"),
-  path.join(UPLOADS_PATH, "Radiology"),
-];
+const uploadDir = path.join(UPLOADS_PATH, "Certificates");
+const personalPhotoDir = path.join(UPLOADS_PATH, "PersonalPhoto");
+const radiologyDir = path.join(UPLOADS_PATH, "Radiology");
+const labTestsDir = path.join(UPLOADS_PATH, "LabTests");
 
 const createDirIfNotExists = (dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
-    console.log(`Created directory: ${dir}`);
+    console.log(`✅ Created directory: ${dir}`); // الآن لن تظهر إلا عند الحاجة
   }
 };
 
-uploadDirs.forEach(createDirIfNotExists);
+[uploadDir, personalPhotoDir, radiologyDir , labTestsDir].forEach(createDirIfNotExists);
 
 connectDB()
   .then(() => {
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT;
     const server = app.listen(PORT, () => {
       console.log(
-        `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`,
+        `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
       );
     });
 
