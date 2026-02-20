@@ -1,67 +1,42 @@
 import multer from "multer";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// 1. التغيير الجوهري: استخدام ذاكرة الرام (Memory Storage) 
+// هذا يمنع الملف من النزول على الهارد ديسك في هذه المرحلة
+const storage = multer.memoryStorage();
 
-const rootPath = process.cwd();
-
-const uploadDirs = {
-  radiology: path.join(rootPath, "Uploads", "Radiology"),
-  certificates: path.join(rootPath, "Uploads", "Certificates"),
-  personal: path.join(rootPath, "Uploads", "PersonalPhoto"),
-};
-
-Object.values(uploadDirs).forEach((absolutePath) => {
-  if (!fs.existsSync(absolutePath)) {
-    fs.mkdirSync(absolutePath, { recursive: true });
-  }
-});
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    let targetDir = path.join(rootPath, "Uploads");
-
-    if (file.fieldname === "radiologyImage") {
-      targetDir = uploadDirs.radiology;
-    } else if (file.fieldname === "licenseImage") {
-      targetDir = uploadDirs.certificates;
-    } else if (file.fieldname === "personalPhoto") {
-      targetDir = uploadDirs.personal;
-    }
-    cb(null, targetDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const cleanFileName = file.originalname.replace(/\s+/g, "_");
-    cb(null, `${uniqueSuffix}-${cleanFileName}`);
-  },
-});
-
+// 2. فلتر أنواع الملفات (يبقى كما هو للأمان)
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Invalid file type. Only JPG/PNG allowed."), false);
-  }
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        // نستخدم AppError أو Error عادي حسب نظامك
+        cb(new Error("Invalid file type. Only JPG/PNG allowed."), false);
+    }
 };
 
+// 3. إعداد Multer بالذاكرة المؤقتة
 export const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
+    storage,
+    fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 }, // حد أقصى 5 ميجا
 });
 
+// 4. التصدير النهائي (يبقى كما هو ليناسب الـ Routes)
 export default {
-  patient: upload.fields([
-    { name: "radiologyImage", maxCount: 1 },
-    { name: "personalPhoto", maxCount: 1 },
-  ]),
-  doctor: upload.fields([
-    { name: "licenseImage", maxCount: 1 },
-    { name: "personalPhoto", maxCount: 1 },
-  ]),
+    patient: upload.fields([
+        { name: "radiologyImage", maxCount: 10 },
+        { name: "personalPhoto", maxCount: 1 },
+        { name: 'labImage', maxCount: 10 }, // ضيف السطر ده
+    ]),
+    doctor: upload.fields([
+        { name: "licenseImage", maxCount: 1 },
+        { name: "personalPhoto", maxCount: 1 },
+    ]),
+    general: upload.fields([
+        { name: "personalPhoto", maxCount: 1 },
+        { name: "radiologyImage", maxCount: 10 },
+        { name: "labImage", maxCount: 10},    
+        { name: "licenseImage", maxCount: 1 }
+    ])
 };
