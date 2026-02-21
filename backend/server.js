@@ -1,5 +1,5 @@
 import app from "./app.js";
-import connectDB from "./src/config/db.js";
+import connectDB from "./Src/Config/db.js";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";

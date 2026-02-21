@@ -1,6 +1,6 @@
 import express from "express";
-import * as medController from "../controllers/MedicationController.js";
-import { protect, restrictTo } from "../middlewares/AuthMiddleware.js";
+import * as medController from "../Controllers/MedicationController.js";
+import { protect, restrictTo } from "../Middlewares/AuthMiddleware.js";
 import validateMiddleware from "../Middlewares/ValidateMiddleware.js"; // تأكد من المسار والاسم
 import { upload } from "../Middlewares/UploadMiddleware.js";
 

@@ -1,5 +1,5 @@
 import express from "express";
-import * as auth from "../controllers/AuthController.js";
+import * as auth from "../Controllers/AuthController.js";
 import upload from "../Middlewares/UploadMiddleware.js";
 import validate from "../Middlewares/ValidateMiddleware.js";
 

@@ -9,10 +9,10 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import AppError from './src/utils/AppError.js';
-import authRouter from './src/routes/AuthRoutes.js';
-import adminRouter from './src/routes/AdminRoutes.js';
-import medicationRouter from './src/routes/MedicationRoutes.js';
+import AppError from './Src/Utils/AppError.js';
+import authRouter from './Src/Routes/AuthRoutes.js';
+import adminRouter from './Src/Routes/AdminRoutes.js';
+import medicationRouter from './Src/Routes/MedicationRoutes.js';
 
 const app = express();
 
@@ -59,7 +59,7 @@ app.use(cookieParser()); // لقراءة الـ Cookies (Refresh Token)
 // --- 2. الملفات الاستاتيكية (الصور) ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use('/uploads', express.static(path.join(__dirname, 'Uploads')));
+app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));
 
 app.use(express.static('public'));
 
