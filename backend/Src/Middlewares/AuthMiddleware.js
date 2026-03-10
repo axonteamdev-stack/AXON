@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../Models/UserModel.js";
 import AppError, { catchAsync } from "../Utils/AppError.js";
+import { StatusCodes } from "http-status-codes";
 
 export const protect = catchAsync(async (req, res, next) => {
   let token;
@@ -16,7 +17,10 @@ export const protect = catchAsync(async (req, res, next) => {
 
   if (!token) {
     return next(
-      new AppError("أنت غير مسجل دخول، يرجى تسجيل الدخول للوصول", 401),
+      new AppError(
+        "أنت غير مسجل دخول، يرجى تسجيل الدخول للوصول",
+        StatusCodes.UNAUTHORIZED,
+      ),
     );
   }
 
@@ -27,20 +31,35 @@ export const protect = catchAsync(async (req, res, next) => {
     // 4) التأكد من وجود المستخدم
     const currentUser = await User.findById(decoded.id);
     if (!currentUser) {
-      return next(new AppError("المستخدم صاحب هذا التوكن لم يعد موجوداً", 401));
+      return next(
+        new AppError(
+          "المستخدم صاحب هذا التوكن لم يعد موجوداً",
+          StatusCodes.UNAUTHORIZED,
+        ),
+      );
     }
 
     req.user = currentUser;
     next();
   } catch (err) {
-    return next(new AppError("التوكن غير صالح أو انتهت صلاحيته", 401));
+    return next(
+      new AppError(
+        "التوكن غير صالح أو انتهت صلاحيته",
+        StatusCodes.UNAUTHORIZED,
+      ),
+    );
   }
 });
 
 export const restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return next(new AppError("ليس لديك صلاحية الوصول لهذه الميزة", 403));
+      return next(
+        new AppError(
+          "ليس لديك صلاحية الوصول لهذه الميزة",
+          StatusCodes.FORBIDDEN,
+        ),
+      );
     }
     next();
   };

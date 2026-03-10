@@ -10,38 +10,24 @@ const router = express.Router();
 router.use(protect);
 
 // 2. قصر الوصول للمرضى فقط
-router.use(restrictTo('patient'));
+router.use(restrictTo("patient"));
 
 router
-  .route('/')
+  .route("/")
   // جلب كل أدوية المريض الحالي
   .get(medController.getMyMedications)
-  
+
   // إضافة دواء جديد
   // ملاحظة: upload.none() يجب أن يسبق الـ validation لقراءة حقول الـ form-data
   .post(
-    upload.none(), 
-    validateMiddleware.addMedication, 
-    medController.addMedication
+    upload.none(),
+    validateMiddleware.addMedication,
+    medController.addMedication,
   );
 
 router
-  .route('/:id')
-  // حذف دواء معين بواسطة المعرف (ID)
-  .delete(medController.deleteMedication
+  .route("/:id")
+  .patch(upload.none(), medController.updateMedication) // تعديل دواء
+  .delete(medController.deleteMedication); // حذف دواء
 
-  );
-
-
-
-router
-  .route('/:id')
-  .patch(upload.none(), medController.updateMedication) // أضف هذا السطر
-  .delete(medController.deleteMedication
-    
-  );
-
-
-
-  
 export default router;

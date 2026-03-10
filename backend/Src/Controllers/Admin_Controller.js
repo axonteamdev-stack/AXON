@@ -1,11 +1,11 @@
 import User from "../Models/UserModel.js";
 import { catchAsync } from "../Utils/AppError.js";
 import AppError from "../Utils/AppError.js";
+import { StatusCodes } from "http-status-codes";
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
   if (!obj) return newObj; // إذا كان الـ body فارغاً، ارجع كائن فارغ بدل الانهيار
-
   Object.keys(obj).forEach((el) => {
     if (allowedFields.includes(el)) newObj[el] = obj[el];
   });
@@ -18,7 +18,7 @@ export const addUser = catchAsync(async (req, res) => {
     ...req.body,
     isVerified: true, // أي مستخدم يضيفه الأدمن يكون مفعلاً تلقائياً
   });
-  res.status(201).json({ status: "success", data: newUser });
+  res.status(StatusCodes.CREATED).json({ status: "success", data: newUser });
 });
 
 // 2. تفعيل طبيب موجود (تغيير حالته لـ true)
@@ -30,11 +30,13 @@ export const activateDoctor = catchAsync(async (req, res, next) => {
   );
 
   if (!doctor) {
-    return next(new AppError("لم يتم العثور على طبيب بهذا المعرف", 404));
+    return next(
+      new AppError("لم يتم العثور على طبيب بهذا المعرف", StatusCodes.NOT_FOUND),
+    );
   }
 
   res
-    .status(200)
+    .status(StatusCodes.OK)
     .json({ status: "success", message: "تم تفعيل حساب الطبيب بنجاح" });
 });
 
@@ -83,9 +85,10 @@ export const updateUser = catchAsync(async (req, res, next) => {
     { new: true, runValidators: true },
   );
 
-  if (!user) return next(new AppError("المستخدم غير موجود", 404));
+  if (!user)
+    return next(new AppError("المستخدم غير موجود", StatusCodes.NOT_FOUND));
 
-  res.status(200).json({
+  res.status(StatusCodes.OK).json({
     status: "success",
     message: "تم التحديث بنجاح",
     data: user,
@@ -97,10 +100,15 @@ export const deleteUser = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndDelete(req.params.id);
 
   if (!user)
-    return next(new AppError("المستخدم غير موجود أو تم حذفه بالفعل", 404));
+    return next(
+      new AppError(
+        "المستخدم غير موجود أو تم حذفه بالفعل",
+        StatusCodes.NOT_FOUND,
+      ),
+    );
 
   // غيرنا الحالة من 240 إلى 200 لكي نتمكن من إرسال JSON
-  res.status(200).json({
+  res.status(StatusCodes.OK).json({
     status: "success",
     message: "تم حذف المستخدم وجميع بياناته بنجاح",
   });

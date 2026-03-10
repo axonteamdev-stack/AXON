@@ -6,6 +6,7 @@ import sendEmail from "../Utils/Email.js";
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
+import { StatusCodes } from "http-status-codes";
 
 /**
  * دالة مساعدة ذكية:
@@ -135,7 +136,7 @@ export const signupPatient = catchAsync(async (req, res, next) => {
   const { accessToken, refreshToken } = generateTokens(res, newUser._id);
   const isMobile = req.headers["platform"] === "mobile";
 
-  res.status(201).json({
+  res.status(StatusCodes.CREATED).json({
     status: "success",
     ...(isMobile && { token: accessToken, refreshToken }),
     data: newUser,
@@ -197,7 +198,7 @@ export const signupDoctor = catchAsync(async (req, res, next) => {
     },
   });
 
-  res.status(201).json({
+  res.status(StatusCodes.CREATED).json({
     status: "success",
     message: "تم إرسال طلب التسجيل بنجاح",
     data: { id: newUser._id, email: newUser.email, role: newUser.role },
@@ -217,13 +218,15 @@ export const login = catchAsync(async (req, res, next) => {
   }
 
   if (user.role === "doctor" && !user.isVerified) {
-    return next(new AppError("حسابك في انتظار موافقة الإدارة", 403));
+    return next(
+      new AppError("حسابك في انتظار موافقة الإدارة", StatusCodes.FORBIDDEN),
+    );
   }
 
   const { accessToken, refreshToken } = generateTokens(res, user._id);
   const isMobile = req.headers["platform"] === "mobile";
 
-  res.status(200).json({
+  res.status(StatusCodes.OK).json({
     status: "success",
     ...(isMobile && { token: accessToken, refreshToken }),
     data: user,
@@ -238,13 +241,17 @@ export const refreshAccessToken = catchAsync(async (req, res, next) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
     const user = await User.findById(decoded.id);
-    if (!user) return next(new AppError("المستخدم غير موجود", 404));
+    if (!user)
+      return next(new AppError("المستخدم غير موجود", StatusCodes.NOT_FOUND));
 
     const { accessToken } = generateTokens(res, user._id);
-    res.status(200).json({ status: "success", token: accessToken });
+    res.status(StatusCodes.OK).json({ status: "success", token: accessToken });
   } catch (err) {
     return next(
-      new AppError("انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً", 401),
+      new AppError(
+        "انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً",
+        StatusCodes.UNAUTHORIZED,
+      ),
     );
   }
 });
@@ -449,7 +456,7 @@ export const updateMe = catchAsync(async (req, res, next) => {
     runValidators: true,
   });
 
-  res.status(200).json({
+  res.status(StatusCodes.OK).json({
     status: "success",
     message: "تم تحديث البيانات بنجاح",
     data: updatedUser,
