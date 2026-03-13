@@ -39,7 +39,7 @@ class HomeHeader extends StatelessWidget {
               backgroundColor: Colors.grey.shade300,
               child: ClipOval(
                 child: Image.asset(
-                  AppImages.onboarding1,
+                  AppImages.body,
                   fit: BoxFit.cover,
                   width: 48.r,
                   height: 48.r,

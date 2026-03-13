@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:Axon/core/extensions/localization_ext.dart';
+import 'package:Axon/core/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 
@@ -36,6 +37,8 @@ class UploadDocumentCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+            /// Upload Image Area
             GestureDetector(
               onTap: enabled ? onPick : null,
               child: Container(
@@ -45,16 +48,29 @@ class UploadDocumentCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.grey.shade300),
                 ),
-                child: const Center(
-                  child: Icon(
-                    Icons.cloud_upload_outlined,
-                    size: 40,
-                    color: Colors.grey,
-                  ),
-                ),
+                child: file != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          file!,
+                          width: double.infinity,
+                          height: 120,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : const Center(
+                        child: Icon(
+                          Icons.cloud_upload_outlined,
+                          size: 40,
+                          color: Colors.grey,
+                        ),
+                      ),
               ),
             ),
+
             const SizedBox(height: 12),
+
+            /// Description + Remove Button
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -92,17 +108,20 @@ class UploadDocumentCard extends StatelessWidget {
                   ),
               ],
             ),
+
             const SizedBox(height: 6),
-            TextField(
+
+            /// Description Field
+            CustomTextField(
               controller: labelController,
               enabled: enabled,
               onChanged: onLabelChanged,
-              decoration: InputDecoration(
-                hintText: hintText,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+              // decoration: InputDecoration(
+              //   hintText: hintText,
+              //   border: OutlineInputBorder(
+              //     borderRadius: BorderRadius.circular(12),
+              //   ),
+              // ),
             ),
           ],
         ),

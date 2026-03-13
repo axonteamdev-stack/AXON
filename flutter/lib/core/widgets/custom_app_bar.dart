@@ -33,7 +33,6 @@ class CustomAppBar extends StatelessWidget {
         ),
         child: Row(
           children: [
-            /// ⬅ Back
             IconButton(
               icon: const Icon(
                 Icons.arrow_back_ios,

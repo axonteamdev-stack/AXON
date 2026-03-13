@@ -16,7 +16,7 @@ class PatientProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(
-        top: 28,
+        top: 55,
         bottom: 16,
         left: 20,
         right: 20,
@@ -34,7 +34,7 @@ class PatientProfileHeader extends StatelessWidget {
             const CircleAvatar(
               radius: 40,
               backgroundImage: AssetImage(
-                AppImages.medicalProfile,
+                AppImages.body,
               ),
             ),
             const SizedBox(height: 8),

@@ -32,7 +32,7 @@ class DoctorHomeHeader extends StatelessWidget {
               ),
               child: ClipOval(
                 child: Image.asset(
-                  AppImages.onboarding3,
+                  AppImages.boda,
                   fit: BoxFit.contain,
                 ),
               ),

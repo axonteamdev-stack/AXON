@@ -10,7 +10,7 @@ class DoctorProfileCubit extends Cubit<DoctorProfileState> {
           const DoctorProfileState(
             name: 'Abdallah Hassan',
             email: 'doctor@mail.com',
-            profession: 'Neurologist',
+          profession: 'Cardiologist',
             phone: '01000000000',
             experience: '8',
             licenseNumber: 'ML-123456',
