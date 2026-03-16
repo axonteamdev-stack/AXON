@@ -1,4 +1,5 @@
 import 'package:Axon/core/routes/app_routes.dart';
+<<<<<<< HEAD
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,6 +15,14 @@ class app extends StatelessWidget {
   }
 }
 
+=======
+import 'package:Axon/features/splash/Presentation/widgets/splash_background.dart';
+import 'package:Axon/features/splash/Presentation/widgets/splash_bottom_letters.dart';
+import 'package:Axon/features/splash/Presentation/widgets/splash_center_logo.dart';
+import 'package:Axon/features/splash/controller/splash_animation_controller.dart';
+import 'package:flutter/material.dart';
+
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
 
@@ -22,14 +31,19 @@ class SplashView extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
+<<<<<<< HEAD
   late AnimationController _animationController;
   late AnimationController _animationLeftRight;
   late Animation<double> _fadeAnimation;
   late Animation<double> _fadeAnimationLeftRight;
+=======
+  final SplashAnimationController _controller = SplashAnimationController();
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
   @override
   void initState() {
     super.initState();
+<<<<<<< HEAD
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2000),
@@ -54,11 +68,25 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
         Navigator.pushReplacementNamed(context, AppRoutes.onBoarding);
       }
     });
+=======
+
+    _controller.init(
+      vsync: this,
+      onFinished: () {
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, AppRoutes.intro);
+      },
+    );
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
   }
 
   @override
   void dispose() {
+<<<<<<< HEAD
     _animationController.dispose();
+=======
+    _controller.dispose();
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
     super.dispose();
   }
 
@@ -67,6 +95,7 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
     return Scaffold(
       body: Stack(
         children: [
+<<<<<<< HEAD
           Center(
             child: AnimatedBuilder(
               animation: _fadeAnimation,
@@ -133,6 +162,13 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
               ),
             ),
           ),
+=======
+          const SplashBackground(),
+
+          SplashCenterLogo(animation: _controller.xFadeAnimation),
+
+          SplashBottomLetters(animation: _controller.lettersFadeAnimation),
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
         ],
       ),
     );

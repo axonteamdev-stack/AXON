@@ -11,12 +11,15 @@ import { fileURLToPath } from "url";
 import { StatusCodes } from "http-status-codes";
 
 import AppError from "./Src/Utils/AppError.js";
+<<<<<<< HEAD
 import {
   CustomAPIError,
   badRequestError,
   unauthorizedError,
   notFound,
 } from "./Src/Error/index.js";
+=======
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 import authRouter from "./Src/Routes/AuthRoutes.js";
 import adminRouter from "./Src/Routes/AdminRoutes.js";
 import medicationRouter from "./Src/Routes/MedicationRoutes.js";
@@ -85,8 +88,16 @@ app.get("/", (req, res) => {
 });
 
 app.use((req, res, next) => {
+<<<<<<< HEAD
   // استخدام معالج الخطأ notFound
   const error = new notFound(`Can't find ${req.originalUrl} on this server!`);
+=======
+  // الخيار الثاني: تمرير الخطأ لـ AppError ليتم معالجته في ملف الأخطاء الموحد
+  const error = new AppError(
+    `Can't find ${req.originalUrl} on this server!`,
+    StatusCodes.NOT_FOUND,
+  );
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
   next(error);
 });
 
@@ -98,7 +109,10 @@ app.use((err, req, res, next) => {
 
   res.status(err.statusCode).json({
     status: err.status,
+<<<<<<< HEAD
     statusCode: err.statusCode,
+=======
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
     message: err.message,
     // في وضع التطوير فقط نرسل تفاصيل الخطأ (Stack)
     ...(process.env.NODE_ENV === "development" && {

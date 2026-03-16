@@ -1,0 +1,131 @@
+import 'dart:io';
+import 'package:Axon/core/extensions/localization_ext.dart';
+import 'package:Axon/core/widgets/custom_text_field.dart';
+import 'package:flutter/material.dart';
+import 'package:Axon/core/widgets/text_app.dart';
+
+class UploadDocumentCard extends StatelessWidget {
+  final File? file;
+  final TextEditingController labelController;
+  final bool enabled;
+  final VoidCallback onPick;
+  final VoidCallback onRemove;
+  final ValueChanged<String> onLabelChanged;
+  final String hintText;
+
+  const UploadDocumentCard({
+    super.key,
+    required this.file,
+    required this.labelController,
+    required this.enabled,
+    required this.onPick,
+    required this.onRemove,
+    required this.onLabelChanged,
+    required this.hintText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            /// Upload Image Area
+            GestureDetector(
+              onTap: enabled ? onPick : null,
+              child: Container(
+                height: 120,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: file != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          file!,
+                          width: double.infinity,
+                          height: 120,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : const Center(
+                        child: Icon(
+                          Icons.cloud_upload_outlined,
+                          size: 40,
+                          color: Colors.grey,
+                        ),
+                      ),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            /// Description + Remove Button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextApp(
+                  text: context.l10n.description,
+                  fontSize: 14,
+                  weight: AppTextWeight.semiBold,
+                ),
+                if (enabled)
+                  InkWell(
+                    onTap: onRemove,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 4,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.delete_outline,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(width: 4),
+                          TextApp(
+                            text: context.l10n.remove,
+                            fontSize: 12,
+                            color: Colors.grey,
+                            weight: AppTextWeight.semiBold,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 6),
+
+            /// Description Field
+            CustomTextField(
+              controller: labelController,
+              enabled: enabled,
+              onChanged: onLabelChanged,
+              // decoration: InputDecoration(
+              //   hintText: hintText,
+              //   border: OutlineInputBorder(
+              //     borderRadius: BorderRadius.circular(12),
+              //   ),
+              // ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

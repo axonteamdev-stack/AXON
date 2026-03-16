@@ -1,0 +1,5 @@
+
+
+class ChangePasswordState {
+  const ChangePasswordState();
+}

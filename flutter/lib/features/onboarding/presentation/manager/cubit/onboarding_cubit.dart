@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/features/onboarding/data/models/onboarding_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+=======
+import 'package:flutter_bloc/flutter_bloc.dart';
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 import 'onboarding_state.dart';
 
 class OnBoardingCubit extends Cubit<OnBoardingState> {
@@ -9,6 +13,7 @@ class OnBoardingCubit extends Cubit<OnBoardingState> {
 
   int currentIndex = 0;
 
+<<<<<<< HEAD
   List<OnBoardingModel> pages = [
     OnBoardingModel(
       image: AppImages.onboarding3,
@@ -30,6 +35,8 @@ class OnBoardingCubit extends Cubit<OnBoardingState> {
     ),
   ];
 
+=======
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
   void changePage(int index) {
     currentIndex = index;
     emit(OnBoardingPageChanged(index));

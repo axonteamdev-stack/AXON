@@ -44,7 +44,11 @@ dependencies:
   dio: ^5.9.0
   shared_preferences: ^2.5.3
   google_fonts: ^6.3.2
+<<<<<<< HEAD
   intl: ^0.20.2
+=======
+  intl: any
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
   table_calendar: ^3.2.0
   syncfusion_flutter_charts: ^31.1.19
   url_launcher: ^6.3.2
@@ -53,6 +57,19 @@ dependencies:
   introduction_screen: ^4.0.0
   bloc: ^9.1.0
   file_picker: ^10.3.7
+<<<<<<< HEAD
+=======
+  pin_code_fields: ^8.0.1
+  google_generative_ai: ^0.4.7
+  font_awesome_flutter: ^10.6.0
+  flutter_localizations:
+    sdk: flutter
+  animated_switch: ^0.0.3
+  animated_toggle_switch: ^0.8.7
+  internet_connection_checker_plus: ^2.9.1+2
+
+  
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
 dev_dependencies:
 
@@ -62,18 +79,41 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
 
   
+<<<<<<< HEAD
  
 
 flutter_icons:
   android: true
   ios: true
   image_path: "assets/logo/logo.jpeg"
+=======
+  flutter_native_splash: ^2.4.7
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: assets/icon/icon.png 
+
+flutter_native_splash:
+  color: "#ffffff"         
+  image:  assets/icon/app_icon.png    
+  android: true            
+  android_gravity: center
+  fullscreen: true          
+  android_12:
+    color: "#ffffff"
+    image: assets/icon/icon.png  
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
+<<<<<<< HEAD
+=======
+  generate: true
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

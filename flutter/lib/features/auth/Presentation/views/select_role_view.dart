@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import 'package:Axon/core/extensions/localization_ext.dart';
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -29,8 +33,13 @@ class SelectRoleView extends StatelessWidget {
                   Center(child: Image.asset(AppImages.logoApp, width: 240.w)),
 
                   SelectRoleOptionCard(
+<<<<<<< HEAD
                     title: "I’m a Patient",
                     subtitle: "Find doctors and book appointments",
+=======
+                    title: context.l10n.im_patient,
+                    subtitle: context.l10n.patient_desc,
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                     imagePath: AppImages.person,
                     isSelected: cubit.selectedIndex == 0,
                     onTap: () => cubit.select(0),
@@ -39,8 +48,13 @@ class SelectRoleView extends StatelessWidget {
                   SizedBox(height: 20.h),
 
                   SelectRoleOptionCard(
+<<<<<<< HEAD
                     title: "I’m a Doctor",
                     subtitle: "Manage patients and consultations",
+=======
+                    title: context.l10n.im_doctor,
+                    subtitle: context.l10n.doctor_desc,
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                     imagePath: AppImages.Stethoscope,
                     isSelected: cubit.selectedIndex == 1,
                     onTap: () => cubit.select(1),
@@ -49,15 +63,24 @@ class SelectRoleView extends StatelessWidget {
                   const Spacer(),
 
                   CustomButton(
+<<<<<<< HEAD
                     text: "Next",
+=======
+                    text: context.l10n.next,
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                     fontSize: 18.sp,
                     height: 52.h,
                     borderRadius: 12,
                     onPressed: () {
                       if (cubit.selectedIndex == -1) {
                         ScaffoldMessenger.of(context).showSnackBar(
+<<<<<<< HEAD
                           const SnackBar(
                             content: Text("Please select an option"),
+=======
+                          SnackBar(
+                            content: Text(context.l10n.field_required),
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                           ),
                         );
                         return;

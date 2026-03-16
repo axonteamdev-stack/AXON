@@ -1,9 +1,13 @@
+<<<<<<< HEAD
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
+=======
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 import 'package:flutter/material.dart';
 
 extension ContextExt on BuildContext {
   //color
+<<<<<<< HEAD
   AppColors get color => AppColors();
 
   // images
@@ -11,6 +15,15 @@ extension ContextExt on BuildContext {
 
   // style
   TextStyle get textStyle => Theme.of(this).textTheme.displaySmall!;
+=======
+  // AppColors get color => AppColors();
+
+  // // images
+  // AppImages get assets => AppImages();
+
+  // // style
+  // TextStyle get textStyle => Theme.of(this).textTheme.displaySmall!;
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
   // //Language
   //   String translate(String langkey) {

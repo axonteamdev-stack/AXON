@@ -3,6 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+<<<<<<< HEAD
+=======
+  connectivity_plus
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
   file_selector_windows
   local_auth_windows
   url_launcher_windows

@@ -1,9 +1,27 @@
+<<<<<<< HEAD
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 //
 void main() {
+=======
+import 'package:Axon/core/bloc_observer.dart';
+import 'package:Axon/core/routes/app_routes.dart';
+import 'package:Axon/core/service/shared_pref/shared_pref.dart';
+import 'package:Axon/features/onboarding/presentation/manager/language_cubit/language_cubit.dart';
+import 'package:Axon/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPref.preferences.instantiatePreferences();
+
+  Bloc.observer = AppBlocObserver();
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
   runApp(const Axon());
 }
 
@@ -17,6 +35,7 @@ class Axon extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
+<<<<<<< HEAD
         return MaterialApp(
          
           title: 'Axon',
@@ -24,6 +43,46 @@ class Axon extends StatelessWidget {
 
           initialRoute: AppRoutes.splash,
           onGenerateRoute: AppRoutes.onGenerateRoute,
+=======
+        return BlocProvider(
+          create: (_) => LanguageCubit(),
+          child: BlocBuilder<LanguageCubit, Locale>(
+            builder: (context, locale) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+
+                /// 🔹 Locale from Cubit
+                locale: locale,
+
+                /// 🔹 Supported languages
+                supportedLocales: const [
+                  Locale('en'),
+                  Locale('ar'),
+                ],
+
+                /// 🔹 Localization delegates (IMPORTANT)
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+
+                localeResolutionCallback: (locale, supportedLocales) {
+                  for (final supportedLocale in supportedLocales) {
+                    if (supportedLocale.languageCode ==
+                        locale?.languageCode) {
+                      return supportedLocale;
+                    }
+                  }
+                  return supportedLocales.first;
+                },
+                initialRoute: AppRoutes.splash,
+                onGenerateRoute: AppRoutes.onGenerateRoute,
+              );
+            },
+          ),
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
         );
       },
     );

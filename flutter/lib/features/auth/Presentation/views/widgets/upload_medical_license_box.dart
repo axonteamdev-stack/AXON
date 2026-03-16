@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import 'package:Axon/core/extensions/localization_ext.dart';
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 import 'package:Axon/features/auth/Presentation/manager/doctor registration/doctor_registration_cubit.dart';
 import 'package:Axon/features/auth/Presentation/manager/doctor%20registration/doctor_registration_state.dart';
 import 'package:flutter/material.dart';
@@ -33,11 +37,19 @@ class UploadMedicalLicenseBox extends StatelessWidget {
                         ),
                         SizedBox(height: 10.h),
                         Text(
+<<<<<<< HEAD
                           "Drag or Click to upload attachment",
                           style: TextStyle(color: Colors.grey.shade600),
                         ),
                         Text(
                           "Max File size : 2mb",
+=======
+                          context.l10n.drag_upload,
+                          style: TextStyle(color: Colors.grey.shade600),
+                        ),
+                        Text(
+                          context.l10n.max_file_size,
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade500,
@@ -51,7 +63,11 @@ class UploadMedicalLicenseBox extends StatelessWidget {
                         Icon(Icons.check_circle, color: Colors.green, size: 32),
                         SizedBox(height: 10.h),
                         Text(
+<<<<<<< HEAD
                           "Uploaded: ${state.uploadedFile!.name}",
+=======
+                          "${context.l10n.upload_medical_license}: ${state.uploadedFile!.name}",
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                           style: TextStyle(
                             color: Colors.green,
                             fontWeight: FontWeight.bold,

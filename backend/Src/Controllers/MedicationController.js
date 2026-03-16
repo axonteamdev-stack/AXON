@@ -1,7 +1,10 @@
 import Medication from "../Models/MedicationModel.js";
 import { catchAsync } from "../Utils/AppError.js";
 import AppError from "../Utils/AppError.js";
+<<<<<<< HEAD
 import { badRequestError, notFound } from "../Error/index.js";
+=======
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 import { StatusCodes } from "http-status-codes";
 
 /** * --- دوال مساعدة لحساب التوقيت ---
@@ -75,9 +78,25 @@ export const addMedication = catchAsync(async (req, res, next) => {
   const end = new Date(endDate);
 
   if (start < startOfToday)
+<<<<<<< HEAD
     return next(new badRequestError("تاريخ البداية لا يمكن أن يكون في الماضي"));
   if (end < now)
     return next(new badRequestError("تاريخ النهاية لا يمكن أن يكون في الماضي"));
+=======
+    return next(
+      new AppError(
+        "تاريخ البداية لا يمكن أن يكون في الماضي",
+        StatusCodes.BAD_REQUEST,
+      ),
+    );
+  if (end < now)
+    return next(
+      new AppError(
+        "تاريخ النهاية لا يمكن أن يكون في الماضي",
+        StatusCodes.BAD_REQUEST,
+      ),
+    );
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
   // منع التكرار للدواء النشط
   const existingMed = await Medication.findOne({
@@ -86,7 +105,16 @@ export const addMedication = catchAsync(async (req, res, next) => {
     $or: [{ endDate: { $gte: startOfToday } }, { isActive: true }],
   });
   if (existingMed)
+<<<<<<< HEAD
     return next(new badRequestError("هذا الدواء مضاف بالفعل وما زال سارياً."));
+=======
+    return next(
+      new AppError(
+        "هذا الدواء مضاف بالفعل وما زال سارياً.",
+        StatusCodes.BAD_REQUEST,
+      ),
+    );
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
   // حساب المواعيد تلقائياً بناءً على أول موعد
   const calculatedTimes = generateIntakeTimes(intakeTime, frequency);
@@ -113,7 +141,12 @@ export const updateMedication = catchAsync(async (req, res, next) => {
     patientId: req.user.id,
   });
 
+<<<<<<< HEAD
   if (!medication) return next(new notFound("الدواء غير موجود"));
+=======
+  if (!medication)
+    return next(new AppError("الدواء غير موجود", StatusCodes.NOT_FOUND));
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
   // إذا تغير الموعد الأول أو التكرار، نعيد حساب المصفوفة
   if (req.body.intakeTime || req.body.frequency) {
@@ -127,7 +160,13 @@ export const updateMedication = catchAsync(async (req, res, next) => {
     const start = new Date(req.body.startDate || medication.startDate);
     const end = new Date(req.body.endDate || medication.endDate);
     if (end < start)
+<<<<<<< HEAD
       return next(new badRequestError("تاريخ النهاية غير منطقي"));
+=======
+      return next(
+        new AppError("تاريخ النهاية غير منطقي", StatusCodes.BAD_REQUEST),
+      );
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
     req.body.duration = `${Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24))} days`;
     req.body.isActive = end >= now;
@@ -151,7 +190,12 @@ export const deleteMedication = catchAsync(async (req, res, next) => {
     _id: req.params.id,
     patientId: req.user.id,
   });
+<<<<<<< HEAD
   if (!med) return next(new notFound("الدواء غير موجود"));
+=======
+  if (!med)
+    return next(new AppError("الدواء غير موجود", StatusCodes.NOT_FOUND));
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
   res
     .status(StatusCodes.OK)
     .json({ status: "success", message: "تم حذف الدواء بنجاح" });

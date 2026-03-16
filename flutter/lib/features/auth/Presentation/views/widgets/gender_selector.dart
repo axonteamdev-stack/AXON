@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import 'package:Axon/core/extensions/localization_ext.dart';
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +21,15 @@ class GenderSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+<<<<<<< HEAD
         _item("Male", 0),
         SizedBox(width: 12.w),
         _item("Female", 1),
+=======
+        _item(context.l10n.male, 0),
+        SizedBox(width: 12.w),
+        _item(context.l10n.female, 1),
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
       ],
     );
   }

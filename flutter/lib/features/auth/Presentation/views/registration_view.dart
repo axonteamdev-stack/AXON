@@ -14,6 +14,11 @@ import 'widgets/form_label.dart';
 import 'widgets/gender_selector.dart';
 import 'widgets/registration_profile_image.dart';
 import 'widgets/terms_checkbox.dart';
+<<<<<<< HEAD
+=======
+import 'package:Axon/core/extensions/localization_ext.dart';
+
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
 class RegistrationView extends StatelessWidget {
   const RegistrationView({super.key});
@@ -50,35 +55,61 @@ class RegistrationView extends StatelessWidget {
 
                     SizedBox(height: 25.h),
 
+<<<<<<< HEAD
                     FormLabel(text: "Full Name"),
                     CustomTextField(
                       controller: regCubit.fullNameController,
                       hintText: "Enter your full name",
+=======
+                    FormLabel(text: context.l10n.full_name),
+                    CustomTextField(
+                      controller: regCubit.fullNameController,
+                      hintText: context.l10n.enter_full_name,
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                       validator: ValidationHelper.validateName,
                     ),
 
                     SizedBox(height: 22.h),
 
+<<<<<<< HEAD
                     FormLabel(text: "Email"),
                     SizedBox(height: 8.h),
                     CustomTextField(
                       controller: regCubit.emailController,
                       hintText: "Enter your email",
+=======
+                    FormLabel(text: context.l10n.email),
+                    SizedBox(height: 8.h),
+                    CustomTextField(
+                      controller: regCubit.emailController,
+                      hintText: context.l10n.enter_email,
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                       validator: ValidationHelper.validateEmail,
                     ),
 
                     SizedBox(height: 22.h),
 
+<<<<<<< HEAD
                     FormLabel(text: "Phone Number"),
                     CustomTextField(
                       controller: regCubit.phoneController,
                       hintText: "Enter your phone number",
+=======
+                    FormLabel(text: context.l10n.phone_number),
+                    CustomTextField(
+                      controller: regCubit.phoneController,
+                      hintText: context.l10n.enter_phone,
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                       validator: ValidationHelper.validatePhone,
                     ),
 
                     SizedBox(height: 22.h),
 
+<<<<<<< HEAD
                     FormLabel(text: "Gender"),
+=======
+                    FormLabel(text: context.l10n.gender),
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                     GenderSelector(
                       selected: regCubit.selectedGender,
                       onSelect: regCubit.pickGender,
@@ -86,10 +117,17 @@ class RegistrationView extends StatelessWidget {
 
                     SizedBox(height: 22.h),
 
+<<<<<<< HEAD
                     FormLabel(text: "Password"),
                     CustomTextField(
                       controller: regCubit.passwordController,
                       hintText: "Create a strong password",
+=======
+                    FormLabel(text: context.l10n.password),
+                    CustomTextField(
+                      controller: regCubit.passwordController,
+                      hintText: context.l10n.create_password,
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                       isPassword: true,
                       validator: ValidationHelper.validatePassword,
                     ),
@@ -104,7 +142,11 @@ class RegistrationView extends StatelessWidget {
                     SizedBox(height: 20.h),
 
                     CustomButton(
+<<<<<<< HEAD
                       text: "Next",
+=======
+                      text: context.l10n.next,
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                       height: 50.h,
                       borderRadius: 10,
                       onPressed: () {
@@ -118,7 +160,11 @@ class RegistrationView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextApp(
+<<<<<<< HEAD
                           text: "Already have an account?",
+=======
+                          text: context.l10n.already_have_account,
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                           fontSize: 14.sp,
                           color: Colors.grey,
                         ),
@@ -128,7 +174,11 @@ class RegistrationView extends StatelessWidget {
                             Navigator.pushNamed(context, AppRoutes.login);
                           },
                           child: TextApp(
+<<<<<<< HEAD
                             text: "Login",
+=======
+                            text: context.l10n.login,
+>>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
                             fontSize: 14.sp,
                             weight: AppTextWeight.regular,
                             color: AppColors.primaryColor,

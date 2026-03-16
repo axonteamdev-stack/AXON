@@ -1,0 +1,441 @@
+{
+  "@@locale": "en",
+  "en": "En",
+  "ar": "AR",
+  "englis": "English",
+  "arabic": "Arabic",
+  
+
+  "app_name": "Axon",
+
+  "skip": "Skip",
+  "home": "Home",
+ 
+"radiology_images": "Radiology images",
+"no_radiology": "No radiology images added yet",
+"scan_type": "Scan type",
+"no_lab_tests": "No lab tests added yet",
+"test_name": "Test name",
+ "no_allergies": "No allergies added yet",
+ "edit_basic_information": "Edit Basic Information",
+
+  "condition_name": "Condition name",
+  "allergy_name": "Allergy name",
+  "years": "Years",
+  "comments": "Comments",
+"write_comment": "Write a comment...",
+"read_more": "Read more",
+"show_less": "Show less",
+"search_medicine": "Search medicine",
+
+
+  "medicine_example": "e.g. Vitamin D",
+  
+  "twice_daily": "Twice Daily",
+  "three_times_daily": "Three Times Daily",
+ 
+  "medicine_saved_successfully": "Medicine saved successfully",
+  
+
+
+  "no_medicine_today": "No medicine for today",
+
+  "minute": "MIN",
+  "what_is_your_complaint": "What is your complaint?",
+ 
+
+  "greeting": "Good Evening, {name}",
+  "health_matters": "Your health matters",
+
+  "reply": "Reply",
+  "write_reply": "Write a reply...",
+  "send": "Send",
+  
+  "chat_bot_title": "As'alny",
+  "type_your_message": "Type your message...",
+  "ai_typing": "AI is typing...",
+  
+ 
+  "search_doctor_specialty": "Search doctor or specialty",
+  
+
+  "about_doctor": "About Doctor",
+  
+  "book_now": "Book Now",
+
+  "book_consultation": "Book Consultation",
+  "describe_complaint": "Describe your complaint",
+  "write_complaint_hint": "Write your symptoms or problem here...",
+  "consultation_price": "Consultation Price",
+  "proceed_payment": "Proceed to Payment",
+  
+ 
+  "choose_language": "Choose language",
+  
+
+  
+
+  "condition": "Condition",
+  "diabetes": "Diabetes",
+  "high_blood_pressure": "High blood pressure",
+  "chronic_back_pain": "Chronic back pain",
+
+
+  "blood_test": "Blood Test",
+  "sugar_analysis": "Sugar Analysis",
+  "cholesterol_test": "Cholesterol Test",
+   "chest_xray": "Chest X-Ray",
+  "mri_scan": "MRI Scan",
+
+
+
+
+
+  "write_symptoms_hint": "Write your symptoms or problem here...",
+  "proceed_to_payment": "Proceed to Payment",
+
+  
+  "intro_title": "Your health in one app",
+  "intro_description": "Axon helps you manage your health with ease. Book doctors, track your medications, connect with specialists, and stay reassured.",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"article_medication_tips": "5 Tips to Take Your Medication on Time",
+"article_vitamins_importance": "Why Daily Vitamins Matter for Your Health",
+"article_healthy_habits": "Simple Habits for a Healthier Life",
+
+"article_dummy_content": "Taking care of your health is not just about visiting the doctor when you feel sick, but also about maintaining healthy daily habits that support your body and mind.\n\nOne of the most important habits is taking your medication on time. Missing doses or taking them incorrectly can reduce the effectiveness of treatment and may cause unexpected side effects.\n\nHere are a few simple tips to help you stay on track:\n• Set daily reminders on your phone.\n• Use a pill organizer to manage your doses.\n• Try to associate your medication with a daily routine, such as meals or bedtime.\n• Always follow your doctor’s instructions carefully.\n\nIn addition, maintaining a balanced diet, staying hydrated, and getting enough sleep play a crucial role in improving your overall health.\n\nRemember, consistency is key. By sticking to healthy habits every day, you give your body the best chance to heal and stay strong.",
+
+
+
+
+
+
+
+
+  "onboarding_title_1": "Connect with the best Doctors",
+  "onboarding_desc_1": "Find a doctor in any specialty and book an appointment easily from home",
+  "next": "Next",
+
+  "onboarding_title_2": "Online Medical Consultations",
+  "onboarding_desc_2": "Video sessions with the doctor while you are in your place, with an electronic prescription",
+
+  "onboarding_title_3": "Track Your Health Smartly",
+  "onboarding_desc_3": "Complete medical history, medication reminders, and follow-up with your doctor",
+  "get_started": "Get Started",
+
+  "email": "Email",
+  "enter_email": "Enter your email",
+  "password": "Password",
+  "enter_password": "Enter your password",
+  "forgot_password": "Forgot Password?",
+  "sign_in": "Sign In",
+  "dont_have_account": "Don’t have an account?",
+  "sign_up": "Sign Up",
+  "or": "OR",
+  "sign_in_google": "Sign in with Google",
+
+  "full_name": "Full Name",
+  "enter_full_name": "Enter your full name",
+  "phone_number": "Phone Number",
+  "enter_phone": "Enter your phone number",
+  "gender": "Gender",
+  "male": "Male",
+  "female": "Female",
+  "create_password": "Create a strong password",
+  "agree_terms": "I agree to the meddidoc Terms of Service and Privacy Policy",
+
+  "im_patient": "I’m a Patient",
+  "patient_desc": "Find doctors and book appointments",
+  "im_doctor": "I’m a Doctor",
+  "doctor_desc": "Manage patients and consultations",
+
+  
+  "doctor_registration": "Doctor Registration",
+  "create_professional_account": "Create your professional account",
+
+  "specialization": "Specialization",
+  "select_specialization": "Select Specialization",
+  "cardiology": "Cardiology",
+  "neurology": "Neurology",
+  "pediatrics": "Pediatrics",
+  "dentistry": "Dentistry",
+
+  "years_experience": "Years of Experience",
+  "enter_years_experience": "Enter number years of experience",
+
+  "medical_license_number": "Medical License Number",
+
+  "about": "About",
+  "about_hint": "Tell us about your experience and background",
+
+  "session_price": "Session Price",
+  "enter_session_price": "Enter session price",
+
+  "upload_medical_license": "Upload Medical License",
+  "drag_upload": "Drag or Click to upload attachment",
+  "max_file_size": "Max File size : 2mb",
+
+  "create_account": "Create Account",
+  "already_have_account": "Already have an account?",
+  "login": "Login",
+
+  "medical_profile": "Medical Profile",
+  "medical_profile_desc": "Help us understand your health better",
+
+  "blood_type": "Blood Type",
+  "select_blood_type": "Select Blood Type",
+
+  "height": "Height (cm)",
+  "weight": "Weight (kg)",
+  "medical_info_hint": "Your medical information helps doctors provide better care.",
+
+  "health_conditions": "Health Conditions",
+  "add_health_conditions": "Add your health conditions",
+  "enter_condition": "Enter condition name",
+
+  "allergies": "Allergies",
+  "add_allergies": "Add your allergies",
+  "enter_allergy": "Enter allergy name",
+
+  "radiology": "Radiology",
+  "upload_radiology": "Upload your radiology images",
+  "description": "Description",
+  "enter_scan_type": "Enter the type of medical scan",
+  "remove": "Remove",
+
+  "lab_tests": "Lab Tests",
+  "upload_lab_tests": "Upload your medical lab tests",
+
+  "finish": "Finish",
+
+  "account_created": "Account Created Successfully 🎉",
+  "redirecting_home": "Welcome! Redirecting to home...",
+
+
+
+  
+  "good_evening": "Good Evening",
+  "your_health_matters": "Your health matters",
+
+  "todays_medications": "Today’s Medications",
+  "next_dose_in": "Next dose in {minutes} minutes",
+  "next_dose": "Next dose",
+  "taken_today": "taken today",
+  "time": "Time",
+  "taken": "Taken",
+  "view_all": "View All",
+
+  "quick_actions": "Quick Actions",
+  "doctors": "Doctors",
+  "hospitals": "Hospitals",
+  "medicine": "Medicine",
+  "asaly": "As'aly",
+
+  "articles_tips": "Articles & Tips",
+
+  "my_doctors": "My Doctors",
+  "cardiology_specialist": "Cardiology Specialist",
+  "neurology_consultant": "Neurology Consultant",
+  "internal_medicine": "Internal Medicine",
+  "chat": "Chat",
+
+  "community": "Community",
+  "no_posts": "No posts yet",
+  "be_first_post": "Be the first to share something",
+  "create_post": "Create Post",
+  "post_title": "Post title",
+  "write_something": "Write something...",
+  "add_image": "Add Image",
+  "share": "Share",
+
+  "edit_basic_info": "Edit Basic Information",
+  "edit_health_conditions": "Edit Health Conditions",
+  "edit_allergies": "Edit Allergies",
+  "edit_radiology": "Edit Radiology",
+  "edit_lab_tests": "Edit Lab Tests",
+  "change_password": "Change Password",
+  "notification_settings": "Notification Settings",
+  "logout": "Logout",
+  "delete_account": "Delete Account",
+
+  "basic_information": "Basic Information",
+  "personal_medical_info": "Personal & medical info",
+  "phone": "Phone",
+  "edit": "Edit",
+
+  
+  "your_health_conditions": "Your health conditions",
+  "no_health_conditions": "No health conditions added yet",
+  "tap_edit_add": "Tap Edit to add one",
+
+
+  "your_allergies": "Your allergies",
+
+
+  "medical_lab_tests": "Medical lab tests",
+
+  "current_password": "Current Password",
+  "enter_current_password": "Enter current password",
+  "new_password": "New Password",
+  "enter_new_password": "Enter new password",
+  "confirm_new_password": "Confirm New Password",
+  "update_password": "Update Password",
+
+  "logout_confirm": "Are you sure you want to logout?",
+  "cancel": "Cancel",
+
+  "delete_account_confirm": "This action is permanent and cannot be undone.",
+  "delete": "Delete",
+
+  
+  "all_medicine": "All Medicine",
+
+  "once_daily": "Once Daily",
+  "next_at": "Next: {time}",
+
+  "all": "All",
+  "heart": "Heart",
+  "internal": "Internal",
+  "kidney": "Kidney",
+  "bones": "Bones",
+  "neuro": "Neuro",
+  "psychology": "Psychology",
+  "more": "More",
+  "price_egp": "{price} EGP",
+
+  "add_new_medicine": "Add New Medicine",
+  "medicine_name": "Medicine Name",
+  "medicine_name_hint": "ex: Vitamin D",
+
+  "frequency": "Frequency",
+
+  "intake_time": "Intake Time",
+  "hour": "HOUR",
+  "min": "MIN",
+  "am": "AM",
+  "pm": "PM",
+
+  "duration": "Duration",
+  "start_date": "Start Date",
+  "end_date": "End Date",
+  "tap_to_select": "Tap to select",
+
+  "save": "SAVE",
+
+
+  "ai_intro": "Hi, I’m your AI medical assistant.\nAsk me anything about your health.",
+  "assistant_unavailable": "The assistant is temporarily unavailable. Please try again in a moment.",
+  "type_message": "Type your message...",
+
+  
+  "hi_doctor": "Hi, Dr {name}",
+  "manage_patients": "Manage your patients easily",
+
+  "chats": "Chats",
+  "requests": "Requests",
+
+
+  
+  "forgot_password_title": "Forgot Password",
+  "forgot_password_desc": "Enter your email to receive a verification code",
+
+  "send_code": "Send Code",
+
+  "verification_code": "Verification Code",
+  "verification_code_desc": "Enter the 4-digit code sent to your email address",
+
+  "otp_code": "OTP Code",
+
+  "verify": "Verify",
+  "resend_code": "Resend Code",
+
+  "create_new_password": "Create New Password",
+  "reset_password": "Reset Password",
+
+
+
+  "back_pain_spinal": "Back pain and spinal",
+  "chronic_neck_pain": "Chronic neck pain",
+  "lower_back_stiffness": "Lower back stiffness",
+  "shoulder_pain_injury": "Shoulder pain after injury",
+  "spinal_nerve_irritation": "Spinal nerve irritation",
+
+ 
+
+  "chest_pain_short_breath": "Chest pain and short breath",
+  "reject": "Reject",
+  "accept": "Accept",
+
+  "articles": "Articles",
+  "create_article": "Create Article",
+  "enter_title": "Enter title",
+  "enter_content": "Enter content",
+  "no_articles": "No articles yet",
+
+  "patient_reviews": "Patient Reviews",
+  "review_professional": "Doctor was very professional and helpful.",
+  "review_excellent": "Excellent experience, highly recommended.",
+  "review_good_wait": "Good doctor but waiting time was long.",
+
+  "edit_profile": "Edit Profile",
+  "neurologist": "Neurologist",
+
+  "license_number": "License Number",
+  "medical_license": "Medical License",
+
+  "experienced_neurologist": "Experienced neurologist with a strong background in patient care",
+
+ 
+  "price": "Price",
+
+  "hello_doctor": "Hello doctor",
+  "how_can_help": "How can I help you?",
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+"field_required": "This field is required",
+"email_required": "Email is required",
+"invalid_email": "Invalid email address",
+"password_required": "Password is required",
+"password_min": "Password must be at least 6 characters",
+"confirm_password_required": "Confirm password is required",
+"passwords_not_match": "Passwords do not match",
+"title_required": "Title is required",
+"title_min": "Title must be at least 3 characters",
+"description_required": "Description is required",
+"description_min": "Description must be at least 10 characters",
+"description_max": "Description must not exceed 300 characters",
+"date_required": "Event date is required",
+"date_past": "Date cannot be in the past",
+"time_required": "Event time is required",
+"date_time_required": "Date & Time Event are required",
+"no_events_found": "No Events Found"
+
+
+
+}
