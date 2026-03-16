@@ -1,0 +1,114 @@
+import 'package:Axon/core/style/app_text_styles.dart';
+import 'package:Axon/core/style/colors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+class CustomTextField extends StatefulWidget {
+  const CustomTextField({
+    super.key,
+    required this.controller,
+    this.hintText,
+    this.validator,
+    this.onChanged,
+    this.prefixIcon,
+    this.isPassword = false,
+    this.keyboardType,
+    this.readOnly = false,
+  });
+
+  final TextEditingController controller;
+  final String? hintText;
+  final String? Function(String?)? validator;
+  final Function(String)? onChanged;
+  final Widget? prefixIcon;
+  final bool isPassword;
+  final TextInputType? keyboardType;
+  final bool readOnly;
+
+  @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  bool _obscure = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscure = widget.isPassword;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: widget.controller,
+      validator: widget.validator,
+      onChanged: widget.onChanged,
+      readOnly: widget.readOnly,
+      obscureText: _obscure,
+      keyboardType: widget.keyboardType,
+      cursorColor: AppColors.primaryColor,
+
+      style: TextStyle(
+        fontSize: 14.sp,
+        fontFamily: AppTextStyles.regular.fontFamily,
+        color: AppColors.black,
+      ),
+
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.w),
+
+        prefixIcon: widget.prefixIcon != null
+            ? Padding(
+                padding: EdgeInsets.only(left: 10.w, right: 4.w),
+                child: SizedBox(
+                  width: 16.w,
+                  height: 16.h,
+                  child: widget.prefixIcon,
+                ),
+              )
+            : null,
+
+        prefixIconConstraints: BoxConstraints(minWidth: 28.w, minHeight: 28.h),
+
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                icon: Icon(
+                  _obscure ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey.shade600,
+                ),
+                onPressed: () {
+                  setState(() => _obscure = !_obscure);
+                },
+              )
+            : null,
+
+        hintText: widget.hintText,
+        hintStyle: TextStyle(fontSize: 14.sp, color: Colors.grey.shade500),
+
+        filled: true,
+        fillColor: AppColors.white,
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: Color(0xFFDCE1E6), width: 1.2),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide(color: AppColors.primaryColor, width: 1.4),
+        ),
+
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: Colors.red, width: 1.2),
+        ),
+
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: Colors.red, width: 1.4),
+        ),
+      ),
+    );
+  }
+}
