@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,6 +9,7 @@ import 'package:Axon/core/widgets/custom_text_field.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/form_label.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/patient_edit_basic_info/patient_edit_basic_info_cubit.dart';
+import 'package:Axon/core/extensions/context_extension.dart';
 
 class PatientEditBasicInfoView extends StatelessWidget {
   const PatientEditBasicInfoView({super.key});
@@ -25,16 +27,13 @@ class PatientEditBasicInfoView extends StatelessWidget {
             backgroundColor: AppColors.white,
 
             bottomNavigationBar: Padding(
-              padding:
-                  EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
+              padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
               child: CustomButton(
-                text: isEdit ? 'Save' : 'Edit',
+                text: isEdit
+                    ? context.l10n.save
+                    : context.l10n.edit,
                 onPressed: () {
-                  if (isEdit) {
-                    cubit.save();
-                  } else {
-                    cubit.toggleEdit();
-                  }
+                  isEdit ? cubit.save() : cubit.toggleEdit();
                 },
               ),
             ),
@@ -46,15 +45,15 @@ class PatientEditBasicInfoView extends StatelessWidget {
                 children: [
                   SizedBox(height: 55.h),
 
-                  const CenterIconHeader(
+                  CenterIconHeader(
                     icon: Icons.person_outline,
-                    title: 'Basic Information',
-                    subtitle: 'Personal & medical info',
+                    title: context.l10n.basic_information,
+                    subtitle: context.l10n.personal_medical_info,
                   ),
 
                   SizedBox(height: 30.h),
 
-                  const FormLabel(text: 'Full Name'),
+                  FormLabel(text: context.l10n.full_name),
                   CustomTextField(
                     controller: cubit.nameCtrl,
                     enabled: isEdit,
@@ -62,7 +61,7 @@ class PatientEditBasicInfoView extends StatelessWidget {
 
                   SizedBox(height: 20.h),
 
-                  const FormLabel(text: 'Email'),
+                  FormLabel(text: context.l10n.email),
                   CustomTextField(
                     controller: cubit.emailCtrl,
                     enabled: isEdit,
@@ -70,7 +69,7 @@ class PatientEditBasicInfoView extends StatelessWidget {
 
                   SizedBox(height: 20.h),
 
-                  const FormLabel(text: 'Phone'),
+                  FormLabel(text: context.l10n.phone),
                   CustomTextField(
                     controller: cubit.phoneCtrl,
                     enabled: isEdit,
@@ -85,12 +84,11 @@ class PatientEditBasicInfoView extends StatelessWidget {
                           crossAxisAlignment:
                               CrossAxisAlignment.start,
                           children: [
-                            const FormLabel(text: 'Height (cm)'),
+                            FormLabel(text: context.l10n.height),
                             CustomTextField(
                               controller: cubit.heightCtrl,
                               enabled: isEdit,
-                              keyboardType:
-                                  TextInputType.number,
+                              keyboardType: TextInputType.number,
                             ),
                           ],
                         ),
@@ -101,12 +99,11 @@ class PatientEditBasicInfoView extends StatelessWidget {
                           crossAxisAlignment:
                               CrossAxisAlignment.start,
                           children: [
-                            const FormLabel(text: 'Weight (kg)'),
+                            FormLabel(text: context.l10n.weight),
                             CustomTextField(
                               controller: cubit.weightCtrl,
                               enabled: isEdit,
-                              keyboardType:
-                                  TextInputType.number,
+                              keyboardType: TextInputType.number,
                             ),
                           ],
                         ),

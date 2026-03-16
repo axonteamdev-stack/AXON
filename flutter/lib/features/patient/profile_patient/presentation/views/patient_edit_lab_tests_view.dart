@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/empty_state_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,19 @@ import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header
 import 'package:Axon/features/auth/Presentation/views/widgets/upload_document_card.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/patient_edit_documents/patient_edit_documents_cubit.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/patient_edit_documents/patient_edit_documents_state.dart';
+
+import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/empty_state_message.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:Axon/core/style/colors.dart';
+import 'package:Axon/core/widgets/custom_button.dart';
+import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header.dart';
+import 'package:Axon/features/auth/Presentation/views/widgets/upload_document_card.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/manager/patient_edit_documents/patient_edit_documents_cubit.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/manager/patient_edit_documents/patient_edit_documents_state.dart';
+import 'package:Axon/core/extensions/context_extension.dart';
 
 class PatientEditLabTestsView extends StatelessWidget {
   const PatientEditLabTestsView({super.key});
@@ -43,7 +57,9 @@ class PatientEditLabTestsView extends StatelessWidget {
               padding:
                   EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
               child: CustomButton(
-                text: state.isEditMode ? 'Save' : 'Edit',
+                text: state.isEditMode
+                    ? context.l10n.save
+                    : context.l10n.edit,
                 onPressed: cubit.toggleEditMode,
               ),
             ),
@@ -52,20 +68,20 @@ class PatientEditLabTestsView extends StatelessWidget {
               children: [
                 SizedBox(height: 55.h),
 
-                const CenterIconHeader(
+                CenterIconHeader(
                   icon: Icons.science_outlined,
-                  title: 'Lab Tests',
-                  subtitle: 'Medical lab tests',
+                  title: context.l10n.lab_tests,
+                  subtitle: context.l10n.medical_lab_tests,
                 ),
 
                 SizedBox(height: 30.h),
 
                 Expanded(
                   child: state.documents.isEmpty
-                      ? const EmptyStateMessage(
+                      ? EmptyStateMessage(
                           icon: Icons.info_outline,
-                          title: 'No lab tests added yet',
-                          subtitle: 'Tap Edit to add one',
+                          title: context.l10n.no_lab_tests,
+                          subtitle: context.l10n.tap_edit_add,
                         )
                       : SingleChildScrollView(
                           padding: EdgeInsets.symmetric(
@@ -89,7 +105,8 @@ class PatientEditLabTestsView extends StatelessWidget {
                                   onLabelChanged: (value) =>
                                       cubit.updateLabel(
                                           index, value),
-                                  hintText: 'Test name',
+                                  hintText:
+                                      context.l10n.test_name,
                                 );
                               },
                             ),

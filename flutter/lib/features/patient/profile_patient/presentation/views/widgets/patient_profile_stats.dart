@@ -1,3 +1,4 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient/patient_profile_state.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/style/colors.dart';
@@ -23,18 +24,19 @@ class PatientProfileStats extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          PatientProfileStatItem(
-            value: '${state.weight} Kg',
-            label: 'Weight',
-          ),
-          PatientProfileStatItem(
-            value: '${state.age}',
-            label: 'Years',
-          ),
-          PatientProfileStatItem(
-            value: '${state.height} Cm',
-            label: 'Height',
-          ),
+         PatientProfileStatItem(
+  value: '${state.weight} Kg',
+  label: context.l10n.weight,
+),
+PatientProfileStatItem(
+  value: '${state.age}',
+  label: context.l10n.years,
+),
+PatientProfileStatItem(
+  value: '${state.height} Cm',
+  label: context.l10n.height,
+),
+
         ],
       ),
     );

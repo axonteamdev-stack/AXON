@@ -1,15 +1,20 @@
 class AppImages {
   static const String logoPath = 'assets/logo';
   static const String IconsPath = 'assets/icons';
-  static const String ImagesPath = 'assets/images';
+  static const String imagesPath = 'assets/images';
 
   // App Logo
   static const String logoApp = '$logoPath/logo_app.png';
 
   // Onboarding Images
-  static const String onboarding1 = '$ImagesPath/onboarding1.png';
-  static const String onboarding2 = '$ImagesPath/onboarding2.png';
-  static const String onboarding3 = '$ImagesPath/onboarding3.png';
+
+  // Onboarding Images
+  static const String onboarding1 = '$imagesPath/onboarding1.png';
+  static const String onboarding2 = '$imagesPath/onboarding2.png';
+  static const String onboarding3 = '$imagesPath/onboarding3.png';
+
+  static const String body = '$imagesPath/body.png';
+  static const String boda = '$imagesPath/boda.png';
 
   // Icons Select Role
   static const String person = '$IconsPath/Person.png';
@@ -29,15 +34,19 @@ class AppImages {
   static const String chat = '$IconsPath/chat.png';
   static const String profile = '$IconsPath/profile.png';
   static const String community = '$IconsPath/community.png';
+  static const String review = '$IconsPath/review.png';
 
-
-// quick access
+  // quick access
   static const String hospital = '$IconsPath/hospital.png';
   static const String Med = '$IconsPath/Med.png';
   static const String History = '$IconsPath/History.png';
- 
 
+  static const String chatBot = '$IconsPath/ai_chatbot.png';
+  static const String hospital1 = '$IconsPath/hospital1.png';
+  static const String Med1 = '$IconsPath/med1.png';
+  static const String doctors1 = '$IconsPath/doctor1.png';
 
-
-
+  // Medicine Icon
+  static const String medicineIcon = '$IconsPath/medicine-removebg-preview.png';
+  static const String medicineIcon2 = '$IconsPath/medicine2.png';
 }

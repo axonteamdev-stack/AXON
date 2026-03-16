@@ -1,3 +1,7 @@
+import 'package:Axon/core/extensions/localization_ext.dart';
+import 'package:Axon/core/style/app_images.dart';
+import 'package:Axon/features/patient/chatting_patient/presntation/views/patient_doctor_chats_view.dart';
+import 'package:Axon/features/patient/comunity_patient/presentation/views/patient_community_view.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/home_bottom_nav_bar.dart';
@@ -16,8 +20,8 @@ class _PatientMainViewState extends State<PatientMainView> {
 
   final pages = const [
     HomeView(),
-    SizedBox(),
-    SizedBox(), 
+    PatientDoctorChatsView(),
+    PatientCommunityView(),
     PatientProfileView(),
   ];
 
@@ -31,6 +35,24 @@ class _PatientMainViewState extends State<PatientMainView> {
         onTap: (index) {
           setState(() => currentIndex = index);
         },
+        items: [
+          NavItem(
+            icon: AppImages.home,
+            label: context.l10n.home,
+          ),
+          NavItem(
+            icon: AppImages.chat,
+            label: context.l10n.chats,
+          ),
+          NavItem(
+            icon: AppImages.community,
+            label: context.l10n.community,
+          ),
+          NavItem(
+            icon: AppImages.profile,
+            label: context.l10n.medical_profile,
+          ),
+        ],
       ),
     );
   }

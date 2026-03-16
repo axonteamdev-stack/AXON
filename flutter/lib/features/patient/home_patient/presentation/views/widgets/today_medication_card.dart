@@ -1,3 +1,6 @@
+import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
+import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/core/widgets/text_app.dart';
@@ -43,7 +46,7 @@ class TodayMedicationCard extends StatelessWidget {
                 const Text("💊"),
                 SizedBox(width: 6.w),
                 TextApp(
-                  text: "Next dose in 20 minutes",
+                  text: context.l10n.next_dose_in("20"),
                   weight: AppTextWeight.bold,
                   fontSize: 12.sp,
                   color: AppColors.primaryColor,
@@ -73,7 +76,7 @@ class TodayMedicationCard extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             TextApp(
-                              text: "taken today",
+                              text: context.l10n.taken_today,
                               fontSize: 10.sp,
                               color: AppColors.grey,
                             ),
@@ -96,7 +99,7 @@ class TodayMedicationCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextApp(
-                        text: "Next dose",
+                        text: context.l10n.next_dose,
                         fontSize: 10.sp,
                         color: AppColors.grey,
                       ),
@@ -111,7 +114,7 @@ class TodayMedicationCard extends StatelessWidget {
                       ),
                       SizedBox(height: 6.h),
                       TextApp(
-                        text: "Time",
+                        text: context.l10n.time,
                         fontSize: 10.sp,
                         color: AppColors.grey,
                       ),
@@ -127,7 +130,7 @@ class TodayMedicationCard extends StatelessWidget {
                         height: 32.h,
                         width: double.infinity,
                         borderRadius: 10.r,
-                        text: "Taken",
+                        text: context.l10n.taken,
                         fontSize: 11.sp,
                         fontWeight: ButtonTextWeight.bold,
                         color: AppColors.primaryColor,
@@ -138,7 +141,7 @@ class TodayMedicationCard extends StatelessWidget {
                         height: 32.h,
                         width: double.infinity,
                         borderRadius: 10.r,
-                        text: "View All",
+                        text: context.l10n.view_all,
                         fontSize: 11.sp,
                         color: AppColors.white,
                         textColor: AppColors.primaryColor,
@@ -147,7 +150,9 @@ class TodayMedicationCard extends StatelessWidget {
                               AppColors.primaryColor.withOpacity(.8),
                           width: 1,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          context.pushName(AppRoutes.viewAll);
+                        },
                       ),
                     ],
                   ),

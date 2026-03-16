@@ -8,7 +8,7 @@ class PatientProfileCubit extends Cubit<PatientProfileState> {
       : super(
           PatientProfileState(
             name: 'Abdalulah Hassan',
-            email: 'body@example.com',
+            email: 'abdallah.com',
             image: '',
             weight: 75,
             age: 28,

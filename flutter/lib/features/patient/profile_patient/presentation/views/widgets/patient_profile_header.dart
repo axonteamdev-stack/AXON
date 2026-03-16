@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient/patient_profile_cubit.dart';
 
 class PatientProfileHeader extends StatelessWidget {
   final PatientProfileState state;
@@ -17,7 +16,7 @@ class PatientProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(
-        top: 28,
+        top: 55,
         bottom: 16,
         left: 20,
         right: 20,
@@ -35,7 +34,7 @@ class PatientProfileHeader extends StatelessWidget {
             const CircleAvatar(
               radius: 40,
               backgroundImage: AssetImage(
-                AppImages.medicalProfile,
+                AppImages.body,
               ),
             ),
             const SizedBox(height: 8),

@@ -11,6 +11,8 @@ import 'package:Axon/features/auth/Presentation/views/widgets/or_divider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
+
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -35,13 +37,13 @@ class LoginView extends StatelessWidget {
                   children: [
                     Center(child: Image.asset(AppImages.logoApp, width: 250.w)),
 
-                    FormLabel(text: "Email"),
+                    FormLabel(text: context.l10n.email),
 
                     SizedBox(height: 8.h),
 
                     CustomTextField(
                       controller: cubit.emailController,
-                      hintText: "Enter your email",
+                      hintText: context.l10n.enter_email,
                       prefixIcon: Icon(
                         Icons.email_outlined,
                         color: Colors.grey.shade600,
@@ -51,13 +53,13 @@ class LoginView extends StatelessWidget {
 
                     SizedBox(height: 22.h),
 
-                    FormLabel(text: "Password"),
+                    FormLabel(text: context.l10n.password),
 
                     SizedBox(height: 8.h),
 
                     CustomTextField(
                       controller: cubit.passwordController,
-                      hintText: "Enter your password",
+                      hintText: context.l10n.enter_password,
                       isPassword: true,
                       prefixIcon: Icon(
                         Icons.lock_outline,
@@ -78,7 +80,7 @@ class LoginView extends StatelessWidget {
                           );
                         },
                         child: TextApp(
-                          text: "Forgot Password?",
+                          text: context.l10n.forgot_password,
                           fontSize: 12.sp,
                           weight: AppTextWeight.regular,
                           color: AppColors.primaryColor,
@@ -89,7 +91,7 @@ class LoginView extends StatelessWidget {
                     SizedBox(height: 35.h),
 
                     CustomButton(
-                      text: "Sign In",
+                      text: context.l10n.sign_in,
                       height: 50.h,
                       borderRadius: 10,
                       isLoading: state is LoginLoading,
@@ -102,7 +104,7 @@ class LoginView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextApp(
-                          text: "Don’t have an account?",
+                          text: context.l10n.dont_have_account,
                           fontSize: 14.sp,
                           color: Colors.grey,
                         ),
@@ -115,7 +117,7 @@ class LoginView extends StatelessWidget {
                             );
                           },
                           child: TextApp(
-                            text: "Sign Up",
+                            text: context.l10n.sign_up,
                             fontSize: 14.sp,
                             weight: AppTextWeight.regular,
                             color: AppColors.primaryColor,
@@ -147,7 +149,7 @@ class LoginView extends StatelessWidget {
                           ),
                           SizedBox(width: 12.w),
                           TextApp(
-                            text: "Sign in with Google",
+                            text: context.l10n.sign_in_google,
                             fontSize: 15.sp,
                             weight: AppTextWeight.semiBold,
                           ),

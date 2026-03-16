@@ -1,16 +1,14 @@
-import 'package:Axon/core/style/app_images.dart';
-import 'package:Axon/core/style/colors.dart';
 import 'package:flutter/material.dart';
 
 extension ContextExt on BuildContext {
   //color
-  AppColors get color => AppColors();
+  // AppColors get color => AppColors();
 
-  // images
-  AppImages get assets => AppImages();
+  // // images
+  // AppImages get assets => AppImages();
 
-  // style
-  TextStyle get textStyle => Theme.of(this).textTheme.displaySmall!;
+  // // style
+  // TextStyle get textStyle => Theme.of(this).textTheme.displaySmall!;
 
   // //Language
   //   String translate(String langkey) {

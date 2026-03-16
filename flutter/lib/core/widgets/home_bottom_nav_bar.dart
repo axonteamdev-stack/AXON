@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:Axon/core/style/colors.dart';
-import 'package:Axon/core/style/app_images.dart';
 
 class HomeBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
+  final List<NavItem> items;
 
   const HomeBottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
+    required this.items,
   });
-
-  static const List<_NavItem> items = [
-    _NavItem(AppImages.home, 'Home'),
-    _NavItem(AppImages.chat, 'Chats'),
-    _NavItem(AppImages.community, 'Community'),
-    _NavItem(AppImages.profile, 'Profile'),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -99,9 +92,12 @@ class HomeBottomNavBar extends StatelessWidget {
   }
 }
 
-class _NavItem {
+class NavItem {
   final String icon;
   final String label;
 
-  const _NavItem(this.icon, this.label);
+  const NavItem({
+    required this.icon,
+    required this.label,
+  });
 }
