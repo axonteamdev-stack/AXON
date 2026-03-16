@@ -1,38 +1,109 @@
 import 'package:Axon/core/routes/base_routes.dart';
 import 'package:Axon/features/auth/Presentation/manager/doctor%20registration/doctor_registration_cubit.dart';
 import 'package:Axon/features/auth/Presentation/manager/patient_registration/patient_registration_cubit.dart';
-import 'package:Axon/features/auth/Presentation/views/doctor_registration_view.dart';
+import 'package:Axon/features/auth/Presentation/views/doctor/account_doctor_created_view.dart';
+import 'package:Axon/features/auth/Presentation/views/doctor/doctor_registration_view.dart';
+import 'package:Axon/features/auth/Presentation/views/forget%20password/forgot_password_email_view.dart';
+import 'package:Axon/features/auth/Presentation/views/forget%20password/forgot_password_otp_view.dart';
+import 'package:Axon/features/auth/Presentation/views/forget%20password/reset_password_view.dart';
 import 'package:Axon/features/auth/Presentation/views/login_view.dart';
+import 'package:Axon/features/auth/Presentation/views/patient/account_created_view.dart';
 import 'package:Axon/features/auth/Presentation/views/patient/patient_allergies_view.dart';
 import 'package:Axon/features/auth/Presentation/views/patient/patient_health_conditions_view.dart';
+import 'package:Axon/features/auth/Presentation/views/patient/patient_lab_tests_view.dart';
 import 'package:Axon/features/auth/Presentation/views/patient/patient_medical_profile_view.dart';
+import 'package:Axon/features/auth/Presentation/views/patient/patient_radiology_view.dart';
 import 'package:Axon/features/auth/Presentation/views/registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/select_role_view.dart';
+import 'package:Axon/features/doctor/presentation/views/doctor_main_view.dart';
 import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart';
+import 'package:Axon/features/patient/home_patient/presentation/views/home_view.dart';
+import 'package:Axon/features/patient/home_patient/presentation/views/patient_main_view.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient%20edit/patient_edit_profile_cubit.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/views/change_password_view.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_allergies_view.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_basic_info_view.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_health_conditions_view.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_lab_tests_view.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_radiology_view.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/views/patient_profile_view.dart';
 import 'package:Axon/features/splash/Presentation/views/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppRoutes {
+  // Splash & Onboarding
   static const splash = '/';
+  static const onBoarding = 'onBoarding';
+
+  // Auth
   static const login = 'login';
   static const registration = 'registration';
   static const selectRole = 'selectRole';
-  static const onBoarding = 'onBoarding';
+
+  // Doctor Registration
   static const registrationDoctor = 'registrationDoctor';
 
+  // Patient Registration
   static const patientMedicalProfile = "patientMedicalProfile";
   static const patientHealthConditions = "patientHealthConditions";
   static const patientAllergies = "patientAllergies";
 
+  // Forgot Password
+  static const forgotPasswordEmail = "forgotPasswordEmail";
+  static const forgotPasswordOtp = "forgotPasswordOtp";
+  static const resetPassword = "resetPassword";
+
+  // Patient Documents
+  static const patientLabTests = "patientLabTests";
+  static const patientRadiology = "patientRadiology";
+
+  // Auth Success
+  static const accountCreated = 'accountCreated';
+
+  // Home
+  static const home = 'home';
+
+  // Patient Profile
+  static const patientProfile = 'patientProfile';
+  
+  // Patient Edit Pages
+static const patientEditBasicInfo = 'patientEditBasicInfo';
+static const patientEditMedicalProfile = 'patientEditMedicalProfile';
+static const patientEditHealthConditions = 'patientEditHealthConditions';
+static const patientEditAllergies = 'patientEditAllergies';
+static const patientEditRadiology = 'patientEditRadiology';
+static const patientEditLabTests = 'patientEditLabTests';
+// Security
+static const changePassword = 'changePassword';
+static const deleteAccount = 'deleteAccount';
+
+// Patient Main
+static const patientMain = 'patientMain';
+
+// doctor Main
+static const doctorMain = 'doctorMain';
+//doctor Auth Success
+  static const accountCreatedDoctor = 'accountCreatedDoctor';
+
+
+
+
+
+
+
+
   static Route<void> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+
+      // Splash & Onboarding
       case splash:
         return BaseRoute(page: const SplashView());
 
       case onBoarding:
         return BaseRoute(page: const OnBoardingView());
 
+      // Auth
       case selectRole:
         return BaseRoute(page: const SelectRoleView());
 
@@ -42,6 +113,7 @@ class AppRoutes {
       case registration:
         return BaseRoute(page: const RegistrationView());
 
+      // Doctor Registration
       case registrationDoctor:
         return BaseRoute(
           page: BlocProvider(
@@ -50,6 +122,7 @@ class AppRoutes {
           ),
         );
 
+      // Patient Registration
       case patientMedicalProfile:
         return BaseRoute(
           page: BlocProvider(
@@ -58,42 +131,132 @@ class AppRoutes {
           ),
         );
 
-      case patientHealthConditions:
-        if (settings.arguments is! PatientRegistrationCubit) {
-          return BaseRoute(
-            page: const Scaffold(
-              body: Center(child: Text("Error: Cubit Missing")),
-            ),
-          );
-        }
+      
+case AppRoutes.patientAllergies:
+  return BaseRoute(
+    page: const PatientAllergiesView(),
+  );
 
-        return BaseRoute(
-          page: BlocProvider.value(
-            value: settings.arguments as PatientRegistrationCubit,
-            child: PatientHealthConditionsView(),
-          ),
-        );
+case AppRoutes.patientHealthConditions:
+  return BaseRoute(
+    page: const PatientHealthConditionsView(),
+  );
 
-      case patientAllergies:
-        if (settings.arguments is! PatientRegistrationCubit) {
-          return BaseRoute(
-            page: const Scaffold(
-              body: Center(child: Text("Error: Cubit Missing")),
-            ),
-          );
-        }
 
-        return BaseRoute(
-          page: BlocProvider.value(
-            value: settings.arguments as PatientRegistrationCubit,
-            child: PatientAllergiesView(),
-          ),
-        );
+
+      // Forgot Password
+      case forgotPasswordEmail:
+        return BaseRoute(page: const ForgotPasswordEmailView());
+
+      case forgotPasswordOtp:
+        return BaseRoute(page: const ForgotPasswordOtpView());
+
+      case resetPassword:
+        return BaseRoute(page: const ResetPasswordView());
+
+      // Patient Documents
+      case patientLabTests:
+        return BaseRoute(page: const PatientLabTestsView());
+
+      case patientRadiology:
+        return BaseRoute(page: const PatientRadiologyView());
+
+      // Auth Success
+      case accountCreated:
+        return BaseRoute(page: const AccountCreatedView());
+
+      // Home
+      case home:
+        return BaseRoute(page: const HomeView());
+
+      // Patient Profile
+      case patientProfile:
+        return BaseRoute(page: const PatientProfileView());
+
+  case AppRoutes.patientEditBasicInfo:
+  return BaseRoute(
+    page: BlocProvider(
+      create: (_) => PatientEditProfileCubit(),
+      child: const PatientEditBasicInfoView(),
+    ),
+  );
+
+
+
+
+case AppRoutes.patientEditHealthConditions:
+  return BaseRoute(
+    page: BlocProvider(
+      create: (_) => PatientEditProfileCubit(),
+      child: const PatientEditHealthConditionsView(),
+    ),
+  );
+
+case AppRoutes.patientEditAllergies:
+  return BaseRoute(
+    page: BlocProvider(
+      create: (_) => PatientEditProfileCubit(),
+      child: const PatientEditAllergiesView(),
+    ),
+  );
+
+case AppRoutes.patientEditRadiology:
+  return BaseRoute(
+    page: BlocProvider(
+      create: (_) => PatientEditProfileCubit(),
+      child: const PatientEditRadiologyView(),
+    ),
+  );
+
+case AppRoutes.patientEditLabTests:
+  return BaseRoute(
+    page: BlocProvider(
+      create: (_) => PatientEditProfileCubit(),
+      child: const PatientEditLabTestsView(),
+    ),
+  );
+
+
+  // Change Password
+case AppRoutes.changePassword:
+  return BaseRoute(
+    page: const ChangePasswordView(),
+  );
+
+
+
+
+
+// Patient Main
+case patientMain:
+  return BaseRoute(page: const PatientMainView());
+
+// Doctor Main
+case doctorMain:
+  return BaseRoute(page: const DoctorMainView());
+case accountCreatedDoctor:
+  return BaseRoute(page: const AccountDoctorCreatedView());
+
+
+
+
+
+
+
+
+      
 
       default:
         return BaseRoute(
-          page: const Scaffold(body: Center(child: Text('Route not found'))),
+          page: const Scaffold(
+            body: Center(child: Text('Route not found')),
+          ),
         );
     }
   }
+
+
+
+
+
 }

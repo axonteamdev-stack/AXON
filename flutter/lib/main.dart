@@ -2,7 +2,6 @@ import 'package:Axon/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-//
 void main() {
   runApp(const Axon());
 }
@@ -18,7 +17,7 @@ class Axon extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp(
-         
+        
           title: 'Axon',
           debugShowCheckedModeBanner: false,
 

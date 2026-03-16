@@ -70,11 +70,19 @@ class LoginView extends StatelessWidget {
 
                     Align(
                       alignment: Alignment.centerRight,
-                      child: TextApp(
-                        text: "Forgot Password?",
-                        fontSize: 12.sp,
-                        weight: AppTextWeight.regular,
-                        color: AppColors.primaryColor,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.forgotPasswordEmail,
+                          );
+                        },
+                        child: TextApp(
+                          text: "Forgot Password?",
+                          fontSize: 12.sp,
+                          weight: AppTextWeight.regular,
+                          color: AppColors.primaryColor,
+                        ),
                       ),
                     ),
 

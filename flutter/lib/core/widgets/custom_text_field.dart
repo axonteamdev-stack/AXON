@@ -13,7 +13,7 @@ class CustomTextField extends StatefulWidget {
     this.prefixIcon,
     this.isPassword = false,
     this.keyboardType,
-    this.readOnly = false,
+    this.enabled, 
   });
 
   final TextEditingController controller;
@@ -23,7 +23,7 @@ class CustomTextField extends StatefulWidget {
   final Widget? prefixIcon;
   final bool isPassword;
   final TextInputType? keyboardType;
-  final bool readOnly;
+  final bool? enabled; 
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -40,23 +40,26 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isEnabled = widget.enabled ?? true;
+
     return TextFormField(
       controller: widget.controller,
       validator: widget.validator,
-      onChanged: widget.onChanged,
-      readOnly: widget.readOnly,
-      obscureText: _obscure,
+      onChanged: isEnabled ? widget.onChanged : null,
+      obscureText: widget.isPassword ? _obscure : false,
       keyboardType: widget.keyboardType,
       cursorColor: AppColors.primaryColor,
+      enabled: isEnabled,
 
       style: TextStyle(
         fontSize: 14.sp,
         fontFamily: AppTextStyles.regular.fontFamily,
-        color: AppColors.black,
+        color: isEnabled ? AppColors.black : Colors.grey.shade700,
       ),
 
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.w),
+        contentPadding:
+            EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.w),
 
         prefixIcon: widget.prefixIcon != null
             ? Padding(
@@ -69,12 +72,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
               )
             : null,
 
-        prefixIconConstraints: BoxConstraints(minWidth: 28.w, minHeight: 28.h),
+        prefixIconConstraints:
+            BoxConstraints(minWidth: 28.w, minHeight: 28.h),
 
-        suffixIcon: widget.isPassword
+        suffixIcon: widget.isPassword && isEnabled
             ? IconButton(
                 icon: Icon(
-                  _obscure ? Icons.visibility_off : Icons.visibility,
+                  _obscure
+                      ? Icons.visibility_off
+                      : Icons.visibility,
                   color: Colors.grey.shade600,
                 ),
                 onPressed: () {
@@ -84,29 +90,47 @@ class _CustomTextFieldState extends State<CustomTextField> {
             : null,
 
         hintText: widget.hintText,
-        hintStyle: TextStyle(fontSize: 14.sp, color: Colors.grey.shade500),
+        hintStyle:
+            TextStyle(fontSize: 14.sp, color: Colors.grey.shade500),
 
         filled: true,
-        fillColor: AppColors.white,
+        fillColor:
+            isEnabled ? AppColors.white : const Color(0xFFF5F6F8),
 
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Color(0xFFDCE1E6), width: 1.2),
+          borderSide: const BorderSide(
+            color: Color(0xFFDCE1E6),
+            width: 1.2,
+          ),
         ),
 
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(color: AppColors.primaryColor, width: 1.4),
+          borderSide: BorderSide(
+            color: AppColors.primaryColor,
+            width: 1.4,
+          ),
+        ),
+
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(
+            color: Color(0xFFE3E6EA),
+            width: 1.2,
+          ),
         ),
 
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Colors.red, width: 1.2),
+          borderSide:
+              const BorderSide(color: Colors.red, width: 1.2),
         ),
 
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Colors.red, width: 1.4),
+          borderSide:
+              const BorderSide(color: Colors.red, width: 1.4),
         ),
       ),
     );
