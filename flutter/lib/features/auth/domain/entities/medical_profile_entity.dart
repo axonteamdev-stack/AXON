@@ -7,7 +7,7 @@ class MedicalProfileEntity {
   final List<RadiologyTestEntity>? radiologyTests;
   final List<LabTestEntity>? labTests;
 
-  MedicalProfileEntity({
+  const MedicalProfileEntity({
     this.bloodType,
     this.height,
     this.weight,
@@ -24,7 +24,12 @@ class RadiologyTestEntity {
   final String? description;
   final String? date;
 
-  RadiologyTestEntity({this.id, this.image, this.description, this.date});
+  const RadiologyTestEntity({
+    this.id,
+    this.image,
+    this.description,
+    this.date,
+  });
 }
 
 class LabTestEntity {
@@ -33,5 +38,10 @@ class LabTestEntity {
   final String? description;
   final String? uploadedAt;
 
-  LabTestEntity({this.id, this.image, this.description, this.uploadedAt});
+  const LabTestEntity({
+    this.id,
+    this.image,
+    this.description,
+    this.uploadedAt,
+  });
 }

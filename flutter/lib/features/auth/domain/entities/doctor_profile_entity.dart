@@ -1,12 +1,12 @@
-class DoctorDataEntity {
+class DoctorProfileEntity {
   final String? specialization;
   final int? yearsExperience;
   final String? medicalLicenseNumber;
   final String? licenseImage;
   final String? about;
-  final num? price;
+  final int? price;
 
-  const DoctorDataEntity({
+  const DoctorProfileEntity({
     this.specialization,
     this.yearsExperience,
     this.medicalLicenseNumber,

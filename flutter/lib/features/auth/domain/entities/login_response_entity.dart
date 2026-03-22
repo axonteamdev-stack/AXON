@@ -1,14 +1,11 @@
-
 import 'package:Axon/features/auth/domain/entities/base_entity.dart';
-import 'package:Axon/features/auth/domain/entities/error_entity.dart';
+import 'package:Axon/features/auth/domain/entities/user_entity.dart';
 
-class LoginResponseEntity extends BaseResponseEntity{
-
-  // final UserEntity? user;
+class LoginResponseEntity extends BaseResponseEntity<UserEntity> {
   const LoginResponseEntity({
     super.status,
     super.message,
-    // this.user,
+    super.data,
     super.error,
   });
 }

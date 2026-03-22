@@ -1,4 +1,4 @@
-import 'package:Axon/features/auth/data/models/error_response_Dm.dart';
+import 'package:Axon/features/auth/data/models/error_Dm.dart';
 import 'package:Axon/features/auth/domain/entities/register_response_doctor_entity.dart';
 
 class RegisterResponseDoctorDm extends RegisterResponseDoctorEntity {
@@ -17,24 +17,28 @@ class RegisterResponseDoctorDm extends RegisterResponseDoctorEntity {
       status: json['status'],
       message: json['message'],
       stack: json['stack'],
-      data: json['data'] != null ? DataDoctorDM.fromJson(json['data']) : null,
+      data: json['data'] != null
+          ? DataDoctorDM.fromJson(json['data'])
+          : null,
       error: json['error'] != null
-          ? ErrorResponseDM.fromJson(json['error'])
+          ? ErrorDM.fromJson(json['error'])
           : null,
     );
   }
 }
 
 class DataDoctorDM extends RegisterDataDoctorEntity {
-  DataDoctorDM({super.id, super.email, super.role});
+  DataDoctorDM({
+    super.id,
+    super.email,
+    super.role,
+  });
 
   factory DataDoctorDM.fromJson(Map<String, dynamic> json) {
     return DataDoctorDM(
-      id: json['id'],
+      id: json['_id'],
       email: json['email'],
       role: json['role'],
     );
   }
 }
-
-
