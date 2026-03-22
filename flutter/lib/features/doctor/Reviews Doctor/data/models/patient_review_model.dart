@@ -10,4 +10,6 @@ class PatientReviewModel {
     required this.rating,
     required this.comment,
   });
+
+  
 }
