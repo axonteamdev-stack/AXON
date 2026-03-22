@@ -54,7 +54,7 @@ class LanguageSwitch extends StatelessWidget {
               fontWeight: FontWeight.w700,
               height: 1.1, // ⬅ يحسن العربي
               color:
-                   AppColors.primaryColor,
+                    AppColors.primaryColor,
             ),
             child: Text(
               value ? 'EN' : 'عربي',

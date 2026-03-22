@@ -5,7 +5,6 @@ import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/onboarding/presentation/views/widgets/language_switch.dart';
 import 'package:Axon/features/onboarding/presentation/views/widgets/onboarding_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

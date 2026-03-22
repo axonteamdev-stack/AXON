@@ -1,29 +1,20 @@
-class RegisterResponseDoctorEntity {
-  final String? status;
-  final String? message;
-  final DataDoctorEntity? data;
-  final ErrorDoctorEntity? error;
+import 'package:Axon/features/auth/domain/entities/base_entity.dart';
+
+class RegisterResponseDoctorEntity extends BaseResponseEntity {
+  final RegisterDataDoctorEntity? data;
 
   RegisterResponseDoctorEntity({
-    this.status,
-    this.message,
+    super.status,
+    super.message,
     this.data,
-    this.error,
+    super.error,
   });
 }
 
-class DataDoctorEntity {
+class RegisterDataDoctorEntity {
   final String? id;
   final String? email;
   final String? role;
 
-  DataDoctorEntity({this.id, this.email, this.role});
-}
-
-class ErrorDoctorEntity {
- final int? statusCode;
-  final String? status;
- final  bool? isOperational;
-
-  ErrorDoctorEntity({this.statusCode, this.status, this.isOperational});
+  RegisterDataDoctorEntity({this.id, this.email, this.role});
 }

@@ -1,42 +1,35 @@
-class RegisterResponseDoctorModel {
-  final String? status;
-  final String? message;
-  final DataDoctorModel? data;
-  final ErrorDoctorModel? error;
+import 'package:Axon/features/auth/data/models/error_response_Dm.dart';
+import 'package:Axon/features/auth/domain/entities/register_response_doctor_entity.dart';
+
+class RegisterResponseDoctorDm extends RegisterResponseDoctorEntity {
   final String? stack;
 
-  RegisterResponseDoctorModel({
-    this.status,
-    this.message,
-    this.data,
-    this.error,
+  RegisterResponseDoctorDm({
+    super.status,
+    super.message,
+    super.data,
+    super.error,
     this.stack,
   });
 
-  factory RegisterResponseDoctorModel.fromJson(Map<String, dynamic> json) {
-    return RegisterResponseDoctorModel(
+  factory RegisterResponseDoctorDm.fromJson(Map<String, dynamic> json) {
+    return RegisterResponseDoctorDm(
       status: json['status'],
       message: json['message'],
       stack: json['stack'],
-      data: json['data'] != null
-          ? DataDoctorModel.fromJson(json['data'])
-          : null,
+      data: json['data'] != null ? DataDoctorDM.fromJson(json['data']) : null,
       error: json['error'] != null
-          ? ErrorDoctorModel.fromJson(json['error'])
+          ? ErrorResponseDM.fromJson(json['error'])
           : null,
     );
   }
 }
 
-class DataDoctorModel {
-  final String? id;
-  final String? email;
-  final String? role;
+class DataDoctorDM extends RegisterDataDoctorEntity {
+  DataDoctorDM({super.id, super.email, super.role});
 
-  DataDoctorModel({this.id, this.email, this.role});
-
-  factory DataDoctorModel.fromJson(Map<String, dynamic> json) {
-    return DataDoctorModel(
+  factory DataDoctorDM.fromJson(Map<String, dynamic> json) {
+    return DataDoctorDM(
       id: json['id'],
       email: json['email'],
       role: json['role'],
@@ -44,18 +37,4 @@ class DataDoctorModel {
   }
 }
 
-class ErrorDoctorModel {
-  final int? statusCode;
-  final String? status;
-  final bool? isOperational;
 
-  ErrorDoctorModel({this.statusCode, this.status, this.isOperational});
-
-  factory ErrorDoctorModel.fromJson(Map<String, dynamic> json) {
-    return ErrorDoctorModel(
-      statusCode: json['statusCode'],
-      status: json['status'],
-      isOperational: json['isOperational'],
-    );
-  }
-}
