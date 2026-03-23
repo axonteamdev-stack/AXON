@@ -20,7 +20,7 @@ class RegisterDoctorUseCase {
     required String medicalLicenseNumber,
     required int price,
     required String about,
-    required List<File> licenseImages,
+    required File licenseImages,
     File? personalPhoto,
   }) {
     return authRepo.registerDoctor(

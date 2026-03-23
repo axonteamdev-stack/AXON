@@ -4,10 +4,21 @@ import 'package:Axon/core/errors/failures.dart';
 import 'package:Axon/features/auth/domain/entities/login_response_entity.dart';
 import 'package:Axon/features/auth/domain/entities/register_response_doctor_entity.dart';
 import 'package:Axon/features/auth/domain/entities/register_response_patient_entity.dart';
+import 'package:Axon/features/auth/domain/repo/auth_repo.dart';
 import 'package:dartz/dartz.dart';
 
-abstract class AuthRepo {
-  Future<Either<Failure, RegisterResponseDoctorEntity>>registerDoctor({
+class AuthRepoImpl implements AuthRepo {
+  @override
+  Future<Either<Failure, LoginResponseEntity>> login({
+    required String email,
+    required String password,
+  }) {
+    // TODO: implement login
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, RegisterResponseDoctorEntity>> registerDoctor({
     required String fullName,
     required String email,
     required String password,
@@ -20,11 +31,13 @@ abstract class AuthRepo {
     required String about,
     required File licenseImages,
     File? personalPhoto,
-  });
+  }) {
+    // TODO: implement registerDoctor
+    throw UnimplementedError();
+  }
 
-
-
-   Future<Either<Failure,RegisterPatientEntity>> registerPatient({
+  @override
+  Future<Either<Failure, RegisterPatientEntity>> registerPatient({
     required String fullName,
     required String email,
     required String password,
@@ -40,11 +53,8 @@ abstract class AuthRepo {
     required List<File> labImages,
     required List<String> labDescriptions,
     File? personalPhoto,
-  });
-
-
-    Future<Either<Failure, LoginResponseEntity>> login({
-    required String email,
-    required String password,
-  });
+  }) {
+    // TODO: implement registerPatient
+    throw UnimplementedError();
+  }
 }

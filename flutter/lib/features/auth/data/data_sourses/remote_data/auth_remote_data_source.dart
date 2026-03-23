@@ -6,8 +6,8 @@ import 'package:Axon/features/auth/domain/entities/register_response_doctor_enti
 import 'package:Axon/features/auth/domain/entities/register_response_patient_entity.dart';
 import 'package:dartz/dartz.dart';
 
-abstract class AuthRepo {
-  Future<Either<Failure, RegisterResponseDoctorEntity>>registerDoctor({
+abstract class AuthRemoteDataSource {
+   Future<Either<Failure, RegisterResponseDoctorEntity>>registerDoctor({
     required String fullName,
     required String email,
     required String password,
@@ -18,7 +18,7 @@ abstract class AuthRepo {
     required String medicalLicenseNumber,
     required int price,
     required String about,
-    required File licenseImages,
+    required List<File> licenseImages,
     File? personalPhoto,
   });
 
@@ -31,8 +31,8 @@ abstract class AuthRepo {
     required String phoneNumber,
     required String gender,
     required String bloodType,
-    required double height,
-    required double weight,
+    required int height,
+    required int weight,
     required List<String> conditions,
     required List<String> allergies,
     required List<File> radiologyImages,
