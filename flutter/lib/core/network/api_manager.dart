@@ -14,9 +14,6 @@ class ApiManager {
         baseUrl: Endpoints.baseUrl,
         connectTimeout: const Duration(seconds: 15),
         receiveTimeout: const Duration(seconds: 15),
-        headers: {
-          "Content-Type": "application/json",
-        },
       ),
     );
 
@@ -29,8 +26,7 @@ class ApiManager {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final token =
-              SharedPref().getString(PrefKeys.accessToken);
+          final token = SharedPref().getString(PrefKeys.accessToken);
 
           // ✅ add token
           if (token != null && token.isNotEmpty) {
@@ -68,7 +64,15 @@ class ApiManager {
   }
 
   Future<dynamic> post(String endpoint, dynamic data) async {
-    final res = await dio.post(endpoint, data: data);
+    final res = await dio.post(
+      endpoint,
+      data: data,
+      options: Options(
+        contentType: data is FormData
+            ? "multipart/form-data"
+            : "application/json",
+      ),
+    );
     return res.data;
   }
 
@@ -94,8 +98,7 @@ class ApiManager {
       if (cookie.contains("jwt=")) {
         final token = cookie.split(";").first.split("=").last;
 
-        await SharedPref()
-            .setString(PrefKeys.accessToken, token);
+        await SharedPref().setString(PrefKeys.accessToken, token);
 
         print("✅ Access Token saved");
       }
@@ -104,8 +107,7 @@ class ApiManager {
       if (cookie.contains("refreshToken=")) {
         final token = cookie.split(";").first.split("=").last;
 
-        await SharedPref()
-            .setString(PrefKeys.refreshToken, token);
+        await SharedPref().setString(PrefKeys.refreshToken, token);
 
         print("✅ Refresh Token saved");
       }

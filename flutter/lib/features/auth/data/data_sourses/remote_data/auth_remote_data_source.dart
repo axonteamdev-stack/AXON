@@ -7,7 +7,7 @@ import 'package:Axon/features/auth/domain/entities/register_response_patient_ent
 import 'package:dartz/dartz.dart';
 
 abstract class AuthRemoteDataSource {
-   Future<Either<Failure, RegisterResponseDoctorEntity>>registerDoctor({
+  Future<Either<Failure, RegisterResponseDoctorEntity>> registerDoctor({
     required String fullName,
     required String email,
     required String password,
@@ -18,13 +18,11 @@ abstract class AuthRemoteDataSource {
     required String medicalLicenseNumber,
     required int price,
     required String about,
-    required List<File> licenseImages,
+    required File licenseImages,
     File? personalPhoto,
   });
 
-
-
-   Future<Either<Failure,RegisterPatientEntity>> registerPatient({
+  Future<Either<Failure, RegisterPatientEntity>> registerPatient({
     required String fullName,
     required String email,
     required String password,
@@ -42,8 +40,7 @@ abstract class AuthRemoteDataSource {
     File? personalPhoto,
   });
 
-
-    Future<Either<Failure, LoginResponseEntity>> login({
+  Future<Either<Failure, LoginResponseEntity>> login({
     required String email,
     required String password,
   });
