@@ -1,111 +1,114 @@
+import 'package:Axon/core/service/shared_pref/shared_pref.dart';
+import 'package:Axon/core/service/shared_pref/pref_keys.dart';
 import 'package:dio/dio.dart';
-import '../errors/exceptions.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'endpoints.dart';
 
 class ApiManager {
-  final Dio dio;
+  late Dio dio;
 
-  ApiManager({
-    required String baseUrl,
-    Map<String, String>? headers,
-  }) : dio = Dio(
-          BaseOptions(
-            baseUrl: baseUrl,
-            headers: headers,
-            connectTimeout: const Duration(seconds: 15),
-            receiveTimeout: const Duration(seconds: 15),
-          ),
-        );
+  ApiManager() {
+    dio = Dio(
+      BaseOptions(
+        baseUrl: Endpoints.baseUrl,
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      ),
+    );
 
-  Future<Response> get(
-    String endPoint, {
-    Map<String, dynamic>? query,
-  }) async {
-    try {
-      return await dio.get(endPoint, queryParameters: query);
-    } on DioException catch (e) {
-      _handleError(e);
-      rethrow;
-    }
+    _addInterceptors();
   }
 
-  Future<Response> post(
-    String endPoint, {
-    dynamic body,
-    Map<String, dynamic>? query,
-  }) async {
-    try {
-      return await dio.post(
-        endPoint,
-        data: body,
-        queryParameters: query,
-      );
-    } on DioException catch (e) {
-      _handleError(e);
-      rethrow;
-    }
+  void _addInterceptors() {
+    dio.interceptors.add(CookieManager(CookieJar()));
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token =
+              SharedPref().getString(PrefKeys.accessToken);
+
+          // ✅ add token
+          if (token != null && token.isNotEmpty) {
+            options.headers["Authorization"] = "Bearer $token";
+          }
+
+          print("📤 ${options.method} ${options.uri}");
+          print("📤 Headers: ${options.headers}");
+          print("📤 Body: ${options.data}");
+
+          handler.next(options);
+        },
+
+        onResponse: (response, handler) async {
+          print("📥 Response: ${response.data}");
+
+          await _saveTokens(response);
+
+          handler.next(response);
+        },
+
+        onError: (error, handler) {
+          print("❌ Error: ${error.message}");
+          handler.next(error);
+        },
+      ),
+    );
   }
 
-  Future<Response> put(
-    String endPoint, {
-    dynamic body,
-  }) async {
-    try {
-      return await dio.put(endPoint, data: body);
-    } on DioException catch (e) {
-      _handleError(e);
-      rethrow;
-    }
+  // ================== REQUESTS ==================
+
+  Future<dynamic> get(String endpoint) async {
+    final res = await dio.get(endpoint);
+    return res.data;
   }
 
-  Future<Response> delete(String endPoint) async {
-    try {
-      return await dio.delete(endPoint);
-    } on DioException catch (e) {
-      _handleError(e);
-      rethrow;
-    }
+  Future<dynamic> post(String endpoint, dynamic data) async {
+    final res = await dio.post(endpoint, data: data);
+    return res.data;
   }
 
-  void _handleError(DioException e) {
-    if (e.type == DioExceptionType.connectionTimeout ||
-        e.type == DioExceptionType.receiveTimeout ||
-        e.type == DioExceptionType.sendTimeout) {
-      throw TimeoutException();
-    }
+  Future<dynamic> patch(String endpoint, dynamic data) async {
+    final res = await dio.patch(endpoint, data: data);
+    return res.data;
+  }
 
-    if (e.type == DioExceptionType.connectionError ||
-        e.response == null) {
-      throw OfflineException();
-    }
+  Future<dynamic> delete(String endpoint) async {
+    final res = await dio.delete(endpoint);
+    return res.data;
+  }
 
-    switch (e.response!.statusCode) {
-      case 400:
-        throw BadRequestException();
-      case 401:
-        throw UnauthorizedException();
-      case 403:
-        throw ForbiddenException();
-      case 404:
-        throw NotFoundException();
-      case 409:
-        throw ConflictException();
-      case 422:
-        throw ValidationException(
-          errors: e.response?.data is Map<String, dynamic>
-              ? e.response?.data['errors']
-              : null,
-        );
-      case 429:
-        throw TooManyRequestsException();
-      case 500:
-      case 502:
-        throw BadGatewayException();
-      case 503:
-        throw ServiceUnavailableException();
-      case 504:
-        throw GatewayTimeoutException();
-      default:
-        throw ServerException();
+  // ================== TOKEN ==================
+
+  Future<void> _saveTokens(Response response) async {
+    final cookies = response.headers.map['set-cookie'];
+
+    if (cookies == null) return;
+
+    for (var cookie in cookies) {
+      // 🔥 access token
+      if (cookie.contains("jwt=")) {
+        final token = cookie.split(";").first.split("=").last;
+
+        await SharedPref()
+            .setString(PrefKeys.accessToken, token);
+
+        print("✅ Access Token saved");
+      }
+
+      // 🔥 refresh token
+      if (cookie.contains("refreshToken=")) {
+        final token = cookie.split(";").first.split("=").last;
+
+        await SharedPref()
+            .setString(PrefKeys.refreshToken, token);
+
+        print("✅ Refresh Token saved");
+      }
     }
   }
 }
