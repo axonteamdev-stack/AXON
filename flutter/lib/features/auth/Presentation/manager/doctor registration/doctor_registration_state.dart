@@ -4,11 +4,12 @@ abstract class DoctorRegistrationState {}
 
 class DoctorRegistrationInitial extends DoctorRegistrationState {
   final String? selectedSpecialization;
-  final XFile? uploadedFile;
+  final XFile? personalFile;
+  final XFile? licenseFile;
 
   DoctorRegistrationInitial({
     this.selectedSpecialization,
-    this.uploadedFile,
+    this.licenseFile, this.personalFile,
   });
 }
 

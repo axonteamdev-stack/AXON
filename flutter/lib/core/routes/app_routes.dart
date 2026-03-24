@@ -172,10 +172,7 @@ static const viewAll = 'viewAll';
       // Doctor Registration
       case registrationDoctor:
         return BaseRoute(
-          page: BlocProvider(
-            create: (_) => DoctorRegistrationCubit(),
-            child: DoctorRegistrationView(),
-          ),
+          page: DoctorRegistrationView(),
         );
 
       // Patient Registration

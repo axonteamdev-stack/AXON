@@ -8,6 +8,8 @@ import 'package:injectable/injectable.dart';
 import 'doctor_registration_state.dart';
 import 'dart:io';
 
+enum ImageType { license, personal }
+
 @injectable
 class DoctorRegistrationCubit extends Cubit<DoctorRegistrationState> {
   final RegisterDoctorUseCase registerDoctorUseCase;
@@ -26,33 +28,45 @@ class DoctorRegistrationCubit extends Cubit<DoctorRegistrationState> {
   final phoneController = TextEditingController();
   final passwordController = TextEditingController();
 
-  // 🔥 specialization variable
+  // ================= DATA =================
+
   String? selectedSpecialization;
-
-  final picker = ImagePicker();
-
   XFile? licenseFile;
+  XFile? personalPhoto;
 
-  // 🔥 change function
+  final ImagePicker picker = ImagePicker();
+
+  // ================= SPECIALIZATION =================
+
   void changeSpecialization(String value) {
     selectedSpecialization = value;
+
     emit(
-      DoctorRegistrationInitial(selectedSpecialization: selectedSpecialization),
+      DoctorRegistrationInitial(
+        selectedSpecialization: selectedSpecialization,
+        licenseFile: licenseFile,
+        personalFile: personalPhoto,
+      ),
     );
   }
 
-  // ================= FILE PICK =================
+  // ================= IMAGE PICK =================
 
-  Future<void> pickLicenseFile() async {
+  Future<void> pickImage(ImageType type) async {
     final picked = await picker.pickImage(source: ImageSource.gallery);
 
     if (picked != null) {
-      licenseFile = picked;
+      if (type == ImageType.license) {
+        licenseFile = picked;
+      } else {
+        personalPhoto = picked;
+      }
 
       emit(
         DoctorRegistrationInitial(
           selectedSpecialization: selectedSpecialization,
-          uploadedFile: licenseFile,
+          licenseFile: licenseFile,
+          personalFile: personalPhoto,
         ),
       );
     }
@@ -74,6 +88,7 @@ class DoctorRegistrationCubit extends Cubit<DoctorRegistrationState> {
 
       emit(DoctorRegistrationLoading());
       var either = await registerDoctorUseCase.invoke(
+        personalPhoto: personalPhoto != null ? File(personalPhoto!.path) : null,
         fullName: fullNameController.text,
         email: emailController.text,
         password: passwordController.text,

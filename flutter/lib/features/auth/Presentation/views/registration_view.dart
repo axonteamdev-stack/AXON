@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Axon/core/di/di.dart';
 import 'package:Axon/core/helpers/validation_helper.dart';
 import 'package:Axon/core/routes/app_routes.dart';
@@ -5,85 +7,89 @@ import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/core/widgets/custom_text_field.dart';
 import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/auth/Presentation/manager/doctor%20registration/doctor_registration_cubit.dart';
-import 'package:Axon/features/auth/Presentation/manager/doctor%20registration/doctor_registration_state.dart';
-import 'package:Axon/features/auth/Presentation/manager/selected%20gender/gender_cubit.dart';
-import 'package:Axon/features/auth/Presentation/manager/signup/registration_cubit.dart';
-import 'package:Axon/features/auth/Presentation/manager/upload image/upload_image_cubit.dart';
+import 'package:Axon/features/auth/Presentation/manager/doctor registration/doctor_registration_cubit.dart';
+import 'package:Axon/features/auth/Presentation/manager/doctor registration/doctor_registration_state.dart';
+import 'package:Axon/features/auth/Presentation/manager/selected gender/gender_cubit.dart';
+import 'package:Axon/features/auth/Presentation/views/widgets/gender_selector.dart';
+import 'package:Axon/features/auth/Presentation/views/widgets/registration_profile_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'widgets/form_label.dart';
-import 'widgets/gender_selector.dart';
-import 'widgets/registration_profile_image.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:Axon/core/extensions/localization_ext.dart';
+import 'widgets/form_label.dart';
 
 class RegistrationView extends StatelessWidget {
-  RegistrationView({super.key});
-
-  DoctorRegistrationCubit doctorRegistrationCubit = getIt<DoctorRegistrationCubit>();
+  const RegistrationView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => doctorRegistrationCubit),
-        BlocProvider(create: (_) => UploadImageCubit()),
-      ],
+    return BlocProvider(
+      create: (_) => getIt<DoctorRegistrationCubit>(),
       child: BlocBuilder<DoctorRegistrationCubit, DoctorRegistrationState>(
         builder: (context, state) {
-          final doctorCubit = context.read<DoctorRegistrationCubit>();
-          final imageCubit = context.watch<UploadImageCubit>();
+          final cubit = context.read<DoctorRegistrationCubit>();
+
+          // 📸 صورة البروفايل
+          XFile? image;
+          if (state is DoctorRegistrationInitial) {
+            image = state.personalFile;
+          }
 
           return Scaffold(
             backgroundColor: AppColors.white,
             body: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: Form(
-                key: doctorRegistrationCubit.formKey,
+                key: cubit.formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 55.h),
 
+                    // 🔥 Profile Image
                     Center(
                       child: ProfileImagePicker(
-                        image: imageCubit.state.image,
-                        onPick: imageCubit.pickImage,
+                        image: image != null ? File(image.path) : null,
+                        onPick: () {
+                          cubit.pickImage(ImageType.personal);
+                        },
                       ),
                     ),
 
                     SizedBox(height: 25.h),
 
+                    // 🔥 Name
                     FormLabel(text: context.l10n.full_name),
                     CustomTextField(
-                      controller: doctorRegistrationCubit.fullNameController,
+                      controller: cubit.fullNameController,
                       hintText: context.l10n.enter_full_name,
                       validator: ValidationHelper.validateName,
                     ),
 
                     SizedBox(height: 22.h),
 
+                    // 🔥 Email
                     FormLabel(text: context.l10n.email),
-                    SizedBox(height: 8.h),
                     CustomTextField(
-                      controller: doctorRegistrationCubit.emailController,
+                      controller: cubit.emailController,
                       hintText: context.l10n.enter_email,
                       validator: ValidationHelper.validateEmail,
                     ),
 
                     SizedBox(height: 22.h),
 
+                    // 🔥 Phone
                     FormLabel(text: context.l10n.phone_number),
                     CustomTextField(
-                      controller: doctorRegistrationCubit.phoneController,
+                      controller: cubit.phoneController,
                       hintText: context.l10n.enter_phone,
                       validator: ValidationHelper.validatePhone,
                     ),
 
                     SizedBox(height: 22.h),
 
+                    // 🔥 Gender
                     FormLabel(text: context.l10n.gender),
                     BlocBuilder<GenderCubit, int>(
                       builder: (context, selectedGender) {
@@ -98,29 +104,26 @@ class RegistrationView extends StatelessWidget {
 
                     SizedBox(height: 22.h),
 
+                    // 🔥 Password
                     FormLabel(text: context.l10n.password),
                     CustomTextField(
-                      controller: doctorRegistrationCubit.passwordController,
+                      controller: cubit.passwordController,
                       hintText: context.l10n.create_password,
                       isPassword: true,
                       validator: ValidationHelper.validatePassword,
                     ),
 
-                    SizedBox(height: 15.h),
+                    SizedBox(height: 25.h),
 
-                    // TermsCheckbox(
-                    //   checked: doctorCubit.termsAccepted,
-                    //   onChanged: regCubit.toggleTerms,
-                    // ),
-
-                    SizedBox(height: 20.h),
-
+                    // 🔥 Next Button
                     CustomButton(
                       text: context.l10n.next,
                       height: 50.h,
                       borderRadius: 10,
                       onPressed: () {
-                        Navigator.pushNamed(context, AppRoutes.selectRole);
+                        if (cubit.formKey.currentState!.validate()) {
+                          Navigator.pushNamed(context, AppRoutes.selectRole);
+                        }
                       },
                     ),
 

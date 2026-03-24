@@ -1,6 +1,8 @@
+import 'dart:io';
+
 import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/features/auth/Presentation/manager/doctor registration/doctor_registration_cubit.dart';
-import 'package:Axon/features/auth/Presentation/manager/doctor%20registration/doctor_registration_state.dart';
+import 'package:Axon/features/auth/Presentation/manager/doctor registration/doctor_registration_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,14 +15,18 @@ class UploadMedicalLicenseBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.read<DoctorRegistrationCubit>().pickLicenseFile();
+        // ✅ هنا الحل
+        context
+            .read<DoctorRegistrationCubit>()
+            .pickImage(ImageType.license);
       },
       child: BlocBuilder<DoctorRegistrationCubit, DoctorRegistrationState>(
         builder: (context, state) {
-          XFile? file;
+          File? file;
 
+          // ✅ نجيب الملف من state
           if (state is DoctorRegistrationInitial) {
-            file = state.uploadedFile;
+            file = state.licenseFile as File?;
           }
 
           return Container(
@@ -34,17 +40,34 @@ class UploadMedicalLicenseBox extends StatelessWidget {
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.cloud_upload_outlined),
-                        SizedBox(height: 10),
-                        Text(context.l10n.drag_upload),
+                        Icon(
+                          Icons.cloud_upload_outlined,
+                          size: 32,
+                          color: Colors.grey.shade600,
+                        ),
+                        SizedBox(height: 10.h),
+                        Text(
+                          context.l10n.drag_upload,
+                          style: TextStyle(color: Colors.grey.shade600),
+                        ),
                       ],
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.check_circle, color: Colors.green),
-                        SizedBox(height: 10),
-                        Text(file.name),
+                        Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                          size: 32,
+                        ),
+                        SizedBox(height: 10.h),
+                        Text(
+                          file.path,
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
             ),
