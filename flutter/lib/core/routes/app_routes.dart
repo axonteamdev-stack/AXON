@@ -171,8 +171,10 @@ static const viewAll = 'viewAll';
 
       // Doctor Registration
       case registrationDoctor:
+        
+
         return BaseRoute(
-          page: DoctorRegistrationView(),
+          page:  DoctorRegistrationView(),
         );
 
       // Patient Registration

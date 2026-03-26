@@ -4,14 +4,12 @@ import 'package:Axon/features/doctor/Profile%20Doctor/presentation/manager/profi
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/doctor_edit_profile_view.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/widgets/doctor_profile_header.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/widgets/doctor_profile_header_delegate.dart';
-import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient/patient_profile_cubit.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/confirm_delete_account_sheet.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/confirm_logout_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/patient_profile_menu_item.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 
 class DoctorProfileBody extends StatelessWidget {
   final DoctorProfileState state;
@@ -34,6 +32,7 @@ class DoctorProfileBody extends StatelessWidget {
         SliverList(
           delegate: SliverChildListDelegate(
             [
+              // ================= EDIT =================
               PatientProfileMenuItem(
                 icon: Icons.edit_outlined,
                 title: context.l10n.edit_profile,
@@ -50,6 +49,8 @@ class DoctorProfileBody extends StatelessWidget {
                   );
                 },
               ),
+
+              // ================= PASSWORD =================
               PatientProfileMenuItem(
                 icon: Icons.lock_outline,
                 title: context.l10n.change_password,
@@ -61,12 +62,16 @@ class DoctorProfileBody extends StatelessWidget {
                   );
                 },
               ),
+
+              // ================= NOTIFICATIONS =================
               PatientProfileMenuItem(
                 icon: Icons.notifications_none,
                 title: context.l10n.notification_settings,
                 dense: true,
                 onTap: () {},
               ),
+
+              // ================= LOGOUT =================
               PatientProfileMenuItem(
                 icon: Icons.logout,
                 title: context.l10n.logout,
@@ -78,17 +83,28 @@ class DoctorProfileBody extends StatelessWidget {
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(16)),
                     ),
-                    builder: (context) {
+                    builder: (sheetContext) {
                       return ConfirmLogoutSheet(
-                        onConfirm: () {
-                          Navigator.pop(context);
-                          context.read<PatientProfileCubit>().logout();
+                        onConfirm: () async {
+                          Navigator.pop(sheetContext);
+
+                          await context
+                              .read<DoctorProfileCubit>()
+                              .logout();
+
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            AppRoutes.login,
+                            (route) => false,
+                          );
                         },
                       );
                     },
                   );
                 },
               ),
+
+              // ================= DELETE =================
               PatientProfileMenuItem(
                 icon: Icons.delete_outline,
                 title: context.l10n.delete_account,
@@ -100,19 +116,27 @@ class DoctorProfileBody extends StatelessWidget {
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(16)),
                     ),
-                    builder: (context) {
+                    builder: (sheetContext) {
                       return ConfirmDeleteAccountSheet(
-                        onConfirm: () {
-                          Navigator.pop(context);
-                          context
-                              .read<PatientProfileCubit>()
+                        onConfirm: () async {
+                          Navigator.pop(sheetContext);
+
+                          await context
+                              .read<DoctorProfileCubit>()
                               .deleteAccount();
+
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            AppRoutes.login,
+                            (route) => false,
+                          );
                         },
                       );
                     },
                   );
                 },
               ),
+
               const SizedBox(height: 32),
             ],
           ),

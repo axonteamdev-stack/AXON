@@ -21,8 +21,14 @@ import '../../features/auth/data/data_sourses/remote_data/impl/auth_remote_data_
 import '../../features/auth/data/repo_impl/auth_repo_impl.dart' as _i279;
 import '../../features/auth/domain/repo/auth_repo.dart' as _i170;
 import '../../features/auth/domain/useCases/login_case.dart' as _i861;
+import '../../features/auth/domain/useCases/register_doctor_use_case.dart'
+    as _i646;
+import '../../features/auth/Presentation/manager/doctor%20registration/doctor_registration_cubit.dart'
+    as _i533;
 import '../../features/auth/Presentation/manager/login/login_cubit.dart'
     as _i65;
+import '../../features/auth/Presentation/manager/selected%20gender/gender_cubit.dart'
+    as _i631;
 import '../network/api_manager.dart' as _i119;
 import '../network/network_info.dart' as _i932;
 import '../network/network_module.dart' as _i200;
@@ -39,6 +45,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i161.InternetConnection>(
       () => networkModule.internetConnection,
     );
+    gh.lazySingleton<_i631.GenderCubit>(() => _i631.GenderCubit());
     gh.lazySingleton<_i932.NetworkInfo>(
       () => _i932.NetworkInfoImpl(gh<_i161.InternetConnection>()),
     );
@@ -53,11 +60,19 @@ extension GetItInjectableX on _i174.GetIt {
         authRemoteDataSource: gh<_i223.AuthRemoteDataSource>(),
       ),
     );
+    gh.factory<_i646.RegisterDoctorUseCase>(
+      () => _i646.RegisterDoctorUseCase(authRepo: gh<_i170.AuthRepo>()),
+    );
     gh.factory<_i861.LoginUseCase>(
       () => _i861.LoginUseCase(gh<_i170.AuthRepo>()),
     );
     gh.factory<_i65.LoginCubit>(
       () => _i65.LoginCubit(loginUseCase: gh<_i861.LoginUseCase>()),
+    );
+    gh.factory<_i533.DoctorRegistrationCubit>(
+      () => _i533.DoctorRegistrationCubit(
+        registerDoctorUseCase: gh<_i646.RegisterDoctorUseCase>(),
+      ),
     );
     return this;
   }

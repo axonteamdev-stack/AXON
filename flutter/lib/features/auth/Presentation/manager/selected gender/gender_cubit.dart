@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 
 @lazySingleton
 class GenderCubit extends Cubit<int> {
-  GenderCubit() : super(0); // default male
+  GenderCubit() : super(0); 
 
   void changeGender(int index) {
     emit(index);

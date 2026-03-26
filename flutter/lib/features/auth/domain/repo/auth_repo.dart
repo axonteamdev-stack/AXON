@@ -5,6 +5,7 @@ import 'package:Axon/features/auth/domain/entities/login_response_entity.dart';
 import 'package:Axon/features/auth/domain/entities/register_response_doctor_entity.dart';
 import 'package:Axon/features/auth/domain/entities/register_response_patient_entity.dart';
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 
 abstract class AuthRepo {
   Future<Either<Failure, RegisterResponseDoctorEntity>>registerDoctor({

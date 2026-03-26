@@ -1,3 +1,4 @@
+import 'package:Axon/core/service/shared_pref/shared_pref.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/manager/profile%20doctor/doctor_profile_state.dartdoctor_profile_state.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +11,13 @@ class DoctorProfileCubit extends Cubit<DoctorProfileState> {
           const DoctorProfileState(
             name: 'Abdallah Hassan',
             email: 'doctor@mail.com',
-          profession: 'Cardiologist',
+            profession: 'Cardiologist',
             phone: '01000000000',
             experience: '8',
             licenseNumber: 'ML-123456',
             licenseImage: AppImages.onboarding2,
-            about: 'Experienced neurologist with a strong background in patient care',
+            about:
+                'Experienced neurologist with a strong background in patient care',
             price: '300',
           ),
         ) {
@@ -26,11 +28,15 @@ class DoctorProfileCubit extends Cubit<DoctorProfileState> {
     priceCtrl.text = state.price;
   }
 
+  // ================= CONTROLLERS =================
+
   final emailCtrl = TextEditingController();
   final phoneCtrl = TextEditingController();
   final expCtrl = TextEditingController();
   final aboutCtrl = TextEditingController();
   final priceCtrl = TextEditingController();
+
+  // ================= UI ACTIONS =================
 
   void toggleEdit() {
     emit(state.copyWith(isEdit: !state.isEdit));
@@ -52,10 +58,33 @@ class DoctorProfileCubit extends Cubit<DoctorProfileState> {
   Future<void> pickImage() async {
     final image =
         await ImagePicker().pickImage(source: ImageSource.gallery);
+
     if (image != null) {
       emit(state.copyWith(image: image.path));
     }
   }
+
+  // ================= LOGOUT =================
+
+  Future<void> logout() async {
+    final pref = SharedPref();
+
+    await pref.clearPreferences();
+
+    print("🧹 [LOGOUT] SharedPref Cleared");
+  }
+
+  // ================= DELETE ACCOUNT =================
+
+  Future<void> deleteAccount() async {
+    final pref = SharedPref();
+
+    await pref.clearPreferences();
+
+    print("🗑 [DELETE ACCOUNT] SharedPref Cleared");
+  }
+
+  // ================= DISPOSE =================
 
   @override
   Future<void> close() {

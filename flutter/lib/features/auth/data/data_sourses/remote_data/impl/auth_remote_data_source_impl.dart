@@ -1,5 +1,5 @@
+import 'dart:convert';
 import 'dart:io';
-import 'dart:convert'; 
 
 import 'package:Axon/core/errors/error_handler.dart';
 import 'package:Axon/core/errors/exceptions.dart';
@@ -8,8 +8,8 @@ import 'package:Axon/core/errors/mappers/exception_to_failure_mapper.dart';
 import 'package:Axon/core/network/api_manager.dart';
 import 'package:Axon/core/network/endpoints.dart';
 import 'package:Axon/core/network/network_info.dart';
-import 'package:Axon/core/service/shared_pref/pref_keys.dart';
 import 'package:Axon/core/service/shared_pref/shared_pref.dart';
+import 'package:Axon/core/service/shared_pref/pref_keys.dart';
 import 'package:Axon/features/auth/data/data_sourses/remote_data/auth_remote_data_source.dart';
 import 'package:Axon/features/auth/data/models/login_response_DM.dart';
 import 'package:Axon/features/auth/data/models/register_response_doctor_Dm.dart';
@@ -28,113 +28,103 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required this.apiManager,
   });
 
+  // ================= HELPERS =================
+
+  Future<void> addFile(FormData data, File? file, String key) async {
+    if (file != null) {
+      data.files.add(MapEntry(
+        key,
+        await MultipartFile.fromFile(
+          file.path,
+          filename: file.path.split('/').last,
+        ),
+      ));
+    }
+  }
+
+  void addList(FormData data, List<String> list, String key) {
+    for (var item in list) {
+      data.fields.add(MapEntry(key, item));
+    }
+  }
+
+  Future<void> addFilesWithDesc({
+    required FormData data,
+    required List<File> files,
+    required List<String> descriptions,
+    required String fileKey,
+    required String descKey,
+  }) async {
+    for (int i = 0; i < files.length; i++) {
+      data.files.add(MapEntry(
+        fileKey,
+        await MultipartFile.fromFile(files[i].path),
+      ));
+
+      if (i < descriptions.length) {
+        data.fields.add(MapEntry(descKey, descriptions[i]));
+      }
+    }
+  }
+
+  // ================= SAVE USER =================
+
+  Future<void> saveUserData(Map<String, dynamic> json) async {
+    final pref = SharedPref();
+
+    print("📦 [SAVE USER DATA FULL RESPONSE]: $json");
+
+    await pref.setString(PrefKeys.accessToken, json["accessToken"] ?? "");
+    await pref.setString(PrefKeys.refreshToken, json["refreshToken"] ?? "");
+    await pref.setString(PrefKeys.userId, json["data"]?["id"]?.toString() ?? "");
+    await pref.setString(PrefKeys.userRole, json["data"]?["role"] ?? "");
+
+    /// 🔥 حفظ الريسبونس كامل
+    await pref.setString(
+      PrefKeys.fullLoginResponse,
+      jsonEncode(json),
+    );
+  }
+
   // ================= LOGIN =================
 
+  @override
+  Future<Either<Failure, LoginResponseDM>> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      if (!await networkInfo.isConnected) {
+        throw OfflineException();
+      }
 
-@override
-Future<Either<Failure, LoginResponseDM>> login({
-  required String email,
-  required String password,
-}) async {
-  try {
-    print("🚀 [LOGIN] Start");
+      final response = await apiManager.post(Endpoints.login, {
+        "email": email,
+        "password": password,
+      });
 
-    // 🌐 check internet
-    final isConnected = await networkInfo.isConnected;
-    print("🌐 [LOGIN] Internet: $isConnected");
+      print("📥 [LOGIN RESPONSE]: $response");
 
-    if (!isConnected) {
-      print("❌ [LOGIN] No Internet");
-      throw OfflineException();
+      await saveUserData(response);
+
+      final loginResponse = LoginResponseDM.fromJson(response);
+      return Right(loginResponse);
+
+    } on DioException catch (e) {
+      print("❌ [LOGIN ERROR]: ${e.response?.data}");
+      return Left(mapExceptionToFailure(ErrorHandler.handle(e)));
+
+    } on AppException catch (e) {
+      return Left(mapExceptionToFailure(e));
+
+    } catch (e) {
+      print("🔥 [LOGIN UNKNOWN ERROR]: $e");
+      return Left(ServerFailure());
     }
-
-    // 📤 API call
-    print("📤 [LOGIN] Sending request...");
-    final response = await apiManager.post(Endpoints.login, {
-      "email": email,
-      "password": password,
-    });
-
-    print("📥 [LOGIN] Response: $response");
-
-    // ================= SAVE FULL RESPONSE =================
-
-    final responseString = jsonEncode(response);
-
-    await SharedPref().setString(
-      PrefKeys.fullLoginResponse,
-      responseString,
-    );
-
-    print("📦 [FULL RESPONSE RAW]: $responseString");
-
-    final savedResponse =
-        SharedPref().getString(PrefKeys.fullLoginResponse);
-
-    print("💾 [FULL RESPONSE FROM STORAGE]: $savedResponse");
-
-    // ================= PARSE =================
-
-    final loginResponse = LoginResponseDM.fromJson(response);
-
-    // ⚠️ التصحيح هنا 👇
-    final user = loginResponse.data;
-
-    // ================= SAVE USER =================
-
-    if (user != null) {
-      await SharedPref().setString(
-        PrefKeys.userId,
-        user.id.toString(),
-      );
-
-      await SharedPref().setString(
-        PrefKeys.userRole,
-        user.role ?? "",
-      );
-
-      print("👤 [USER] ID: ${user.id}");
-      print("🎭 [USER] Role: ${user.role}");
-    } else {
-      print("❌ [USER] user is null");
-    }
-
-    // ================= TOKEN =================
-
-    final accessToken =
-        SharedPref().getString(PrefKeys.accessToken);
-    final refreshToken =
-        SharedPref().getString(PrefKeys.refreshToken);
-
-    print("🔑 [TOKEN] Access: $accessToken");
-    print("🔄 [TOKEN] Refresh: $refreshToken");
-
-    print("✅ [LOGIN] Success");
-
-    return Right(loginResponse);
-
-  } on DioException catch (e) {
-    print("🔥 [LOGIN] Dio Error: ${e.message}");
-
-    final exception = ErrorHandler.handle(e);
-    print("⚠️ [LOGIN] Exception: $exception");
-
-    final failure = mapExceptionToFailure(exception);
-    print("❌ [LOGIN] Failure: $failure");
-
-    return Left(failure);
-
-  } on AppException catch (e) {
-    print("⚠️ [LOGIN] AppException: $e");
-
-    final failure = mapExceptionToFailure(e);
-    return Left(failure);
-
-  } catch (e) {
-    print("💥 [LOGIN] Unknown Error: $e");
-    return Left(ServerFailure());
   }
-}
+
+  // ================= REGISTER DOCTOR =================
+
   @override
   Future<Either<Failure, RegisterResponseDoctorDm>> registerDoctor({
     required String fullName,
@@ -155,7 +145,7 @@ Future<Either<Failure, LoginResponseDM>> login({
         throw OfflineException();
       }
 
-      final doctorData = FormData.fromMap({
+      final data = FormData.fromMap({
         "email": email,
         "password": password,
         "phoneNumber": phoneNumber,
@@ -166,37 +156,37 @@ Future<Either<Failure, LoginResponseDM>> login({
         "fullName": fullName,
         "about": about,
         "price": price,
-
-        //todo: license image (single file)
-        "licenseImage": await MultipartFile.fromFile(
-          licenseImages.path,
-          filename: licenseImages.path.split('/').last,
-        ),
-
-        //todo: personal photo (optional)
-        if (personalPhoto != null)
-          "personalPhoto": await MultipartFile.fromFile(
-            personalPhoto.path,
-            filename: personalPhoto.path.split('/').last,
-          ),
       });
 
-      var response = await apiManager.post(
+      await addFile(data, licenseImages, "licenseImage");
+      await addFile(data, personalPhoto, "personalPhoto");
+
+      final response = await apiManager.post(
         Endpoints.registerDoctor,
-        doctorData,
+        data,
       );
-      var doctorResponse = RegisterResponseDoctorDm.fromJson(response);
+
+      print("📥 [REGISTER DOCTOR RESPONSE]: $response");
+
+      await saveUserData(response);
+
+      final doctorResponse = RegisterResponseDoctorDm.fromJson(response);
       return Right(doctorResponse);
+
     } on DioException catch (e) {
-      final exception = ErrorHandler.handle(e); // AppException
-      return Left(mapExceptionToFailure(exception)); // ✅
+      print("❌ [REGISTER DOCTOR ERROR]: ${e.response?.data}");
+      return Left(mapExceptionToFailure(ErrorHandler.handle(e)));
+
     } on AppException catch (e) {
-      // todo exception → failure
       return Left(mapExceptionToFailure(e));
+
     } catch (e) {
+      print("🔥 [REGISTER DOCTOR UNKNOWN ERROR]: $e");
       return Left(ServerFailure());
     }
   }
+
+  // ================= REGISTER PATIENT =================
 
   @override
   Future<Either<Failure, RegisterResponsePatientDm>> registerPatient({
@@ -217,7 +207,6 @@ Future<Either<Failure, LoginResponseDM>> login({
     File? personalPhoto,
   }) async {
     try {
-      // todo: check internet
       if (!await networkInfo.isConnected) {
         throw OfflineException();
       }
@@ -233,46 +222,13 @@ Future<Either<Failure, LoginResponseDM>> login({
         "weight": weight,
       });
 
-      // ================= LISTS =================
-      void addList(List<String> list, String key) {
-        for (var item in list) {
-          data.fields.add(MapEntry(key, item));
-        }
-      }
+      addList(data, conditions, "conditions");
+      addList(data, allergies, "allergies");
 
-      addList(conditions, "conditions");
-      addList(allergies, "allergies");
-
-      // ================= FILE =================
-      Future<void> addFile(File? file, String key) async {
-        if (file != null) {
-          data.files.add(
-            MapEntry(key, await MultipartFile.fromFile(file.path)),
-          );
-        }
-      }
-
-      await addFile(personalPhoto, "personalPhoto");
-
-      // ================= MULTIPLE FILES =================
-      Future<void> addFilesWithDesc({
-        required List<File> files,
-        required List<String> descriptions,
-        required String fileKey,
-        required String descKey,
-      }) async {
-        for (int i = 0; i < files.length; i++) {
-          data.files.add(
-            MapEntry(fileKey, await MultipartFile.fromFile(files[i].path)),
-          );
-
-          if (i < descriptions.length) {
-            data.fields.add(MapEntry(descKey, descriptions[i]));
-          }
-        }
-      }
+      await addFile(data, personalPhoto, "personalPhoto");
 
       await addFilesWithDesc(
+        data: data,
         files: radiologyImages,
         descriptions: radiologyDescriptions,
         fileKey: "radiologyImage",
@@ -280,23 +236,34 @@ Future<Either<Failure, LoginResponseDM>> login({
       );
 
       await addFilesWithDesc(
+        data: data,
         files: labImages,
         descriptions: labDescriptions,
         fileKey: "labImage",
         descKey: "labDescription",
       );
 
-      // ================= REQUEST =================
-      final response = await apiManager.post(Endpoints.registerPatient, data);
-      final result = RegisterResponsePatientDm.fromJson(response);
+      final response = await apiManager.post(
+        Endpoints.registerPatient,
+        data,
+      );
 
+      print("📥 [REGISTER PATIENT RESPONSE]: $response");
+
+      await saveUserData(response);
+
+      final result = RegisterResponsePatientDm.fromJson(response);
       return Right(result);
+
     } on DioException catch (e) {
-      final exception = ErrorHandler.handle(e); // AppException
-      return Left(mapExceptionToFailure(exception)); // ✅
+      print("❌ [REGISTER PATIENT ERROR]: ${e.response?.data}");
+      return Left(mapExceptionToFailure(ErrorHandler.handle(e)));
+
     } on AppException catch (e) {
       return Left(mapExceptionToFailure(e));
+
     } catch (e) {
+      print("🔥 [REGISTER PATIENT UNKNOWN ERROR]: $e");
       return Left(ServerFailure());
     }
   }

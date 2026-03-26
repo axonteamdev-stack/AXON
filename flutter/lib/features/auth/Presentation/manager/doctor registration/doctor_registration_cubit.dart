@@ -1,5 +1,4 @@
-import 'package:Axon/core/di/di.dart';
-import 'package:Axon/features/auth/Presentation/manager/selected%20gender/gender_cubit.dart';
+import 'package:Axon/core/service/shared_pref/shared_pref.dart';
 import 'package:Axon/features/auth/domain/useCases/register_doctor_use_case.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,18 +14,21 @@ class DoctorRegistrationCubit extends Cubit<DoctorRegistrationState> {
   final RegisterDoctorUseCase registerDoctorUseCase;
   DoctorRegistrationCubit({required this.registerDoctorUseCase})
     : super(DoctorRegistrationInitial());
+    bool _isPicking = false;
 
-  final experienceCtrl = TextEditingController();
-  final licenseCtrl = TextEditingController();
-  final aboutCtrl = TextEditingController();
-  final priceCtrl = TextEditingController();
+ final experienceCtrl = TextEditingController(text: "5");
+final licenseCtrl = TextEditingController(text: "ML-123456");
+final aboutCtrl = TextEditingController(
+  text: "Experienced doctor specialized in patient care",
+);
+final priceCtrl = TextEditingController(text: "200");
 
-  final formKey = GlobalKey<FormState>();
+final formKey = GlobalKey<FormState>();
 
-  final fullNameController = TextEditingController();
-  final emailController = TextEditingController();
-  final phoneController = TextEditingController();
-  final passwordController = TextEditingController();
+final fullNameController = TextEditingController(text: "Ahmed Mohamed");
+final emailController = TextEditingController(text: "ahmed@test.com");
+final phoneController = TextEditingController(text: "01012345678");
+final passwordController = TextEditingController(text: "P@assword123456");
 
   // ================= DATA =================
 
@@ -51,8 +53,12 @@ class DoctorRegistrationCubit extends Cubit<DoctorRegistrationState> {
   }
 
   // ================= IMAGE PICK =================
+Future<void> pickImage(ImageType type) async {
+  if (_isPicking) return; // 🛑 يمنع التكرار
 
-  Future<void> pickImage(ImageType type) async {
+  _isPicking = true;
+
+  try {
     final picked = await picker.pickImage(source: ImageSource.gallery);
 
     if (picked != null) {
@@ -70,42 +76,59 @@ class DoctorRegistrationCubit extends Cubit<DoctorRegistrationState> {
         ),
       );
     }
-  }
-
-  Future<void> doctorRegistration() async {
-    if (formKey.currentState!.validate() == true) {
-      final gender = getIt<GenderCubit>().genderValue;
-
-      if (selectedSpecialization == null) {
-        emit(DoctorRegistrationErrorMessage("Please select specialization"));
-        return;
-      }
-
-      if (licenseFile == null) {
-        emit(DoctorRegistrationErrorMessage("Upload license image"));
-        return;
-      }
-
-      emit(DoctorRegistrationLoading());
-      var either = await registerDoctorUseCase.invoke(
-        personalPhoto: personalPhoto != null ? File(personalPhoto!.path) : null,
-        fullName: fullNameController.text,
-        email: emailController.text,
-        password: passwordController.text,
-        phoneNumber: phoneController.text,
-        gender: gender,
-        specialization: selectedSpecialization ?? "",
-        yearsExperience: int.tryParse(experienceCtrl.text) ?? 0,
-        medicalLicenseNumber: licenseCtrl.text,
-        price: int.tryParse(priceCtrl.text) ?? 0,
-        about: aboutCtrl.text,
-        licenseImages: File(licenseFile!.path),
-      );
-      either.fold(
-        (error) => emit(DoctorRegistrationError(failure: error)),
-        (response) =>
-            emit(DoctorRegistrationSuccess(registerDoctorEntity: response)),
-      );
-    }
+  } catch (e) {
+    print(e);
+  } finally {
+    _isPicking = false; // ✅ يرجع يفتح تاني
   }
 }
+Future<void> doctorRegistration() async {
+  final prefs = SharedPref();
+
+  final fullName = prefs.getString("fullName");
+  final email = prefs.getString("email");
+  final phone = prefs.getString("phone");
+  final password = prefs.getString("password");
+  final gender = prefs.getString("gender");
+  final imagePath = prefs.getString("personalImage");
+
+  if (!formKey.currentState!.validate()) return;
+
+  if (selectedSpecialization == null) {
+    emit(DoctorRegistrationErrorMessage("Select specialization"));
+    return;
+  }
+
+  if (licenseFile == null) {
+    emit(DoctorRegistrationErrorMessage("Upload license image"));
+    return;
+  }
+
+  emit(DoctorRegistrationLoading());
+
+  final result = await registerDoctorUseCase.invoke(
+    // ✅ من SharedPref
+    fullName: fullName ?? "",
+    email: email ?? "",
+    password: password ?? "",
+    phoneNumber: phone ?? "",
+    gender: gender ?? "",
+
+    // ✅ من الصفحة التانية
+    specialization: selectedSpecialization!,
+    yearsExperience: int.tryParse(experienceCtrl.text) ?? 0,
+    medicalLicenseNumber: licenseCtrl.text,
+    price: int.tryParse(priceCtrl.text) ?? 0,
+    about: aboutCtrl.text,
+
+    // ✅ الصور
+    personalPhoto: imagePath != null ? File(imagePath) : null,
+    licenseImages: File(licenseFile!.path),
+  );
+
+  result.fold(
+    (error) => emit(DoctorRegistrationError(failure: error)),
+    (response) =>
+        emit(DoctorRegistrationSuccess(registerDoctorEntity: response)),
+  );
+}}

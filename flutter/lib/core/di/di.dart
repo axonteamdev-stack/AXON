@@ -12,3 +12,5 @@ final getIt = GetIt.instance;
 )  
 void configureDependencies() => getIt.init();
 
+// flutter pub run build_runner build --delete-conflicting-outputs
+// flutter pub run build_runner watch --delete-conflicting-outputs

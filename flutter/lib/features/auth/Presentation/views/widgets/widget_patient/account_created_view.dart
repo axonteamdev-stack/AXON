@@ -21,11 +21,14 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
-  final jsonString = SharedPref().getString(PrefKeys.fullLoginResponse);
+
+  String? jsonString;
 
   @override
   void initState() {
     super.initState();
+
+    jsonString = SharedPref().getString(PrefKeys.fullLoginResponse);
 
     _controller = AnimationController(
       vsync: this,
@@ -42,14 +45,30 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
     _controller.forward();
 
     Timer(const Duration(seconds: 2), () {
-      final Map<String, dynamic> data = jsonDecode(jsonString!);
-      if (data["data"]["role"] == "doctor") {
-        context.pushName(AppRoutes.doctorMain);
-      }else{
-                context.pushName(AppRoutes.home);
-
-      }
+      _handleNavigation();
     });
+  }
+
+  void _handleNavigation() {
+    try {
+      if (jsonString == null || jsonString!.isEmpty) {
+        context.pushName(AppRoutes.home);
+        return;
+      }
+
+      final Map<String, dynamic> data = jsonDecode(jsonString!);
+
+      final role = data["data"]?["role"];
+
+      if (role == "doctor") {
+        context.pushName(AppRoutes.doctorMain);
+      } else {
+        context.pushName(AppRoutes.home);
+      }
+    } catch (e) {
+      // fallback لو حصل أي error
+      context.pushName(AppRoutes.home);
+    }
   }
 
   @override
