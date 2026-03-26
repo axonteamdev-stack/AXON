@@ -125,66 +125,84 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   // ================= REGISTER DOCTOR =================
 
-  @override
-  Future<Either<Failure, RegisterResponseDoctorDm>> registerDoctor({
-    required String fullName,
-    required String email,
-    required String password,
-    required String phoneNumber,
-    required String gender,
-    required String specialization,
-    required int yearsExperience,
-    required String medicalLicenseNumber,
-    required int price,
-    required String about,
-    required File licenseImages,
-    File? personalPhoto,
-  }) async {
-    try {
-      if (!await networkInfo.isConnected) {
-        throw OfflineException();
-      }
-
-      final data = FormData.fromMap({
-        "email": email,
-        "password": password,
-        "phoneNumber": phoneNumber,
-        "gender": gender,
-        "specialization": specialization,
-        "yearsExperience": yearsExperience,
-        "medicalLicenseNumber": medicalLicenseNumber,
-        "fullName": fullName,
-        "about": about,
-        "price": price,
-      });
-
-      await addFile(data, licenseImages, "licenseImage");
-      await addFile(data, personalPhoto, "personalPhoto");
-
-      final response = await apiManager.post(
-        Endpoints.registerDoctor,
-        data,
-      );
-
-      print("📥 [REGISTER DOCTOR RESPONSE]: $response");
-
-      await saveUserData(response);
-
-      final doctorResponse = RegisterResponseDoctorDm.fromJson(response);
-      return Right(doctorResponse);
-
-    } on DioException catch (e) {
-      print("❌ [REGISTER DOCTOR ERROR]: ${e.response?.data}");
-      return Left(mapExceptionToFailure(ErrorHandler.handle(e)));
-
-    } on AppException catch (e) {
-      return Left(mapExceptionToFailure(e));
-
-    } catch (e) {
-      print("🔥 [REGISTER DOCTOR UNKNOWN ERROR]: $e");
-      return Left(ServerFailure());
+ @override
+Future<Either<Failure, RegisterResponseDoctorDm>> registerDoctor({
+  required String fullName,
+  required String email,
+  required String password,
+  required String phoneNumber,
+  required String gender,
+  required String specialization,
+  required int yearsExperience,
+  required String medicalLicenseNumber,
+  required int price,
+  required String about,
+  required File licenseImages,
+  File? personalPhoto,
+}) async {
+  try {
+    if (!await networkInfo.isConnected) {
+      throw OfflineException();
     }
+
+    final data = FormData.fromMap({
+      "email": email,
+      "password": password,
+      "phoneNumber": phoneNumber,
+      "gender": gender,
+      "specialization": specialization,
+      "yearsExperience": yearsExperience,
+      "medicalLicenseNumber": medicalLicenseNumber,
+      "fullName": fullName,
+      "about": about,
+      "price": price,
+    });
+
+    await addFile(data, licenseImages, "licenseImage");
+    await addFile(data, personalPhoto, "personalPhoto");
+
+    // ================= 🔥 PRINT REQUEST DATA =================
+
+    print("📤 ========= REGISTER DOCTOR REQUEST =========");
+
+    print("📌 Fields:");
+    for (var field in data.fields) {
+      print("➡️ ${field.key}: ${field.value}");
+    }
+
+    print("📌 Files:");
+    for (var file in data.files) {
+      print("➡️ ${file.key}: ${file.value.filename}");
+    }
+
+    print("📤 ==========================================");
+
+    // ========================================================
+
+    final response = await apiManager.post(
+      Endpoints.registerDoctor,
+      data,
+    );
+
+    print("📥 [REGISTER DOCTOR RESPONSE]: $response");
+
+    await saveUserData(response);
+
+    final doctorResponse = RegisterResponseDoctorDm.fromJson(response);
+    return Right(doctorResponse);
+
+  } on DioException catch (e) {
+    print("❌ [REGISTER DOCTOR ERROR]: ${e.response?.data}");
+    return Left(mapExceptionToFailure(ErrorHandler.handle(e)));
+
+  } on AppException catch (e) {
+    return Left(mapExceptionToFailure(e));
+
+  } catch (e) {
+    print("🔥 [REGISTER DOCTOR UNKNOWN ERROR]: $e");
+    return Left(ServerFailure());
   }
+}
 
   // ================= REGISTER PATIENT =================
 

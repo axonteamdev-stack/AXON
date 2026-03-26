@@ -18,25 +18,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 class DoctorRegistrationView extends StatelessWidget {
-  const DoctorRegistrationView({super.key});
+  DoctorRegistrationView({super.key});
+
+  final DoctorRegistrationCubit doctorRegistrationCubit =
+      getIt<DoctorRegistrationCubit>();
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<DoctorRegistrationCubit>(),
-      child: const DoctorRegistrationBody(),
-    );
-  }
-}
-
-class DoctorRegistrationBody extends StatelessWidget {
-  const DoctorRegistrationBody({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cubit = context.read<DoctorRegistrationCubit>();
-
     return BlocConsumer<DoctorRegistrationCubit, DoctorRegistrationState>(
+      bloc: doctorRegistrationCubit,
       listener: (context, state) {
         if (state is DoctorRegistrationErrorMessage) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -51,7 +41,9 @@ class DoctorRegistrationBody extends StatelessWidget {
         }
 
         if (state is DoctorRegistrationSuccess) {
+          // 🔥 امسح البيانات بعد النجاح (اختياري)
           SharedPref().clearPreferences();
+
           Navigator.pushReplacementNamed(context, AppRoutes.home);
         }
       },
@@ -69,7 +61,7 @@ class DoctorRegistrationBody extends StatelessWidget {
           body: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Form(
-              key: cubit.formKey,
+              key: doctorRegistrationCubit.formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -96,7 +88,7 @@ class DoctorRegistrationBody extends StatelessWidget {
                     ],
                     onChanged: (v) {
                       if (v != null) {
-                        cubit.changeSpecialization(v);
+                        doctorRegistrationCubit.changeSpecialization(v);
                       }
                     },
                   ),
@@ -106,7 +98,7 @@ class DoctorRegistrationBody extends StatelessWidget {
                   /// experience
                   FormLabel(text: context.l10n.years_experience),
                   CustomTextField(
-                    controller: cubit.experienceCtrl,
+                    controller: doctorRegistrationCubit.experienceCtrl,
                     hintText: context.l10n.enter_years_experience,
                     keyboardType: TextInputType.number,
                   ),
@@ -116,7 +108,7 @@ class DoctorRegistrationBody extends StatelessWidget {
                   /// license number
                   FormLabel(text: context.l10n.medical_license_number),
                   CustomTextField(
-                    controller: cubit.licenseCtrl,
+                    controller: doctorRegistrationCubit.licenseCtrl,
                     hintText: "ML-123456",
                   ),
 
@@ -125,7 +117,7 @@ class DoctorRegistrationBody extends StatelessWidget {
                   /// about
                   FormLabel(text: context.l10n.about),
                   CustomTextField(
-                    controller: cubit.aboutCtrl,
+                    controller: doctorRegistrationCubit.aboutCtrl,
                     hintText: context.l10n.about_hint,
                     maxLines: 4,
                   ),
@@ -135,7 +127,7 @@ class DoctorRegistrationBody extends StatelessWidget {
                   /// price
                   FormLabel(text: context.l10n.session_price),
                   CustomTextField(
-                    controller: cubit.priceCtrl,
+                    controller: doctorRegistrationCubit.priceCtrl,
                     hintText: context.l10n.enter_session_price,
                     keyboardType: TextInputType.number,
                   ),
@@ -147,7 +139,7 @@ class DoctorRegistrationBody extends StatelessWidget {
                   UploadMedicalLicenseBox(
                     file: licenseImage,
                     onTap: () {
-                      cubit.pickImage(ImageType.license);
+                      doctorRegistrationCubit.pickImage(ImageType.license);
                     },
                   ),
 
@@ -159,7 +151,7 @@ class DoctorRegistrationBody extends StatelessWidget {
                         ? "Loading..."
                         : context.l10n.create_account,
                     height: 50.h,
-                    onPressed: cubit.doctorRegistration,
+                    onPressed: doctorRegistrationCubit.doctorRegistration,
                   ),
 
                   SizedBox(height: 40.h),
