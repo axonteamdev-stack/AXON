@@ -1,31 +1,23 @@
-import 'package:image_picker/image_picker.dart';
+import 'package:Axon/core/errors/failures.dart';
+import 'package:Axon/features/auth/domain/entities/register_response_doctor_entity.dart';
 
 abstract class DoctorRegistrationState {}
 
-class DoctorRegistrationInitial extends DoctorRegistrationState {
-  final String? selectedSpecialization;
-  final XFile? personalFile;
-  final XFile? licenseFile;
-
-  DoctorRegistrationInitial({
-    this.selectedSpecialization,
-    this.licenseFile, this.personalFile,
-  });
+class InitialDoctorRegistration extends DoctorRegistrationState {
 }
 
 class DoctorRegistrationLoading extends DoctorRegistrationState {}
 
 class DoctorRegistrationSuccess extends DoctorRegistrationState {
-  final dynamic registerDoctorEntity;
+  final RegisterResponseDoctorEntity? registerDoctorEntity;
   DoctorRegistrationSuccess({this.registerDoctorEntity});
 }
 
 class DoctorRegistrationError extends DoctorRegistrationState {
-  final dynamic failure;
+  final Failure failure;
   DoctorRegistrationError({required this.failure});
 }
 
-class DoctorRegistrationErrorMessage extends DoctorRegistrationState {
-  final String message;
-  DoctorRegistrationErrorMessage(this.message);
-}
+
+class LicenseDoctorImage extends DoctorRegistrationState{}
+class SpecializationDoctor extends DoctorRegistrationState{}

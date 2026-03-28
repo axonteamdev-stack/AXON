@@ -25,6 +25,8 @@ import '../../features/auth/domain/useCases/register_doctor_use_case.dart'
     as _i646;
 import '../../features/auth/Presentation/manager/doctor%20registration/doctor_registration_cubit.dart'
     as _i533;
+import '../../features/auth/Presentation/manager/general%20register%20data/general_register_cubit.dart'
+    as _i613;
 import '../../features/auth/Presentation/manager/login/login_cubit.dart'
     as _i65;
 import '../../features/auth/Presentation/manager/selected%20gender/gender_cubit.dart'
@@ -41,6 +43,7 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final networkModule = _$NetworkModule();
+    gh.factory<_i613.GeneralRegisterCubit>(() => _i613.GeneralRegisterCubit());
     gh.singleton<_i119.ApiManager>(() => _i119.ApiManager());
     gh.lazySingleton<_i161.InternetConnection>(
       () => networkModule.internetConnection,

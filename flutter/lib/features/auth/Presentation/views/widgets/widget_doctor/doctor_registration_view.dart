@@ -1,4 +1,5 @@
 import 'package:Axon/core/di/di.dart';
+import 'package:Axon/core/errors/mappers/failure_to_message_mapper.dart';
 import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/service/shared_pref/shared_pref.dart';
@@ -15,7 +16,6 @@ import 'package:Axon/features/auth/Presentation/views/widgets/upload_medical_lic
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 
 class DoctorRegistrationView extends StatelessWidget {
   DoctorRegistrationView({super.key});
@@ -28,33 +28,21 @@ class DoctorRegistrationView extends StatelessWidget {
     return BlocConsumer<DoctorRegistrationCubit, DoctorRegistrationState>(
       bloc: doctorRegistrationCubit,
       listener: (context, state) {
-        if (state is DoctorRegistrationErrorMessage) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
-
         if (state is DoctorRegistrationError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Something went wrong")),
+            SnackBar(content: Text(mapFailureToMessage(state.failure))),
           );
         }
 
         if (state is DoctorRegistrationSuccess) {
-          // 🔥 امسح البيانات بعد النجاح (اختياري)
           SharedPref().clearPreferences();
 
           Navigator.pushReplacementNamed(context, AppRoutes.home);
         }
       },
       builder: (context, state) {
-        String? selected;
-        XFile? licenseImage;
-
-        if (state is DoctorRegistrationInitial) {
-          selected = state.selectedSpecialization;
-          licenseImage = state.licenseFile;
-        }
+        // String? selected;
+        // XFile? licenseImage;
 
         return Scaffold(
           backgroundColor: AppColors.white,
@@ -79,7 +67,7 @@ class DoctorRegistrationView extends StatelessWidget {
                   FormLabel(text: context.l10n.specialization),
                   ReusableDropdown(
                     hint: context.l10n.select_specialization,
-                    value: selected,
+                    value: doctorRegistrationCubit.selectedSpecialization,
                     items: [
                       context.l10n.cardiology,
                       context.l10n.neurology,
@@ -88,7 +76,7 @@ class DoctorRegistrationView extends StatelessWidget {
                     ],
                     onChanged: (v) {
                       if (v != null) {
-                        doctorRegistrationCubit.changeSpecialization(v);
+                        doctorRegistrationCubit.specializationSelected(v);
                       }
                     },
                   ),
@@ -137,9 +125,9 @@ class DoctorRegistrationView extends StatelessWidget {
                   /// license image
                   FormLabel(text: context.l10n.upload_medical_license),
                   UploadMedicalLicenseBox(
-                    file: licenseImage,
+                    file: doctorRegistrationCubit.licenseImage,
                     onTap: () {
-                      doctorRegistrationCubit.pickImage(ImageType.license);
+                      doctorRegistrationCubit.pickedLicenseImage();
                     },
                   ),
 
