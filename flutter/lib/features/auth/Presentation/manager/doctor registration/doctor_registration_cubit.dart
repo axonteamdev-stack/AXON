@@ -61,14 +61,14 @@ class DoctorRegistrationCubit extends Cubit<DoctorRegistrationState> {
           price: int.tryParse(priceCtrl.text) ?? 0,
           about: aboutCtrl.text,
           licenseImages: File(licenseImage!.path),
-          personalPhoto: pref.getString("gender") != null
-              ? File(pref.getString("gender") ?? '')
+          personalPhoto: pref.getString("personalPhoto") != null
+              ? File(pref.getString("personalPhoto") ?? '')
               : null,
         );
         either.fold((error) => emit(DoctorRegistrationError(failure: error)), (
           response,
         ) {
-          print("✅ Register Success: ${response.message}");
+          print("Register Success: ${response.message}");
           emit(DoctorRegistrationSuccess());
         });
       } catch (e) {

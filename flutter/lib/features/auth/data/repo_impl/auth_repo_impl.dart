@@ -53,6 +53,7 @@ class AuthRepoImpl implements AuthRepo {
       price: price,
       about: about,
       licenseImages: licenseImages,
+      personalPhoto: personalPhoto,
     );
     return either.fold((error) => Left(error), (response) => Right(response));
   }

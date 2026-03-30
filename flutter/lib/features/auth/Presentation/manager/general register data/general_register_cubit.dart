@@ -31,15 +31,18 @@ class GeneralRegisterCubit extends Cubit<GeneralRegisterState> {
   }
 
   Future<void> saveAllData(String gender) async {
-    await pref.setString("fullName", fullNameController.text);
-    await pref.setString("email", emailController.text);
-    await pref.setString("phone", phoneController.text);
-    await pref.setString("password", passwordController.text);
-    await pref.setString("gender", gender);
-    if (personalPhoto != null) {
-      await pref.setString("personalPhoto", personalPhoto!.path);
-    }
+   await Future.wait([
+      pref.setString("fullName", fullNameController.text),
+      pref.setString("email", emailController.text),
+      pref.setString("phone", phoneController.text),
+      pref.setString("password", passwordController.text),
+      pref.setString("gender", gender),
+   if  ( personalPhoto != null)
+       pref.setString("personalPhoto", personalPhoto!.path),
+    
+    ]);
 
+   
 
     print("Name: ${pref.getString("fullName")}");
     print("Email: ${pref.getString("email")}");

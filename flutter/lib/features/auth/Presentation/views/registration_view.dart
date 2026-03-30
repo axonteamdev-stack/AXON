@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
-/// ================== MAIN VIEW ==================
 class RegistrationView extends StatelessWidget {
   const RegistrationView({super.key});
 
