@@ -52,7 +52,7 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
   void _handleNavigation() {
     try {
       if (jsonString == null || jsonString!.isEmpty) {
-        context.pushName(AppRoutes.home);
+        context.pushName(AppRoutes.patientMain);
         return;
       }
 
@@ -63,11 +63,11 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
       if (role == "doctor") {
         context.pushName(AppRoutes.doctorMain);
       } else {
-        context.pushName(AppRoutes.home);
+        context.pushName(AppRoutes.patientMain);
       }
     } catch (e) {
       // fallback لو حصل أي error
-      context.pushName(AppRoutes.home);
+      context.pushName(AppRoutes.patientMain);
     }
   }
 

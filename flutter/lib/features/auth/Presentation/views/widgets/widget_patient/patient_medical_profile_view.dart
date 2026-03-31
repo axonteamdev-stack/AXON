@@ -1,4 +1,3 @@
-import 'package:Axon/core/di/di.dart';
 import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/helpers/validation_helper.dart';
@@ -13,179 +12,184 @@ import 'package:Axon/features/auth/Presentation/manager/patient_registration/pat
 import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/form_label.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/reusable_dropdown.dart';
-import 'package:Axon/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PatientMedicalProfileView extends StatelessWidget {
   PatientMedicalProfileView({super.key});
-  TextEditingController heightCtrl = TextEditingController();
-  TextEditingController weightCtrl = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-   final cubit = getIt<PatientRegistrationCubit>();
 
+  final TextEditingController heightCtrl = TextEditingController();
+  final TextEditingController weightCtrl = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
- 
+    final cubit = context.read<PatientRegistrationCubit>();
 
-    return BlocProvider(
-     create: (_) => cubit,
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        body: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 55.h),
-                      CenterIconHeader(
-                        imagePath: AppImages.medicalProfile,
-                        title: context.l10n.medical_profile,
-                        subtitle: context.l10n.medical_profile_desc,
-                      ),
-                      SizedBox(height: 25.h),
-                      FormLabel(text: context.l10n.blood_type),
-                      BlocBuilder<
-                        PatientRegistrationCubit,
-                        PatientRegistrationState
-                      >(
-                        builder: (context, state) {
-                          return ReusableDropdown(
-                            hint: context.l10n.select_blood_type,
-                            value: cubit.currentState.bloodType,
-                            items: const [
-                              'A+',
-                              'A-',
-                              'B+',
-                              'B-',
-                              'O+',
-                              'O-',
-                              'AB+',
-                              'AB-',
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 55.h),
+
+                    CenterIconHeader(
+                      imagePath: AppImages.medicalProfile,
+                      title: context.l10n.medical_profile,
+                      subtitle: context.l10n.medical_profile_desc,
+                    ),
+
+                    SizedBox(height: 25.h),
+
+                    FormLabel(text: context.l10n.blood_type),
+
+                    BlocBuilder<
+                      PatientRegistrationCubit,
+                      PatientRegistrationState
+                    >(
+                      builder: (context, state) {
+                        return ReusableDropdown(
+                          hint: context.l10n.select_blood_type,
+                          value: state.bloodType,
+                          items: const [
+                            'A+',
+                            'A-',
+                            'B+',
+                            'B-',
+                            'O+',
+                            'O-',
+                            'AB+',
+                            'AB-',
+                          ],
+                          onChanged: (v) {
+                            cubit.updateMedicalProfile(bloodType: v);
+                          },
+                        );
+                      },
+                    ),
+
+                    SizedBox(height: 20.h),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              FormLabel(text: context.l10n.height),
+
+                              CustomTextField(
+                                validator: ValidationHelper.validateNumber,
+                                controller: heightCtrl,
+                                hintText: '170',
+                                keyboardType: TextInputType.number,
+                                prefixIcon: Image.asset(
+                                  AppImages.height,
+                                  width: 20,
+                                  height: 20,
+                                ),
+                                onChanged: (v) {
+                                  cubit.updateMedicalProfile(
+                                    height: double.tryParse(v),
+                                  );
+                                },
+                              ),
                             ],
-                            onChanged: (v) {
-                              cubit.updateMedicalProfile(bloodType: v);
-                            },
-                          );
-                        },
-                      ),
-                      SizedBox(height: 20.h),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                FormLabel(text: context.l10n.height),
-                                CustomTextField(
-                                  validator: ValidationHelper.validateNumber,
-                                  controller: heightCtrl,
-                                  hintText: '170',
-                                  keyboardType: TextInputType.number,
-                                  prefixIcon: Image.asset(
-                                    AppImages.height,
-                                    width: 20,
-                                    height: 20,
-                                  ),
-                                  onChanged: (v) {
-                                    cubit.updateMedicalProfile(
-                                      height: double.tryParse(v),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
                           ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                FormLabel(text: context.l10n.weight),
-                                CustomTextField(
-                                  validator: ValidationHelper.validateNumber,
-                                  controller: weightCtrl,
-                                  hintText: '62.5',
-                                  keyboardType: TextInputType.number,
-                                  prefixIcon: Image.asset(
-                                    AppImages.weight,
-                                    width: 16,
-                                    height: 16,
-                                    fit: BoxFit.contain,
-                                  ),
-                                  onChanged: (v) {
-                                    cubit.updateMedicalProfile(
-                                      weight: double.tryParse(v),
-                                    );
-                                  },
+                        ),
+
+                        SizedBox(width: 12.w),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              FormLabel(text: context.l10n.weight),
+
+                              CustomTextField(
+                                validator: ValidationHelper.validateNumber,
+                                controller: weightCtrl,
+                                hintText: '62.5',
+                                keyboardType: TextInputType.number,
+                                prefixIcon: Image.asset(
+                                  AppImages.weight,
+                                  width: 16,
+                                  height: 16,
+                                  fit: BoxFit.contain,
                                 ),
-                              ],
+                                onChanged: (v) {
+                                  cubit.updateMedicalProfile(
+                                    weight: double.tryParse(v),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 20.h),
+
+                    Container(
+                      padding: EdgeInsets.all(12.r),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.blue),
+                        borderRadius: BorderRadius.circular(12),
+                        color: AppColors.blue.withOpacity(0.1),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: AppColors.blue,
+                            size: 20.sp,
+                          ),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            child: TextApp(
+                              text: context.l10n.medical_info_hint,
+                              fontSize: 13,
+                              color: AppColors.blue,
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 20.h),
-                      Container(
-                        padding: EdgeInsets.all(12.r),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: AppColors.blue),
-                          borderRadius: BorderRadius.circular(12),
-                          color: AppColors.blue.withOpacity(0.1),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: AppColors.blue,
-                              size: 20.sp,
-                            ),
-                            SizedBox(width: 10.w),
-                            Expanded(
-                              child: TextApp(
-                                text: context.l10n.medical_info_hint,
-                                fontSize: 13,
-                                color: AppColors.blue,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 24),
-                    ],
-                  ),
+                    ),
+
+                    SizedBox(height: 24),
+                  ],
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
-                child: CustomButton(
-                  text: context.l10n.next,
-                  height: 50.h,
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      if (cubit.currentState.bloodType != null) {
-                       context.pushName(
-  AppRoutes.patientHealthConditions,
-  arguments: cubit,
-);
-                      }else{
-                         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.select_blood_type)),
-          );
-                      }
-                      
+            ),
+
+            Padding(
+              padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
+              child: CustomButton(
+                text: context.l10n.next,
+                height: 50.h,
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    if (cubit.state.bloodType != null) {
+                      context.pushName(AppRoutes.patientHealthConditions);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(context.l10n.select_blood_type)),
+                      );
                     }
-                  },
-                ),
+                  }
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

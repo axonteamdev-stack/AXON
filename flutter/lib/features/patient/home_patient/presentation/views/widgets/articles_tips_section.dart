@@ -11,30 +11,28 @@ import 'article_card.dart';
 class ArticlesTipsSection extends StatelessWidget {
   const ArticlesTipsSection({super.key});
 
-  
-
   @override
   Widget build(BuildContext context) {
-     List<ArticleDetailsModel> articles = [
-    ArticleDetailsModel(
-      id: "1",
-      title: context.l10n.article_medication_tips,
-      image: AppImages.onboarding1,
-      content: context.l10n.article_dummy_content,
-    ),
-    ArticleDetailsModel(
-      id: "2",
-      title: context.l10n.article_vitamins_importance,
-      image: AppImages.onboarding2,
-      content: context.l10n.article_dummy_content,
-    ),
-    ArticleDetailsModel(
-      id: "3",
-      title: context.l10n.article_healthy_habits,
-      image: AppImages.onboarding3,
-      content: context.l10n.article_dummy_content,
-    ),
-  ];
+    List<ArticleDetailsModel> articles = [
+      ArticleDetailsModel(
+        id: "1",
+        title: context.l10n.article_medication_tips,
+        image: AppImages.onboarding1,
+        content: context.l10n.article_dummy_content,
+      ),
+      ArticleDetailsModel(
+        id: "2",
+        title: context.l10n.article_vitamins_importance,
+        image: AppImages.onboarding2,
+        content: context.l10n.article_dummy_content,
+      ),
+      ArticleDetailsModel(
+        id: "3",
+        title: context.l10n.article_healthy_habits,
+        image: AppImages.onboarding3,
+        content: context.l10n.article_dummy_content,
+      ),
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

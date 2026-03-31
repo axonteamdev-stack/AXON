@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScrollableContent extends StatelessWidget {
-  const HomeScrollableContent();
+  const HomeScrollableContent({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -7,9 +7,10 @@ class QuickActionItem extends StatelessWidget {
   final String icon;
   final String label;
   final VoidCallback onTap;
-  Color  ? colorIcon;
+  final Color  ? colorIcon;
 
-    QuickActionItem({
+  const  QuickActionItem({
+    super.key,
     required this.icon,
     required this.label,
     required this.onTap,

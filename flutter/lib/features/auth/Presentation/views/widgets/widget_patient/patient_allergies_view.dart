@@ -17,20 +17,11 @@ class PatientAllergiesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final registrationCubit = context.read<PatientRegistrationCubit>();
-
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => PatientDynamicListCubit(),
-        ),
-
-        BlocProvider.value(
-          value: registrationCubit,
-        ),
-      ],
+    return BlocProvider(
+      create: (_) => PatientDynamicListCubit(),
       child: Builder(
         builder: (context) {
+
           return Scaffold(
             backgroundColor: AppColors.white,
 
@@ -48,10 +39,14 @@ class PatientAllergiesView extends StatelessWidget {
                 text: context.l10n.next,
                 onPressed: () {
 
-                  final dynamicCubit = context.read<PatientDynamicListCubit>();
-                  final registrationCubit = context.read<PatientRegistrationCubit>();
+                  final dynamicCubit =
+                      context.read<PatientDynamicListCubit>();
+
+                  final registrationCubit =
+                      context.read<PatientRegistrationCubit>();
 
                   for (var item in dynamicCubit.state.items) {
+
                     final text = item.controller.text.trim();
 
                     if (text.isNotEmpty) {
@@ -64,13 +59,17 @@ class PatientAllergiesView extends StatelessWidget {
               ),
             ),
 
-            body: BlocBuilder<PatientDynamicListCubit, PatientDynamicListState>(
+            body: BlocBuilder<
+                PatientDynamicListCubit,
+                PatientDynamicListState>(
               builder: (context, state) {
+
                 return SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+
                       SizedBox(height: 55.h),
 
                       CenterIconHeader(
@@ -96,6 +95,7 @@ class PatientAllergiesView extends StatelessWidget {
               },
             ),
           );
+
         },
       ),
     );

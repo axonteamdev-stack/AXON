@@ -18,20 +18,8 @@ class PatientHealthConditionsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final registrationCubit = context.read<PatientRegistrationCubit>();
-
-    return MultiBlocProvider(
-      providers: [
-
-        BlocProvider(
-          create: (_) => PatientDynamicListCubit(),
-        ),
-
-        BlocProvider.value(
-          value: registrationCubit,
-        ),
-      ],
-
+    return BlocProvider(
+      create: (_) => PatientDynamicListCubit(),
       child: Builder(
         builder: (context) {
 
@@ -98,8 +86,7 @@ class PatientHealthConditionsView extends StatelessWidget {
                       ...List.generate(
                         state.items.length,
                         (index) => PatientDynamicInputCard(
-                          controller:
-                              state.items[index].controller,
+                          controller: state.items[index].controller,
                           hint: context.l10n.enter_condition,
                         ),
                       ),

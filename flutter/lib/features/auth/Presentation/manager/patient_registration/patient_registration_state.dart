@@ -2,7 +2,9 @@ import 'package:Axon/core/errors/failures.dart';
 import 'package:Axon/features/auth/domain/entities/medical_profile_entity.dart';
 import 'package:Axon/features/auth/domain/entities/register_response_patient_entity.dart';
 
-abstract class PatientRegistrationState {}
+abstract class PatientRegistrationState {
+  String? get bloodType => null;
+}
 
 class PatientRegistrationInitial extends PatientRegistrationState {}
 

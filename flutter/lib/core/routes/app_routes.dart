@@ -1,5 +1,4 @@
 import 'package:Axon/core/routes/base_routes.dart';
-import 'package:Axon/features/auth/Presentation/manager/patient_registration/patient_registration_cubit.dart';
 import 'package:Axon/features/auth/Presentation/views/forgot_password_email_view.dart';
 import 'package:Axon/features/auth/Presentation/views/forgot_password_otp_view.dart';
 import 'package:Axon/features/auth/Presentation/views/login_view.dart';
@@ -8,11 +7,9 @@ import 'package:Axon/features/auth/Presentation/views/reset_password_view.dart';
 import 'package:Axon/features/auth/Presentation/views/select_role_view.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/widget_doctor/doctor_registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/account_created_view.dart';
-import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/patient_allergies_view.dart';
-import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/patient_health_conditions_view.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/patient_lab_tests_view.dart';
-import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/patient_medical_profile_view.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/patient_radiology_view.dart';
+import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/patient_registration_flow.dart';
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_chat_view.dart';
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_show_patient_profile_view.dart';
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_view_patient_allergies_view.dart';
@@ -178,19 +175,19 @@ static const viewAll = 'viewAll';
       // Patient Registration
       case patientMedicalProfile:
         return BaseRoute(
-          page: PatientMedicalProfileView(),
+          page: PatientRegistrationFlow(),
         );
 
       
-case AppRoutes.patientAllergies:
-  return BaseRoute(
-    page: const PatientAllergiesView(),
-  );
+// case AppRoutes.patientAllergies:
+//   return BaseRoute(
+//     page: const PatientAllergiesView(),
+//   );
 
-case AppRoutes.patientHealthConditions:
-  return BaseRoute(
-    page:  PatientHealthConditionsView(),
-  );
+// case AppRoutes.patientHealthConditions:
+//   return BaseRoute(
+//     page:  PatientHealthConditionsView(),
+//   );
 
 
 
@@ -205,11 +202,11 @@ case AppRoutes.patientHealthConditions:
         return BaseRoute(page: const ResetPasswordView());
 
       // Patient Documents
-      case patientLabTests:
-        return BaseRoute(page: const PatientLabTestsView());
+      // case patientLabTests:
+      //   return BaseRoute(page: const PatientLabTestsView());
 
-      case patientRadiology:
-        return BaseRoute(page: const PatientRadiologyView());
+      // case patientRadiology:
+      //   return BaseRoute(page: const PatientRadiologyView());
 
       // Auth Success
       case accountCreated:

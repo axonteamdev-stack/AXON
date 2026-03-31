@@ -6,7 +6,7 @@ class NotificationIcon extends StatelessWidget {
   final int count;
   final VoidCallback onTap;
 
-  const NotificationIcon({
+  const NotificationIcon({super.key, 
     required this.count,
     required this.onTap,
   });
