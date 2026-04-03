@@ -1,9 +1,6 @@
 import User from "../Models/UserModel.js";
 import AppError, { catchAsync } from "../Utils/AppError.js";
-<<<<<<< HEAD
 import { badRequestError, unauthorizedError } from "../Error/index.js";
-=======
->>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 import { generateTokens } from "../Utils/TokenService.js";
 import jwt from "jsonwebtoken";
 import sendEmail from "../Utils/Email.js";
@@ -85,11 +82,7 @@ export const signupPatient = catchAsync(async (req, res, next) => {
   // 1. فحص الإيميل أولاً
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-<<<<<<< HEAD
     return next(new badRequestError("البريد الإلكتروني مسجل بالفعل"));
-=======
-    return next(new AppError("البريد الإلكتروني مسجل بالفعل", 400));
->>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
   }
 
   // 2. معالجة صورة الملف الشخصي (صورة واحدة فقط)
@@ -167,20 +160,13 @@ export const signupDoctor = catchAsync(async (req, res, next) => {
   } = req.body;
 
   const existingUser = await User.findOne({ email });
-  if (existingUser)
-<<<<<<< HEAD
+  if (existingUser) {
     return next(new badRequestError("البريد الإلكتروني مسجل بالفعل"));
+  }
 
   // التأكد من وجود صورة الترخيص في الذاكرة أولاً
   if (!req.files?.licenseImage?.[0]) {
     return next(new badRequestError("صورة ترخيص المزاولة مطلوبة للطبيب"));
-=======
-    return next(new AppError("البريد الإلكتروني مسجل بالفعل", 400));
-
-  // التأكد من وجود صورة الترخيص في الذاكرة أولاً
-  if (!req.files?.licenseImage?.[0]) {
-    return next(new AppError("صورة ترخيص المزاولة مطلوبة للطبيب", 400));
->>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
   }
 
   // حفظ الصور يدوياً
@@ -202,7 +188,7 @@ export const signupDoctor = catchAsync(async (req, res, next) => {
     phoneNumber,
     gender,
     role: "doctor",
-    isVerified: true,
+    isVerified: false,
     personalPhoto: personalPhotoPath,
     doctorProfile: {
       specialization,

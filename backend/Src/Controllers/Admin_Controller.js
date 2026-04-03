@@ -1,11 +1,27 @@
+import fs from "fs";
+import path from "path";
 import User from "../Models/UserModel.js";
 import { catchAsync } from "../Utils/AppError.js";
-import AppError from "../Utils/AppError.js";
-<<<<<<< HEAD
-import { badRequestError, notFound } from "../Error/index.js";
-=======
->>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
+import { notFound } from "../Error/index.js";
 import { StatusCodes } from "http-status-codes";
+
+const saveFile = (file, subFolder, role = "user") => {
+  if (!file || !file.buffer) return null;
+
+  const rootPath = process.cwd();
+  const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+  const extension = path.extname(file.originalname) || ".jpg";
+  const fileName = `${role}-${uniqueSuffix}${extension}`;
+  const targetDir = path.join(rootPath, "Uploads", subFolder);
+
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true });
+  }
+
+  const filePath = path.join(targetDir, fileName);
+  fs.writeFileSync(filePath, file.buffer);
+  return `Uploads/${subFolder}/${fileName}`.replace(/\\/g, "/");
+};
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -34,13 +50,7 @@ export const activateDoctor = catchAsync(async (req, res, next) => {
   );
 
   if (!doctor) {
-<<<<<<< HEAD
     return next(new notFound("لم يتم العثور على طبيب بهذا المعرف"));
-=======
-    return next(
-      new AppError("لم يتم العثور على طبيب بهذا المعرف", StatusCodes.NOT_FOUND),
-    );
->>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
   }
 
   res
@@ -78,11 +88,20 @@ export const updateUser = catchAsync(async (req, res, next) => {
   if (req.files && req.files.length > 0) {
     req.files.forEach((file) => {
       if (file.fieldname === "personalPhoto")
-        updateData.personalPhoto = file.path;
+        updateData.personalPhoto = saveFile(file, "PersonalPhoto", "user");
       if (file.fieldname === "licenseImage")
-        updateData["doctorProfile.licenseImage"] = file.path;
+        updateData["doctorProfile.licenseImage"] = saveFile(
+          file,
+          "Certificates",
+          "doctor",
+        );
       if (file.fieldname === "radiologyImage")
-        updateData["medicalProfile.radiologyImage"] = file.path;
+        updateData["medicalProfile.radiologyTests"] = [
+          {
+            image: saveFile(file, "Radiology", "patient"),
+            description: "",
+          },
+        ];
     });
   }
 
@@ -93,12 +112,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
     { new: true, runValidators: true },
   );
 
-<<<<<<< HEAD
   if (!user) return next(new notFound("المستخدم غير موجود"));
-=======
-  if (!user)
-    return next(new AppError("المستخدم غير موجود", StatusCodes.NOT_FOUND));
->>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
   res.status(StatusCodes.OK).json({
     status: "success",
@@ -111,17 +125,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
 export const deleteUser = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndDelete(req.params.id);
 
-<<<<<<< HEAD
   if (!user) return next(new notFound("المستخدم غير موجود أو تم حذفه بالفعل"));
-=======
-  if (!user)
-    return next(
-      new AppError(
-        "المستخدم غير موجود أو تم حذفه بالفعل",
-        StatusCodes.NOT_FOUND,
-      ),
-    );
->>>>>>> 0dd14dd95286373c6535852ed9ea6f14b97cafeb
 
   // غيرنا الحالة من 240 إلى 200 لكي نتمكن من إرسال JSON
   res.status(StatusCodes.OK).json({
