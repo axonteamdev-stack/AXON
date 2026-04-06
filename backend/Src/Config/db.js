@@ -5,7 +5,7 @@
 
 const connectDB = async () => {
   try {
-    console.log("Attempting to connect with URI:", process.env.MONGO_URI); // ADD THIS
+    console.log("Attempting to connect..."); // ADD THIS
     
     if (!process.env.MONGO_URI) {
       throw new Error("MONGO_URI is undefined. Check your .env file!");
