@@ -219,11 +219,11 @@ export const login = catchAsync(async (req, res, next) => {
     return next(new AppError("بيانات الدخول غير صحيحة", 401));
   }
 
-  if (user.role === "doctor" && !user.isVerified) {
-    return next(
-      new AppError("حسابك في انتظار موافقة الإدارة", StatusCodes.FORBIDDEN),
-    );
-  }
+//   if (user.role === "doctor" && !user.isVerified) {
+//     return next(
+//       new AppError("حسابك في انتظار موافقة الإدارة", StatusCodes.FORBIDDEN),
+//     );
+//   }
 
   const { accessToken, refreshToken } = generateTokens(res, user._id);
   const isMobile = req.headers["platform"] === "mobile";
