@@ -2,11 +2,14 @@ import User from "../Models/UserModel.js";
 import { catchAsync, sendResponse } from "../Utils/AppError.js";
 import AppError from "../Utils/AppError.js";
 
+
+
+
 // 1. جلب قائمة كل الأطباء
 export const getAllDoctors = catchAsync(async (req, res, next) => {
     // 1. جلب الأطباء من القاعدة
     const doctors = await User.find({ role: "doctor", isVerified: true })
-        .select("fullName email phoneNumber gender role doctorProfile");
+        .select("fullName email phoneNumber personalPhoto gender role doctorProfile");
 
     // 2. تجميع البيانات (Flattening)
     const flatDoctors = doctors.map(doc => {
@@ -15,6 +18,7 @@ export const getAllDoctors = catchAsync(async (req, res, next) => {
             fullName: doc.fullName,
             email: doc.email,
             phoneNumber: doc.phoneNumber,
+            personalPhoto: doc.personalPhoto,
             gender: doc.gender,
             role: doc.role,
             // دمج بيانات البروفايل في نفس المستوى
@@ -38,7 +42,7 @@ export const getAllDoctors = catchAsync(async (req, res, next) => {
 // 2. جلب بيانات طبيب واحد بالتفصيل
 export const getDoctorDetails = catchAsync(async (req, res, next) => {
     const doctor = await User.findOne({ _id: req.params.id, role: "doctor" })
-        .select("fullName email phoneNumber gender doctorProfile"); 
+        .select("fullName email phoneNumber personalPhoto gender doctorProfile"); 
 
     if (!doctor) {
         return next(new AppError({
@@ -52,6 +56,7 @@ export const getDoctorDetails = catchAsync(async (req, res, next) => {
         fullName: doctor.fullName,
         email: doctor.email,
         phoneNumber: doctor.phoneNumber,
+        personalPhoto: doctor.personalPhoto,
         gender: doctor.gender,
         specialization: doctor.doctorProfile?.specialization || "N/A",
         yearsExperience: doctor.doctorProfile?.yearsExperience || 0,
@@ -87,6 +92,9 @@ export const searchDoctors = catchAsync(async (req, res, next) => {
     en: "Search results are ready"
   }, { results: doctors.length, doctors });
 });
+
+
+
 
 // 4. المتابعة وإلغاء المتابعة
 export const toggleFollow = catchAsync(async (req, res, next) => {
