@@ -31,7 +31,6 @@ Method: del | URL: /api/v1/medications/:id
 
 
 
-
 -------------
 
 Method: get | URL: /api/v1/articles
@@ -39,6 +38,14 @@ Method: get | URL: /api/v1/articles
 -------------
 
 Method: get | URL: /api/v1/auth/all-doctors
+
+-------------
+
+Method: get | URL: localhost:3000/api/v1/articles/getArticle/:id
+
+-------------
+
+Method: get | URL: localhost:3000/api/v1/articles/my-articles
 
 -------------
 
