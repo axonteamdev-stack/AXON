@@ -1,5 +1,5 @@
 import app from "./app.js";
-import connectDB from "./Src/Config/db.js";
+import connectDB from "./src/Config/db.js";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
@@ -24,19 +24,14 @@ const createDirIfNotExists = (dir) => {
   }
 };
 
-[uploadDir, personalPhotoDir, radiologyDir, labTestsDir].forEach(
-  createDirIfNotExists,
-);
+[uploadDir, personalPhotoDir, radiologyDir , labTestsDir].forEach(createDirIfNotExists);
 
 connectDB()
   .then(() => {
-    const PORT = process.env.PORT || 3000;
-    if (!process.env.PORT) {
-      console.warn("⚠️  PORT not set, defaulting to", PORT);
-    }
+    const PORT = process.env.PORT;
     const server = app.listen(PORT, () => {
       console.log(
-        `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`,
+        `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
       );
     });
 
