@@ -133,9 +133,3 @@ export const deleteMedication = catchAsync(async (req, res, next) => {
     res.status(200).json({ status: 'success', message: 'تم حذف الدواء بنجاح' });
 });
 
-
-
-
-
-
-
