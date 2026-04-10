@@ -212,6 +212,7 @@ static const viewAll = 'viewAll';
       case accountCreated:
         return BaseRoute(page: const AccountCreatedView());
 
+
       // Home
       case home:
         return BaseRoute(page: const HomeView());

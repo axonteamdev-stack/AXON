@@ -18,15 +18,22 @@ void main() async {
 
   final token = pref.getString(PrefKeys.accessToken);
   final role = pref.getString(PrefKeys.userRole);
+  final seenOnboarding = pref.getBoolean(PrefKeys.onboardingSeen);
 
-  String startRoute = AppRoutes.splash;
+  String startRoute;
 
-  if (token != null && token.isNotEmpty) {
+  if (seenOnboarding != true) {
+    startRoute = AppRoutes.splash; 
+  } else if (token != null && token.isNotEmpty) {
     if (role?.toLowerCase() == "doctor") {
       startRoute = AppRoutes.doctorMain;
     } else if (role?.toLowerCase() == "patient") {
       startRoute = AppRoutes.patientMain;
+    } else {
+      startRoute = AppRoutes.login;
     }
+  } else {
+    startRoute = AppRoutes.login;
   }
 
   Bloc.observer = AppBlocObserver();

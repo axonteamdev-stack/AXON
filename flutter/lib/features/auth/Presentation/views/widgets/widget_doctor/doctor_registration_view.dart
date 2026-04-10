@@ -13,6 +13,7 @@ import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header
 import 'package:Axon/features/auth/Presentation/views/widgets/form_label.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/reusable_dropdown.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/upload_medical_license_box.dart';
+import 'package:Axon/features/auth/Presentation/views/widgets/widget_doctor/account_doctor_created_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -37,7 +38,10 @@ class DoctorRegistrationView extends StatelessWidget {
         if (state is DoctorRegistrationSuccess) {
           SharedPref().clearPreferences();
 
-          Navigator.pushReplacementNamed(context, AppRoutes.accountCreated);
+          Navigator.pushReplacementNamed(
+            context,
+            AppRoutes.accountCreatedDoctor,
+          );
         }
       },
       builder: (context, state) {

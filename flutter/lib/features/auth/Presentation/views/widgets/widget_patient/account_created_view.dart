@@ -41,50 +41,55 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
     _controller.forward();
 
     Timer(const Duration(seconds: 2), () {
-      _handleNavigation();
+       Navigator.pushReplacementNamed(
+      context,
+      AppRoutes.patientMain,
+    );
+     
+     
     });
-  }
+  }         
 
-  void _handleNavigation() async {
+//   void _handleNavigation() async {
 
-  await Future.delayed(const Duration(milliseconds: 300));
+//   await Future.delayed(const Duration(milliseconds: 300));
 
-  final role = SharedPref().getString(PrefKeys.userRole);
+//   final role = SharedPref().getString(PrefKeys.userRole);
 
-  print("========== ACCOUNT CREATED DEBUG ==========");
-  print("Role from SharedPref: $role");
-  print("===========================================");
+//   print("========== ACCOUNT CREATED DEBUG ==========");
+//   print("Role from SharedPref: $role");
+//   print("===========================================");
 
-  final normalizedRole = role?.toLowerCase().trim();
+//   final normalizedRole = role?.toLowerCase().trim();
 
-  if (normalizedRole == "doctor") {
+//   if (normalizedRole == "doctor") {
 
-    print("➡️ Navigate to DOCTOR HOME");
+//     print("➡️ Navigate to DOCTOR HOME");
 
-    Navigator.pushReplacementNamed(
-      context,
-      AppRoutes.doctorMain,
-    );
+//     Navigator.pushReplacementNamed(
+//       context,
+//       AppRoutes.doctorMain,
+//     );
 
-  } else if (normalizedRole == "patient") {
+//   } else if (normalizedRole == "patient") {
 
-    print("➡️ Navigate to PATIENT HOME");
+//     print("➡️ Navigate to PATIENT HOME");
 
-    Navigator.pushReplacementNamed(
-      context,
-      AppRoutes.patientMain,
-    );
+//     Navigator.pushReplacementNamed(
+//       context,
+//       AppRoutes.patientMain,
+//     );
 
-  } else {
+//   } else {
 
-    print("⚠️ Role still null → retry");
+//     print("⚠️ Role still null → retry");
 
-    Navigator.pushReplacementNamed(
-      context,
-      AppRoutes.patientMain,
-    );
-  }
-}
+//     Navigator.pushReplacementNamed(
+//       context,
+//       AppRoutes.patientMain,
+//     );
+//   }
+// }
   @override
   void dispose() {
     _controller.dispose();

@@ -28,7 +28,7 @@ class IntroView extends StatelessWidget {
 Expanded(
                 flex: 7,
              child: OnBoardingImage(
-                image: AppImages.onboarding3,
+                image: AppImages.intro,
               ),),
 
               SizedBox(height: 35.h),

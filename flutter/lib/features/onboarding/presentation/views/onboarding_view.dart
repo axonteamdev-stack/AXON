@@ -1,6 +1,8 @@
 import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
+import 'package:Axon/core/service/shared_pref/pref_keys.dart';
+import 'package:Axon/core/service/shared_pref/shared_pref.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -20,6 +22,11 @@ class _OnBoardingViewState extends State<OnBoardingView> {
 
   int currentIndex = 0;
   final PageController pageController = PageController();
+
+  void finishOnboarding() async {
+    await SharedPref().setBoolean(PrefKeys.onboardingSeen, true);
+    context.pushReplacementNamed(AppRoutes.login);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +63,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
               Align(
                 alignment: AlignmentDirectional.centerEnd,
                 child: GestureDetector(
-                  onTap: () {
-                    context.pushReplacementNamed(AppRoutes.login);
-                  },
+                  onTap: finishOnboarding,
                   child: TextApp(
                     text: context.l10n.skip,
                     fontSize: 14.sp,
@@ -154,15 +159,14 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   onPressed: () {
 
                     if (currentIndex == pages.length - 1) {
-                      context.pushReplacementNamed(AppRoutes.login);
+                      finishOnboarding();
                     } else {
-
                       pageController.nextPage(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
                       );
-
                     }
+
                   },
                 ),
               ),
