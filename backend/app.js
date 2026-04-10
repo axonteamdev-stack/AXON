@@ -2,8 +2,6 @@ import express from 'express';
 // import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
-// import mongoSanitize from 'express-mongo-sanitize';
-// import xss from 'xss-clean';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import path from 'path';
@@ -18,123 +16,80 @@ import medicationRouter from './Src/Routes/MedicationRoutes.js';
 
 const app = express();
 
-// --- 1. الإعدادات الأمنية (Global Middlewares) ---
+// --- 1. SETTINGS & SECURITY ---
 
-// إعدادات الـ CORS للربط مع React
-// app.use(cors({
-//   origin: 'http://localhost:3000', // ضع رابط تطبيق React هنا
-//   credentials: true // للسماح بإرسال الـ Refresh Token عبر الكوكيز
-// }));
-
+// FIX: Trust the proxy headers to identify the real user IP
+// This must be done before defining the rate limiter
+app.set('trust proxy', 1); 
 
 app.use(cors({
   origin: true,
   credentials: true
 }));
 
-// حماية الـ Headers الخاصة بالسيرفر
-// app.use(helmet());
-
-// تسجيل الطلبات في الـ Console (أثناء التطوير فقط)
-// if (process.env.NODE_ENV === 'development') {
-//   app.use(morgan('dev'));
-// }
-
-// تحديد عدد الطلبات من نفس الـ IP لحماية السيرفر من الهجمات (Brute-force)
+// Standardizing the rate limiter configuration
 const limiter = rateLimit({
-  max: 100, // حد أقصى 100 طلب
-  windowMs: 60 * 60 * 1000, // خلال ساعة واحدة
-  message: 'Too many requests from this IP, please try again in an hour!'
+  max: 100, 
+  windowMs: 60 * 60 * 1000, 
+  message: 'Too many requests from this IP, please try again in an hour!',
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false,  // Disable the `X-RateLimit-*` headers
 });
 app.use('/api', limiter);
 
-// قراءة البيانات من الـ Body (JSON) مع تحديد الحجم الأقصى
 app.use(express.json({ limit: '10kb' }));
-app.use(cookieParser()); // لقراءة الـ Cookies (Refresh Token)
+app.use(cookieParser());
 
-// // حماية البيانات من الـ NoSQL Query Injection
-// app.use(mongoSanitize());
-
-// // حماية البيانات من الـ XSS (إدخال أكواد HTML ضارة)
-// app.use(xss());
-
-// --- 2. الملفات الاستاتيكية (الصور) ---
+// --- 2. STATIC FILES ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, 'Uploads')));
-
 app.use(express.static('public'));
 
-// --- 3. المسارات (Routes) ---
+// --- 3. ROUTES ---
 app.use(setLanguage);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/articles', articleRouter);
 app.use('/api/v1/medications', medicationRouter);
 
-
-
 app.get('/', (req, res) => {
     res.status(200).json({
         status: "success",
-        message: "Welcome to MeddioDoc API - Server is live and runninggggg!"
+        message: "Welcome to MeddioDoc API - Server is live and running!"
     });
 });
 
-
-
-
-// app.use((req, res, next) => {
-//     // الخيار الثاني: تمرير الخطأ لـ AppError ليتم معالجته في ملف الأخطاء الموحد
-//     const error = new AppError(`Can't find ${req.originalUrl} on this server!`, 404);
-//     next(error);
-// });
-
-
-
-
+// 404 Handler
 app.use((req, res, next) => {
-    // إرسال رسالة مترجمة وتجنب بعت نصوص عادية
     const error = new AppError({
         ar: `العنوان المطلوب ${req.originalUrl} غير موجود!`,
         en: `The requested path ${req.originalUrl} was not found!`
     }, 404);
-    
     next(error);
 });
 
-
-// --- 4. معالج الأخطاء العالمي (Global Error Handler) ---
+// --- 4. GLOBAL ERROR HANDLER ---
 app.use((err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
-  // 1. اختيار الرسالة بناءً على اللغة اللي حددها setLanguage
-  // لو مفيش لغة محددة، بنفترض العربي 'ar'
   const lang = req.lang || 'ar'; 
-
   let message = err.message;
 
-  // 2. إذا كان الخطأ يحتوي على كائن لغات {ar: "...", en: "..."}
   if (err.messages && typeof err.messages === 'object') {
     message = err.messages[lang] || err.messages['ar'];
   }
 
-  // 3. الرد النهائي المنظم
   res.status(err.statusCode).json({
     status: err.status,
     message: message,
-    // تفاصيل إضافية تظهر فقط للمبرمج في مرحلة التطوير
     ...(process.env.NODE_ENV === 'development' && { 
         stack: err.stack, 
         error: err,
-        detectedLang: lang // عشان تتأكد إن الميدلوير شغال صح
+        detectedLang: lang 
     })
   });
 });
 
 export default app;
-
-
-
-
