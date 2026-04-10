@@ -2,10 +2,10 @@
 Method: POST | URL: /api/v1/medications
 
 medicineName:Panadol Extra 
-frequency:three times daily 
+frequency:twice daily
 intakeTime:10:00 AM
-startDate:2026-02-20
-endDate:2026-02-21
+startDate:2026-04-11
+endDate:2026-04-21
 
 
 
