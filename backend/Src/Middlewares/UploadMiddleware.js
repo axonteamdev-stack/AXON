@@ -1,42 +1,62 @@
 import multer from "multer";
 
-// 1. التغيير الجوهري: استخدام ذاكرة الرام (Memory Storage)
-// هذا يمنع الملف من النزول على الهارد ديسك في هذه المرحلة
+/**
+ * 1. التخزين في الذاكرة المؤقتة فقط (Memory Storage)
+ * الملف لا يُحفظ في أي مجلد في هذه المرحلة.
+ */
 const storage = multer.memoryStorage();
 
-// 2. فلتر أنواع الملفات (يبقى كما هو للأمان)
+/**
+ * 2. فلتر الأمان لأنواع الملفات
+ */
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    // نستخدم AppError أو Error عادي حسب نظامك
-    cb(new Error("Invalid file type. Only JPG/PNG allowed."), false);
-  }
+    if (file.mimetype.startsWith("image/")) {
+        cb(null, true);
+    } else {
+        cb(new Error("نوع الملف غير مدعوم. يرجى رفع صور فقط."), false);
+    }
 };
 
-// 3. إعداد Multer بالذاكرة المؤقتة
+/**
+ * 3. إعداد Multer
+ */
 export const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // حد أقصى 5 ميجا
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // حد أقصى 5 ميجا بايت
+    fileFilter,
 });
 
-// 4. التصدير النهائي (يبقى كما هو ليناسب الـ Routes)
-export default {
-  patient: upload.fields([
-    { name: "radiologyImage", maxCount: 10 },
-    { name: "personalPhoto", maxCount: 1 },
-    { name: "labImage", maxCount: 10 }, // ضيف السطر ده
-  ]),
-  doctor: upload.fields([
-    { name: "licenseImage", maxCount: 1 },
-    { name: "personalPhoto", maxCount: 1 },
-  ]),
-  general: upload.fields([
-    { name: "personalPhoto", maxCount: 1 },
-    { name: "radiologyImage", maxCount: 10 },
-    { name: "labImage", maxCount: 10 },
-    { name: "licenseImage", maxCount: 1 },
-  ]),
+/**
+ * 4. التصدير النهائي (Strict Mode)
+ * لا يوجد هنا أي مسارات (Paths) أو مجلدات (Folders).
+ */
+const uploadMiddleware = {
+    // مخصص لبيانات المريض
+    patient: upload.fields([
+        { name: "radiologyImage", maxCount: 10 },
+        { name: "labImage", maxCount: 10 },
+        { name: "personalPhoto", maxCount: 1 },
+    ]),
+
+    // مخصص لبيانات الطبيب
+    doctor: upload.fields([
+        { name: "licenseImage", maxCount: 1 },
+        { name: "personalPhoto", maxCount: 1 },
+    ]),
+
+    // مخصص للمنشورات والمقالات
+    post: upload.fields([
+        { name: "postImage", maxCount: 1 } 
+    ]),
+
+    // إعدادات عامة للأدمن
+    general: upload.fields([
+        { name: "personalPhoto", maxCount: 1 },
+        { name: "radiologyImage", maxCount: 10 },
+        { name: "labImage", maxCount: 10 },
+        { name: "licenseImage", maxCount: 1 },
+        { name: "postImage", maxCount: 1 }
+    ])
 };
+
+export default uploadMiddleware;
