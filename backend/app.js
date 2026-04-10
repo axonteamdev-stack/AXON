@@ -10,7 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import AppError from './Src/Utils/AppError.js';
-import { setLanguage } from './Src/Middlewares/langMiddleware.js';
+import { setLanguage } from './Src/Middlewares/LanguageMiddleware.js';
 import authRouter from './Src/Routes/AuthRoutes.js';
 import adminRouter from './Src/Routes/AdminRoutes.js';
 import articleRouter from './Src/Routes/ArticleRoutes.js';
