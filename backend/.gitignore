@@ -1,5 +1,6 @@
 # Dependencies
-/node_modules
+# ALWAYS keep package-lock.json in Git for version consistency
+node_modules/
 /.pnp
 .pnp.js
 
@@ -19,11 +20,13 @@ pids
 *.pid.lock
 
 # Environment variables
-# KEEP THESE OUT OF VERSION CONTROL!!!
+# CRITICAL: Keep these private!
 .env
-.env.*
+.env.local
+.env.development
+.env.production
 
-# TypeScript files
+# TypeScript
 *.tsbuildinfo
 
 # Coverage/Test reports
@@ -36,11 +39,18 @@ Thumbs.db
 .idea/
 .vscode/
 
-# # NPM package lock files - optional, but generally included for consistency
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-routes.md
-Notes
+# Accidental/Temp Files
+Notes/
+Notes.zip
 *.zip
+routes.md
+
+# Uploaded Content
+# We ignore everything inside these folders so test images aren't pushed
+Uploads/Certificates/*
+Uploads/PersonalPhoto/*
+Uploads/Radiology/*
+Uploads/LabTests/*
+
+# Optional: Allow the folders themselves to exist in Git without content
+!Uploads/**/.gitkeep
