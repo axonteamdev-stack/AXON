@@ -6,42 +6,42 @@ import { upload } from "../Middlewares/UploadMiddleware.js";
 
 const router = express.Router();
 
-// 1. حماية جميع المسارات التالية
+// 1. حماية جميع المسارات القادمة
 router.use(protect);
 
-// 2. قصر الوصول للمرضى فقط
+// 2. قصر الوصول للمرضى فقط (لأن الأدوية خاصة بالمريض)
 router.use(restrictTo('patient'));
 
-router
-  .route('/')
-  // جلب كل أدوية المريض الحالي
-  .get(medController.getMyMedications)
-  
-  // إضافة دواء جديد
-  // ملاحظة: upload.none() يجب أن يسبق الـ validation لقراءة حقول الـ form-data
-  .post(
-    upload.none(), 
-    validateMiddleware.addMedication, 
-    medController.addMedication
-  );
+// --- المسارات الأساسية ---
 
-router
-  .route('/:id')
-  // حذف دواء معين بواسطة المعرف (ID)
-  .delete(medController.deleteMedication
+// جلب كل أدوية المريض الحالي
+router.get("/", medController.getMyMedications);
 
-  );
+// إضافة دواء جديد
+router.post(
+  "/", 
+  upload.none(), 
+  validateMiddleware.addMedication, 
+  medController.addMedication
+);
 
+// تحديث دواء معين بواسطة المعرف (ID)
+router.patch(
+  "/:id", 
+  upload.none(), 
+  medController.updateMedication
+);
 
-
-router
-  .route('/:id')
-  .patch(upload.none(), medController.updateMedication) // أضف هذا السطر
-  .delete(medController.deleteMedication
-    
-  );
+// حذف دواء معين بواسطة المعرف (ID)
+router.delete(
+  "/:id", 
+  medController.deleteMedication
+);
 
 
 
-  
+router.get("/:id", medController.getSingleMedication);
+
+
+
 export default router;
