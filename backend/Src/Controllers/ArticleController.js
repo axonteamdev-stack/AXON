@@ -92,3 +92,33 @@ export const getMyArticles = catchAsync(async (req, res, next) => {
     en: 'Your articles fetched successfully'
   }, articles);
 });
+
+
+
+
+
+
+export const getArticleDetails = catchAsync(async (req, res, next) => {
+    const article = await Article.findOne({ _id: req.params.id})
+        .select("doctor title content image"); 
+
+    if (!article) {
+        return next(new AppError({
+            ar: "هذا المقال غير موجود",
+            en: "This article was not found"
+        }, 404));
+    }
+
+    const articleData = {
+        _id: article._id,
+        doctor: article.doctor,
+        title: article.title,
+        content: article.content,
+        image: article.image,
+    };
+
+    sendResponse(res, 200, {
+        ar: "تم جلب بيانات المقال بنجاح",
+        en: "Doctor article fetched successfully"
+    }, { article: articleData });
+});
