@@ -8,7 +8,8 @@ startDate:2026-04-11
 endDate:2026-04-21
 
 
-
+------------------
+( once daily , twice daily , three times daily )
 ------------------
 
 
@@ -16,12 +17,17 @@ Method: PATCH | URL: /api/v1/medications/:id
 
 medicineName:Panadol Extra 
 
-
+او اي حاجه تانيه
 
 -------------------
 
 
 Method: GET | URL: /api/v1/medications/:id
+
+-------------------
+
+
+Method: GET | URL: /api/v1/medications
 
 
 ----------------------
