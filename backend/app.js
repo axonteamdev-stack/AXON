@@ -9,12 +9,12 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import AppError from './src/Utils/AppError.js';
-import { setLanguage } from './src/Middlewares/langMiddleware.js';
-import authRouter from './src/Routes/AuthRoutes.js';
-import adminRouter from './src/Routes/AdminRoutes.js';
-import articleRouter from './src/Routes/ArticleRoutes.js';
-import medicationRouter from './src/Routes/MedicationRoutes.js';
+import AppError from './Src/Utils/AppError.js';
+import { setLanguage } from './Src/Middlewares/langMiddleware.js';
+import authRouter from './Src/Routes/AuthRoutes.js';
+import adminRouter from './Src/Routes/AdminRoutes.js';
+import articleRouter from './Src/Routes/ArticleRoutes.js';
+import medicationRouter from './Src/Routes/MedicationRoutes.js';
 
 const app = express();
 
@@ -134,12 +134,6 @@ app.use((err, req, res, next) => {
 });
 
 export default app;
-
-
-
-
-
-
 
 
 
