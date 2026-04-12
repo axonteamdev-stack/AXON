@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:Axon/features/doctor/Articles%20Doctor/presentation/manager/doctor_articles_cubit.dart';
+import 'package:Axon/core/network/endpoints.dart';
 import 'package:Axon/features/doctor/Articles%20Doctor/presentation/views/article_details_view.dart';
+import 'package:Axon/features/patient/home_patient/domain/entities/article_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Axon/core/style/colors.dart';
@@ -25,7 +26,7 @@ class ArticleItemCard extends StatelessWidget {
       builder: (_) => ArticleDetailsView(
         title: article.title,
         content: article.content,
-        imagePath: article.imagePath ?? '',
+        imagePath: article.image ,
         isFileImage: true,
       ),
     ),
@@ -52,15 +53,15 @@ class ArticleItemCard extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              if (article.imagePath != null)
+             if (article.image.isNotEmpty)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20.r),
-                  child: Image.file(
-                    File(article.imagePath!),
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                  child: Image.network(
+  Endpoints.baseUrlImage + article.image,
+  width: double.infinity,
+  height: double.infinity,
+  fit: BoxFit.cover,
+)
                 ),
               Container(
                 decoration: BoxDecoration(

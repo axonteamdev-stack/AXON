@@ -5,6 +5,7 @@ import 'package:Axon/features/auth/Presentation/views/login_view.dart';
 import 'package:Axon/features/auth/Presentation/views/registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/reset_password_view.dart';
 import 'package:Axon/features/auth/Presentation/views/select_role_view.dart';
+import 'package:Axon/features/auth/Presentation/views/widgets/widget_doctor/account_doctor_created_view.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/widget_doctor/doctor_registration_view.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/account_created_view.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/patient_lab_tests_view.dart';
@@ -211,6 +212,10 @@ static const viewAll = 'viewAll';
       // Auth Success
       case accountCreated:
         return BaseRoute(page: const AccountCreatedView());
+
+      case accountCreatedDoctor:
+        return BaseRoute(page: const AccountDoctorCreatedView());
+
 
 
       // Home

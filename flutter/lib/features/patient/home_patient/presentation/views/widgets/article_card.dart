@@ -1,13 +1,14 @@
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/extensions/context_extension.dart';
+import 'package:Axon/core/network/endpoints.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/patient/home_patient/data/models/article_details_model.dart';
+import 'package:Axon/features/patient/home_patient/domain/entities/article_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ArticleCard extends StatelessWidget {
-  final ArticleDetailsModel item;
+  final ArticleEntity item;
 
   const ArticleCard({super.key, required this.item});
 
@@ -36,26 +37,44 @@ class ArticleCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+            /// image
             ClipRRect(
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(14.r),
               ),
-              child: Image.asset(
-                item.image,
+              child: Image.network(
+                "${Endpoints.baseUrlImage}${item.image}",
                 height: 120.h,
                 width: double.infinity,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: double.infinity,
+                    height: 120.h,
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.image_not_supported),
+                  );
+                },
               ),
             ),
+            SizedBox(height: 10.h,),
+
+            /// title
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
-              child: TextApp(
-                text: item.title,
-                weight: AppTextWeight.semiBold,
-                fontSize: 11.sp,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                color: AppColors.black,
+              padding: EdgeInsets.symmetric(
+                horizontal: 8.w,
+                vertical: 6.h,
+              ),
+              child: Center(
+                child: TextApp(
+                  text: item.title,
+                  weight: AppTextWeight.semiBold,
+                  fontSize: 11.sp,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  color: AppColors.black,
+                ),
               ),
             ),
           ],

@@ -47,7 +47,6 @@ class CustomButton extends StatelessWidget {
   final double loadingWidth;
   final double loadingHeight;
 
-  /// ✅ التحكم في حجم الخط
   final double? fontSize;
   final ButtonTextWeight fontWeight;
 

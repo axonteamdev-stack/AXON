@@ -30,6 +30,9 @@ class ApiManager {
         onRequest: (options, handler) async {
           final token = SharedPref().getString(PrefKeys.accessToken);
 
+          // 🔥 إضافة اللغة من SharedPref
+          final lang = SharedPref().getString(PrefKeys.language) ?? "en";
+
           // 🔥 PRINT TOKEN قبل ما يتبعت
           print("🔑 [REQUEST] Current Token: $token");
 
@@ -39,6 +42,10 @@ class ApiManager {
           } else {
             print("❌ [REQUEST] No token found");
           }
+
+          // 🔥 إضافة اللغة في الهيدر
+          options.headers["Accept-Language"] = lang;
+          print("🌍 [REQUEST] Language added: $lang");
 
           print("📤 ${options.method} ${options.uri}");
           print("📤 Headers: ${options.headers}");

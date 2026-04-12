@@ -1,43 +1,43 @@
+import 'package:flutter/material.dart';
 import 'package:Axon/core/errors/failures.dart';
-import 'package:Axon/core/strings/failures_strings.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
 
-String mapFailureToMessage(Failure failure) {
+String mapFailureToMessage(BuildContext context, Failure failure) {
   switch (failure) {
     case OfflineFailure _:
-      return OFFLINE_FAILURE_MESSAGE;
+      return context.l10n.offline_error;
 
     case TimeoutFailure _:
-      return SERVER_FAILURE_MESSAGE;
+      return context.l10n.server_error;
 
     case TooManyRequestsFailure _:
-      return TOO_MANY_REQUESTS_FAILURE_MESSAGE;
+      return context.l10n.too_many_requests;
 
     case WrongPasswordFailure _:
-      return WRONG_PASSWORD_FAILURE_MESSAGE;
+      return context.l10n.wrong_password;
 
     case NoUserFailure _:
-      return NO_USER_FAILURE_MESSAGE;
+      return context.l10n.no_user;
 
     case ExistedAccountFailure _:
-      return EXISTED_ACCOUNT_FAILURE_MESSAGE;
+      return context.l10n.account_exists;
 
     case WeakPasswordFailure _:
-      return WEEK_PASS_FAILURE_MESSAGE;
+      return context.l10n.weak_password;
 
     case UnmatchedPassFailure _:
-      return UNMATCHED_PASSWORD_FAILURE_MESSAGE;
+      return context.l10n.unmatched_password;
 
-    // 🔥 أهم إضافات
     case UnauthorizedFailure _:
-      return UNAUTHORIZED_FAILURE_MESSAGE;
+  return context.l10n.wrong_password;
 
     case NotFoundFailure _:
-      return NOT_FOUND_FAILURE_MESSAGE;
+      return context.l10n.not_found;
 
     case ServerFailure _:
-      return SERVER_FAILURE_MESSAGE;
+      return context.l10n.server_error;
 
     default:
-      return SERVER_FAILURE_MESSAGE;
+      return context.l10n.server_error;
   }
 }

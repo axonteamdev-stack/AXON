@@ -1,38 +1,22 @@
 import 'package:Axon/core/extensions/localization_ext.dart';
-import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/patient/home_patient/data/models/article_details_model.dart';
+import 'package:Axon/features/patient/home_patient/domain/entities/article_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'article_card.dart';
 
 class ArticlesTipsSection extends StatelessWidget {
-  const ArticlesTipsSection({super.key});
+  final List<ArticleEntity> articles;
+
+  const ArticlesTipsSection({
+    super.key,
+    required this.articles,
+  });
 
   @override
   Widget build(BuildContext context) {
-    List<ArticleDetailsModel> articles = [
-      ArticleDetailsModel(
-        id: "1",
-        title: context.l10n.article_medication_tips,
-        image: AppImages.onboarding1,
-        content: context.l10n.article_dummy_content,
-      ),
-      ArticleDetailsModel(
-        id: "2",
-        title: context.l10n.article_vitamins_importance,
-        image: AppImages.onboarding2,
-        content: context.l10n.article_dummy_content,
-      ),
-      ArticleDetailsModel(
-        id: "3",
-        title: context.l10n.article_healthy_habits,
-        image: AppImages.onboarding3,
-        content: context.l10n.article_dummy_content,
-      ),
-    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

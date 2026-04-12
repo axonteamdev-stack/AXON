@@ -179,6 +179,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get select_blood_type_error => 'Please select blood type';
 
   @override
+  String get successfully => 'Successfully';
+
+  @override
+  String get offline_error => 'No internet connection';
+
+  @override
+  String get server_error => 'Server error occurred';
+
+  @override
+  String get too_many_requests => 'Too many requests. Please try again later';
+
+  @override
+  String get wrong_password => 'Invalid email or password';
+
+  @override
+  String get no_user => 'User not found';
+
+  @override
+  String get account_exists => 'Account already exists';
+
+  @override
+  String get weak_password => 'Password is too weak';
+
+  @override
+  String get unmatched_password => 'Passwords do not match';
+
+  @override
+  String get unauthorized => 'Unauthorized access';
+
+  @override
+  String get not_found => 'Resource not found';
+
+  @override
   String get write_symptoms_hint => 'Write your symptoms or problem here...';
 
   @override

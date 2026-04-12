@@ -17,22 +17,16 @@ class LanguageSwitch extends StatelessWidget {
       first: false,
       second: true,
 
-      height: 28, // ⬅ أكبر شوية
+      height: 30,
       spacing: 4,
-      indicatorSize: const Size(34, 22),
+      indicatorSize: const Size(36, 24),
 
       onChanged: (_) => cubit.toggleLanguage(),
-
-      // indicatorTransition: const ForegroundIndicatorTransition(
-      //   curve: Curves.easeInOutCubic,
-      //   duration: Duration(milliseconds: 300),
-      // ),
 
       style: ToggleStyle(
         backgroundColor: AppColors.lightGrey.withOpacity(0.6),
         borderRadius: BorderRadius.circular(20),
 
-        // 🔥 Indicator احترافي
         indicatorColor: AppColors.primaryColor,
         indicatorBoxShadow: [
           BoxShadow(
@@ -44,20 +38,14 @@ class LanguageSwitch extends StatelessWidget {
       ),
 
       textBuilder: (value) {
-        final isActive = value == isEnglish;
-
         return Center(
-          child: AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 200),
-            style: TextStyle(
-              fontSize: 11, // ⬅ أوضح
+          child: Text(
+            value ? 'EN' : 'عربي',
+            style: const TextStyle(
+              fontSize: 11,
               fontWeight: FontWeight.w700,
-              height: 1.1, // ⬅ يحسن العربي
-              color:
-                    AppColors.primaryColor,
-            ),
-            child: Text(
-              value ? 'EN' : 'عربي',
+              height: 1.1,
+              color: AppColors.primaryColor,
             ),
           ),
         );

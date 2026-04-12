@@ -1,0 +1,15 @@
+import 'package:Axon/features/doctor/Articles%20Doctor/domain/entities/create_article_entity.dart';
+import 'package:dartz/dartz.dart';
+import 'package:Axon/core/errors/failures.dart';
+import 'package:injectable/injectable.dart';
+
+
+abstract class DoctorArticlesRepo {
+
+  Future<Either<Failure, CreateArticleEntity>> createArticle({
+    required String title,
+    required String content,
+    required String imagePath,
+  });
+
+}

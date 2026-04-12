@@ -51,6 +51,8 @@ class _CreateArticleCardState extends State<CreateArticleCard> {
             color: AppColors.primaryColor,
           ),
           SizedBox(height: 10.h),
+
+          /// Title
           TextField(
             controller: titleController,
             decoration: InputDecoration(
@@ -59,7 +61,10 @@ class _CreateArticleCardState extends State<CreateArticleCard> {
               isDense: true,
             ),
           ),
+
           SizedBox(height: 2.h),
+
+          /// Content
           TextField(
             controller: contentController,
             maxLines: 3,
@@ -69,6 +74,8 @@ class _CreateArticleCardState extends State<CreateArticleCard> {
               isDense: true,
             ),
           ),
+
+          /// Image preview
           if (imagePath != null) ...[
             SizedBox(height: 8.h),
             ClipRRect(
@@ -81,10 +88,14 @@ class _CreateArticleCardState extends State<CreateArticleCard> {
               ),
             ),
           ],
+
           SizedBox(height: 6.h),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+
+              /// Pick Image
               GestureDetector(
                 onTap: pickImage,
                 child: Row(
@@ -102,24 +113,29 @@ class _CreateArticleCardState extends State<CreateArticleCard> {
                   ],
                 ),
               ),
+
+              /// Share Button
               CustomButton(
                 text: context.l10n.share,
                 width: 90.w,
                 height: 34.h,
                 onPressed: () {
+
                   if (titleController.text.isEmpty ||
-                      contentController.text.isEmpty) {
+                      contentController.text.isEmpty ||
+                      imagePath == null) {
                     return;
                   }
 
-                  context.read<DoctorArticlesCubit>().addArticle(
+                  context.read<DoctorArticlesCubit>().createArticle(
                         title: titleController.text,
                         content: contentController.text,
-                        imagePath: imagePath,
+                        imagePath: imagePath!,
                       );
 
                   titleController.clear();
                   contentController.clear();
+
                   setState(() {
                     imagePath = null;
                   });

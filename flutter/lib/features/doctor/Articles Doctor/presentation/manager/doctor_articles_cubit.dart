@@ -1,29 +1,47 @@
+import 'package:Axon/features/doctor/Articles%20Doctor/domain/usecases/create_article_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+import 'doctor_articles_state.dart';
 
-part 'doctor_articles_state.dart';
-
+@injectable
 class DoctorArticlesCubit extends Cubit<DoctorArticlesState> {
-  DoctorArticlesCubit() : super(DoctorArticlesState.initial());
 
-  void addArticle({
+  final CreateArticleUseCase createArticleUseCase;
+
+  DoctorArticlesCubit(this.createArticleUseCase)
+      : super(DoctorArticlesInitial());
+
+  Future<void> createArticle({
     required String title,
     required String content,
-    String? imagePath,
-  }) {
-    final article = ArticleEntity(
-      title: title,
-      content: content,
-      imagePath: imagePath,
+    required String imagePath,
+  }) async {
+
+    emit(DoctorArticlesLoading());
+
+    final either = await createArticleUseCase(
+     title:  title,
+     content:  content,
+    imagePath:   imagePath,
     );
 
-    final updated = List<ArticleEntity>.from(state.articles)
-      ..insert(0, article);
+    either.fold(
+      (failure) {
 
-    emit(
-      state.copyWith(
-        status: DoctorArticlesStatus.success,
-        articles: updated,
-      ),
+        emit(
+          DoctorArticlesError(
+            failure: failure,
+          ),
+        );
+      },
+      (article) {
+
+        emit(
+          DoctorArticlesSuccess(
+            articleEntity: article,
+          ),
+        );
+      },
     );
   }
 }

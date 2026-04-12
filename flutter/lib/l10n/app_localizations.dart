@@ -434,6 +434,72 @@ abstract class AppLocalizations {
   /// **'Please select blood type'**
   String get select_blood_type_error;
 
+  /// No description provided for @successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully'**
+  String get successfully;
+
+  /// No description provided for @offline_error.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get offline_error;
+
+  /// No description provided for @server_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error occurred'**
+  String get server_error;
+
+  /// No description provided for @too_many_requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. Please try again later'**
+  String get too_many_requests;
+
+  /// No description provided for @wrong_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email or password'**
+  String get wrong_password;
+
+  /// No description provided for @no_user.
+  ///
+  /// In en, this message translates to:
+  /// **'User not found'**
+  String get no_user;
+
+  /// No description provided for @account_exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Account already exists'**
+  String get account_exists;
+
+  /// No description provided for @weak_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is too weak'**
+  String get weak_password;
+
+  /// No description provided for @unmatched_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get unmatched_password;
+
+  /// No description provided for @unauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Unauthorized access'**
+  String get unauthorized;
+
+  /// No description provided for @not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource not found'**
+  String get not_found;
+
   /// No description provided for @write_symptoms_hint.
   ///
   /// In en, this message translates to:

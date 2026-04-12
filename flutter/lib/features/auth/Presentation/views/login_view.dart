@@ -4,6 +4,8 @@ import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/helpers/snackbar.dart';
 import 'package:Axon/core/helpers/validation_helper.dart';
 import 'package:Axon/core/routes/app_routes.dart';
+import 'package:Axon/core/service/shared_pref/pref_keys.dart';
+import 'package:Axon/core/service/shared_pref/shared_pref.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
@@ -167,12 +169,39 @@ class LoginView extends StatelessWidget {
         ); 
       },
       listener: (context, state) {
-        if(state is LoginSuccess){
-          Snackbar.showSuccess(context, message: "Successfully");
-          context.pushName(AppRoutes.accountCreated);
-        }else if (state is LoginError){
-          Snackbar.showError(context, message:mapFailureToMessage(state.failure) );
-        }
-      },) ;
+
+  if (state is LoginSuccess) {
+
+    Snackbar.showSuccess(
+      context,
+      message: context.l10n.successfully,
+    );
+
+    final role = SharedPref().getString(PrefKeys.userRole);
+
+    if (role?.toLowerCase() == "doctor") {
+
+      context.pushName(AppRoutes.doctorMain);
+
+    } else if (role?.toLowerCase() == "patient") {
+
+      context.pushName(AppRoutes.patientMain);
+
+    } else {
+
+      context.pushName(AppRoutes.login);
+
+    }
+  }
+
+  else if (state is LoginError) {
+
+    Snackbar.showError(
+      context,
+      message: mapFailureToMessage(context, state.failure),
+    );
+
+  }
+},) ;
   }
 }

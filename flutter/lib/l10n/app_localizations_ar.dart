@@ -179,6 +179,39 @@ class AppLocalizationsAr extends AppLocalizations {
   String get select_blood_type_error => 'من فضلك اختر فصيلة الدم';
 
   @override
+  String get successfully => 'تم بنجاح';
+
+  @override
+  String get offline_error => 'لا يوجد اتصال بالإنترنت';
+
+  @override
+  String get server_error => 'حدث خطأ في الخادم';
+
+  @override
+  String get too_many_requests => 'عدد محاولات كبير، حاول لاحقًا';
+
+  @override
+  String get wrong_password => 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+
+  @override
+  String get no_user => 'المستخدم غير موجود';
+
+  @override
+  String get account_exists => 'هذا الحساب موجود بالفعل';
+
+  @override
+  String get weak_password => 'كلمة المرور ضعيفة';
+
+  @override
+  String get unmatched_password => 'كلمتا المرور غير متطابقتين';
+
+  @override
+  String get unauthorized => 'غير مصرح لك بالوصول';
+
+  @override
+  String get not_found => 'العنصر غير موجود';
+
+  @override
   String get write_symptoms_hint =>
       'اكتب الأعراض أو المشكلة التي تعاني منها هنا...';
 

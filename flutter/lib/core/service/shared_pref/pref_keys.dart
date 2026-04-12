@@ -12,4 +12,5 @@ class PrefKeys {
   static const String status = 'status';
   static const String message = 'message';
    static const String onboardingSeen = 'onboardingSeen';
+  
 }

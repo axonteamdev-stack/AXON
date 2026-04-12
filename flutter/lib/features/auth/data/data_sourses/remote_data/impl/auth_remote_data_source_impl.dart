@@ -85,20 +85,19 @@ Future<void> saveUserData(Map<String, dynamic> json) async {
 
   await pref.setString(
     PrefKeys.userId,
-    json["data"]?["id"]?.toString() ?? "",
+    json["data"]?["data"]?["_id"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.userRole,
-    json["data"]?["role"]?.toString() ?? "",
+    json["data"]?["data"]?["role"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.userEmail,
-    json["data"]?["email"]?.toString() ?? "",
+    json["data"]?["data"]?["email"]?.toString() ?? "",
   );
-}
-  // todo : login
+}  // todo : login
 
   @override
   Future<Either<Failure, LoginResponseDM>> login({

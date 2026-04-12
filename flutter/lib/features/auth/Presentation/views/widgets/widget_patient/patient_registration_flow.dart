@@ -1,5 +1,4 @@
 import 'package:Axon/core/routes/app_routes.dart';
-import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/account_created_view.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/patient_allergies_view.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/patient_health_conditions_view.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/widget_patient/patient_lab_tests_view.dart';

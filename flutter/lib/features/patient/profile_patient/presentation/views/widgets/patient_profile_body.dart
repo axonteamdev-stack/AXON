@@ -1,5 +1,6 @@
 import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/extensions/localization_ext.dart';
+import 'package:Axon/features/onboarding/presentation/views/widgets/language_switch.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient/patient_profile_state.dart'
     show PatientProfileState;
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/patient_profile_header.dart';
@@ -155,6 +156,14 @@ class PatientProfileBody extends StatelessWidget {
                 );
               },
             ),
+            PatientProfileMenuItem(
+  icon: Icons.language,
+  title: context.l10n.choose_language,
+  dense: true,
+  trailing: const LanguageSwitch(),
+  onTap: () {},
+),
+
 
             const SizedBox(height: 32),
           ]),

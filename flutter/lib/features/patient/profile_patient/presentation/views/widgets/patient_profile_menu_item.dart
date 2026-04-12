@@ -7,6 +7,7 @@ class PatientProfileMenuItem extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
   final bool dense;
+  final Widget? trailing; 
 
   const PatientProfileMenuItem({
     super.key,
@@ -14,6 +15,7 @@ class PatientProfileMenuItem extends StatelessWidget {
     required this.title,
     required this.onTap,
     this.dense = false,
+    this.trailing, 
   });
 
   @override
@@ -22,22 +24,27 @@ class PatientProfileMenuItem extends StatelessWidget {
       dense: dense,
       contentPadding:
           const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+
       leading: Icon(
         icon,
         size: dense ? 20 : 24,
         color: AppColors.black,
       ),
+
       title: TextApp(
         text: title,
         fontSize: dense ? 14 : 16,
         weight: AppTextWeight.regular,
         color: AppColors.black,
       ),
-      trailing: const Icon(
-        Icons.arrow_forward_ios,
-        size: 14,
-        color: AppColors.grey,
-      ),
+
+      trailing: trailing ??
+          const Icon(
+            Icons.arrow_forward_ios,
+            size: 14,
+            color: AppColors.grey,
+          ),
+
       onTap: onTap,
     );
   }

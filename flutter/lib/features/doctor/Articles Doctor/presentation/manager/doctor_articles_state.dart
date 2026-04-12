@@ -1,42 +1,20 @@
-part of 'doctor_articles_cubit.dart';
+import 'package:Axon/core/errors/failures.dart';
+import 'package:Axon/features/doctor/Articles%20Doctor/domain/entities/create_article_entity.dart';
 
-enum DoctorArticlesStatus { initial, success }
+abstract class DoctorArticlesState {}
 
-class DoctorArticlesState {
-  final DoctorArticlesStatus status;
-  final List<ArticleEntity> articles;
+class DoctorArticlesInitial extends DoctorArticlesState {}
 
-  const DoctorArticlesState({
-    required this.status,
-    required this.articles,
-  });
+class DoctorArticlesLoading extends DoctorArticlesState {}
 
-  factory DoctorArticlesState.initial() {
-    return const DoctorArticlesState(
-      status: DoctorArticlesStatus.initial,
-      articles: [],
-    );
-  }
+class DoctorArticlesSuccess extends DoctorArticlesState {
+  final CreateArticleEntity? articleEntity;
 
-  DoctorArticlesState copyWith({
-    DoctorArticlesStatus? status,
-    List<ArticleEntity>? articles,
-  }) {
-    return DoctorArticlesState(
-      status: status ?? this.status,
-      articles: articles ?? this.articles,
-    );
-  }
+  DoctorArticlesSuccess({this.articleEntity});
 }
 
-class ArticleEntity {
-  final String title;
-  final String content;
-  final String? imagePath;
+class DoctorArticlesError extends DoctorArticlesState {
+  final Failure failure;
 
-  const ArticleEntity({
-    required this.title,
-    required this.content,
-    this.imagePath,
-  });
+  DoctorArticlesError({required this.failure});
 }

@@ -1,6 +1,7 @@
 import 'package:Axon/core/di/di.dart';
 import 'package:Axon/core/errors/mappers/failure_to_message_mapper.dart';
 import 'package:Axon/core/extensions/localization_ext.dart';
+import 'package:Axon/core/helpers/snackbar.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/service/shared_pref/shared_pref.dart';
 import 'package:Axon/core/style/app_images.dart';
@@ -13,7 +14,6 @@ import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header
 import 'package:Axon/features/auth/Presentation/views/widgets/form_label.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/reusable_dropdown.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/upload_medical_license_box.dart';
-import 'package:Axon/features/auth/Presentation/views/widgets/widget_doctor/account_doctor_created_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,9 +30,10 @@ class DoctorRegistrationView extends StatelessWidget {
       bloc: doctorRegistrationCubit,
       listener: (context, state) {
         if (state is DoctorRegistrationError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(mapFailureToMessage(state.failure))),
-          );
+          Snackbar.showError(
+  context,
+  message: mapFailureToMessage(context, state.failure),
+);
         }
 
         if (state is DoctorRegistrationSuccess) {

@@ -1,9 +1,10 @@
 import 'package:Axon/core/extensions/localization_ext.dart';
-import 'package:Axon/features/doctor/Profile%20Doctor/presentation/manager/profile%20doctor/doctor_profile_cubit.dart';
+import 'package:Axon/features/doctor/Profile Doctor/presentation/manager/profile doctor/doctor_profile_cubit.dart';
+import 'package:Axon/features/doctor/Profile Doctor/presentation/views/doctor_edit_profile_view.dart';
+import 'package:Axon/features/doctor/Profile Doctor/presentation/views/widgets/doctor_profile_header.dart';
+import 'package:Axon/features/doctor/Profile Doctor/presentation/views/widgets/doctor_profile_header_delegate.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/manager/profile%20doctor/doctor_profile_state.dartdoctor_profile_state.dart';
-import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/doctor_edit_profile_view.dart';
-import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/widgets/doctor_profile_header.dart';
-import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/widgets/doctor_profile_header_delegate.dart';
+import 'package:Axon/features/onboarding/presentation/views/widgets/language_switch.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/confirm_delete_account_sheet.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/confirm_logout_sheet.dart';
 import 'package:flutter/material.dart';
@@ -29,10 +30,12 @@ class DoctorProfileBody extends StatelessWidget {
             child: DoctorProfileHeader(),
           ),
         ),
+
         SliverList(
           delegate: SliverChildListDelegate(
             [
-              // ================= EDIT =================
+
+              /// ================= EDIT PROFILE =================
               PatientProfileMenuItem(
                 icon: Icons.edit_outlined,
                 title: context.l10n.edit_profile,
@@ -50,7 +53,7 @@ class DoctorProfileBody extends StatelessWidget {
                 },
               ),
 
-              // ================= PASSWORD =================
+              /// ================= CHANGE PASSWORD =================
               PatientProfileMenuItem(
                 icon: Icons.lock_outline,
                 title: context.l10n.change_password,
@@ -63,7 +66,7 @@ class DoctorProfileBody extends StatelessWidget {
                 },
               ),
 
-              // ================= NOTIFICATIONS =================
+              /// ================= NOTIFICATIONS =================
               PatientProfileMenuItem(
                 icon: Icons.notifications_none,
                 title: context.l10n.notification_settings,
@@ -71,7 +74,8 @@ class DoctorProfileBody extends StatelessWidget {
                 onTap: () {},
               ),
 
-              // ================= LOGOUT =================
+       
+              /// ================= LOGOUT =================
               PatientProfileMenuItem(
                 icon: Icons.logout,
                 title: context.l10n.logout,
@@ -104,7 +108,7 @@ class DoctorProfileBody extends StatelessWidget {
                 },
               ),
 
-              // ================= DELETE =================
+              /// ================= DELETE ACCOUNT =================
               PatientProfileMenuItem(
                 icon: Icons.delete_outline,
                 title: context.l10n.delete_account,
@@ -136,6 +140,15 @@ class DoctorProfileBody extends StatelessWidget {
                   );
                 },
               ),
+
+              /// ================= LANGUAGE =================
+PatientProfileMenuItem(
+  icon: Icons.language,
+  title: context.l10n.choose_language,
+  dense: true,
+  trailing: const LanguageSwitch(),
+  onTap: () {},
+),
 
               const SizedBox(height: 32),
             ],
