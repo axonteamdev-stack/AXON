@@ -1,35 +1,32 @@
 import Joi from "joi";
-import { getMessage } from "../Utils/Translations.js";
 
 const emailRegexX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 // --- حقول مشتركة ---
-const flexibleDescription = Joi.alternatives()
-  .try(Joi.array().items(Joi.string().allow("")), Joi.string().allow(""))
-  .optional();
+const flexibleDescription = Joi.alternatives().try(
+  Joi.array().items(Joi.string().allow("")),
+  Joi.string().allow("")
+).optional();
 
 const medicationSchema = Joi.object({
   medicineName: Joi.string().trim().min(2).required().messages({
-    "string.empty": "اسم الدواء لا يمكن أن يكون فارغاً",
-    "any.required": "اسم الدواء مطلوب",
+    'string.empty': 'اسم الدواء لا يمكن أن يكون فارغاً',
+    'any.required': 'اسم الدواء مطلوب'
   }),
 
   frequency: Joi.string()
     .valid("once daily", "twice daily", "three times daily")
     .required()
     .messages({
-      "any.only": "يجب اختيار تكرار صالح (once, twice, or three times daily)",
+      'any.only': 'يجب اختيار تكرار صالح (once, twice, or three times daily)'
     }),
 
-  intakeTime: Joi.alternatives()
-    .try(
-      Joi.array().items(Joi.string().required()).min(1),
-      Joi.string().required(),
-    )
-    .required()
-    .messages({
-      "any.required": "مواعيد الجرعات مطلوبة",
-    }),
+  intakeTime: Joi.alternatives().try(
+    Joi.array().items(Joi.string().required()).min(1),
+    Joi.string().required()
+  ).required().messages({
+    'any.required': 'مواعيد الجرعات مطلوبة'
+  }),
 
   // التحقق من الوقت الحالي ومنع التواريخ القديمة
   startDate: Joi.date()
@@ -37,17 +34,21 @@ const medicationSchema = Joi.object({
     .min(new Date().setHours(0, 0, 0, 0)) // يقارن ببداية اليوم الحالي فقط
     .required()
     .messages({
-      "date.min": "تاريخ البداية لا يمكن أن يكون قبل اليوم",
-      "date.format": "صيغة تاريخ البداية غير صحيحة",
-      "any.required": "تاريخ بداية العلاج مطلوب",
+      'date.min': 'تاريخ البداية لا يمكن أن يكون قبل اليوم',
+      'date.format': 'صيغة تاريخ البداية غير صحيحة',
+      'any.required': 'تاريخ بداية العلاج مطلوب'
     }),
 
-  endDate: Joi.date().iso().min(Joi.ref("startDate")).required().messages({
-    "date.min": "تاريخ النهاية يجب أن يكون مساوياً أو بعد تاريخ البداية",
-    "any.required": "تاريخ نهاية العلاج مطلوب",
-  }),
+  endDate: Joi.date()
+    .iso()
+    .min(Joi.ref('startDate'))
+    .required()
+    .messages({
+      'date.min': 'تاريخ النهاية يجب أن يكون مساوياً أو بعد تاريخ البداية',
+      'any.required': 'تاريخ نهاية العلاج مطلوب'
+    }),
 
-  notes: Joi.string().allow("").optional(),
+  notes: Joi.string().allow('').optional()
 });
 
 // 2. Patient Registration Schema
@@ -57,12 +58,10 @@ const patientSchema = Joi.object({
   password: Joi.string().min(6).required().label("Password"),
   phoneNumber: Joi.string().required().label("Phone Number"),
   gender: Joi.string().valid("Male", "Female").required(),
-  bloodType: Joi.string()
-    .valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
-    .allow("", null),
+  bloodType: Joi.string().valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-").allow("", null),
   height: Joi.number().min(30).max(300).allow(null),
   weight: Joi.number().min(2).max(500).allow(null),
-  conditions: Joi.any().label("Conditions"),
+  conditions: Joi.any().label("Conditions"), 
   allergies: Joi.any().label("Allergies"),
   radiologyDescription: flexibleDescription.label("Radiology Description"),
   labDescription: flexibleDescription.label("Lab Description"),
@@ -81,11 +80,7 @@ const doctorSchema = Joi.object({
   about: Joi.string().min(5).max(2000).required().label("About"),
   price: Joi.number().min(0).required().label("Consultation Price"),
   specialization: Joi.string().min(3).required().label("Specialization"),
-  yearsExperience: Joi.number()
-    .integer()
-    .min(0)
-    .required()
-    .label("Years Experience"),
+  yearsExperience: Joi.number().integer().min(0).required().label("Years Experience"),
   medicalLicenseNumber: Joi.string().required().label("Medical License Number"),
   licenseImage: Joi.any(),
   personalPhoto: Joi.any(),
@@ -107,9 +102,7 @@ const updateMeSchema = Joi.object({
   price: Joi.number().min(0).optional(),
   specialization: Joi.string().optional(),
   yearsExperience: Joi.number().optional(),
-  bloodType: Joi.string()
-    .valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
-    .optional(),
+  bloodType: Joi.string().valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-").optional(),
   height: Joi.number().optional(),
   weight: Joi.number().optional(),
   radiologyDescription: flexibleDescription,
@@ -124,19 +117,15 @@ const validate = (schema) => {
   return (req, res, next) => {
     const { error, value } = schema.validate(req.body, {
       abortEarly: false,
-      allowUnknown: true,
-      stripUnknown: true,
+      allowUnknown: true, 
+      stripUnknown: true, 
     });
 
     if (error) {
-      const lang = req.lang || "ar";
-      const message = getMessage("VALIDATION_FAILED", lang);
-
       return res.status(400).json({
         status: "error",
-        message: message,
+        message: "فشل التحقق من البيانات",
         errors: error.details.map((detail) => detail.message),
-        lang: lang,
       });
     }
 
@@ -145,16 +134,24 @@ const validate = (schema) => {
   };
 };
 
+
+
+
+
+
 const articleSchema = Joi.object({
   title: Joi.string().min(5).required().messages({
-    "any.required": "عنوان المقال مطلوب",
+    'any.required': 'عنوان المقال مطلوب'
   }),
   // حقل المحتوى: لو عايزه "ممكن يكون فاضي" كما سألت:
-  content: Joi.string().allow("").optional().messages({
-    "string.empty": "محتوى المقال لا يمكن أن يكون فارغاً",
+  content: Joi.string().allow('').optional().messages({
+    'string.empty': 'محتوى المقال لا يمكن أن يكون فارغاً'
   }),
-  category: Joi.string().optional(),
+  category: Joi.string().optional()
 });
+
+
+
 
 // --- التصدير النهائي ---
 const validateMiddleware = {
