@@ -4,61 +4,67 @@ import AppError from "../Utils/AppError.js";
 
 // 1. جلب قائمة كل الأطباء
 export const getAllDoctors = catchAsync(async (req, res, next) => {
-  // 1. جلب الأطباء من القاعدة
-  const doctors = await User.find({ role: "doctor", isVerified: true }).select(
-    "fullName email phoneNumber personalPhoto gender role doctorProfile",
-  );
+    // 1. جلب الأطباء من القاعدة
+    const doctors = await User.find({ role: "doctor", isVerified: true })
+        .select("fullName email phoneNumber personalPhoto gender role doctorProfile");
 
-  // 2. تجميع البيانات (Flattening)
-  const flatDoctors = doctors.map((doc) => {
-    return {
-      _id: doc._id,
-      fullName: doc.fullName,
-      email: doc.email,
-      phoneNumber: doc.phoneNumber,
-      personalPhoto: doc.personalPhoto,
-      gender: doc.gender,
-      role: doc.role,
-      // دمج بيانات البروفايل في نفس المستوى
-      specialization: doc.doctorProfile?.specialization || "N/A",
-      yearsExperience: doc.doctorProfile?.yearsExperience || 0,
-      about: doc.doctorProfile?.about || "",
-      price: doc.doctorProfile?.price || 0,
-    };
-  });
+    // 2. تجميع البيانات (Flattening)
+    const flatDoctors = doctors.map(doc => {
+        return {
+            _id: doc._id,
+            fullName: doc.fullName,
+            email: doc.email,
+            phoneNumber: doc.phoneNumber,
+            personalPhoto: doc.personalPhoto,
+            gender: doc.gender,
+            role: doc.role,
+            // دمج بيانات البروفايل في نفس المستوى
+            specialization: doc.doctorProfile?.specialization || "N/A",
+            yearsExperience: doc.doctorProfile?.yearsExperience || 0,
+            about: doc.doctorProfile?.about || "",
+            price: doc.doctorProfile?.price || 0
+        };
+    });
 
-  // 3. الرد النهائي
-  sendResponse(res, 200, "DOCTORS_FETCHED_SUCCESS", {
-    results: flatDoctors.length,
-    doctors: flatDoctors,
-  });
+    // 3. الرد النهائي
+    sendResponse(res, 200, {
+        ar: "تم جلب جميع بيانات الأطباء مدمجة بنجاح",
+        en: "All doctors data merged and fetched successfully"
+    }, { 
+        results: flatDoctors.length, 
+        doctors: flatDoctors 
+    });
 });
 
 // 2. جلب بيانات طبيب واحد بالتفصيل
 export const getDoctorDetails = catchAsync(async (req, res, next) => {
-  const doctor = await User.findOne({
-    _id: req.params.id,
-    role: "doctor",
-  }).select("fullName email phoneNumber personalPhoto gender doctorProfile");
+    const doctor = await User.findOne({ _id: req.params.id, role: "doctor" })
+        .select("fullName email phoneNumber personalPhoto gender doctorProfile"); 
 
-  if (!doctor) {
-    return next(new AppError("DOCTOR_NOT_FOUND_GENERAL", 404));
-  }
+    if (!doctor) {
+        return next(new AppError({
+            ar: "هذا الطبيب غير موجود",
+            en: "This doctor was not found"
+        }, 404));
+    }
 
-  const doctorData = {
-    _id: doctor._id,
-    fullName: doctor.fullName,
-    email: doctor.email,
-    phoneNumber: doctor.phoneNumber,
-    personalPhoto: doctor.personalPhoto,
-    gender: doctor.gender,
-    specialization: doctor.doctorProfile?.specialization || "N/A",
-    yearsExperience: doctor.doctorProfile?.yearsExperience || 0,
-    about: doctor.doctorProfile?.about || "",
-    price: doctor.doctorProfile?.price || 0,
-  };
+    const doctorData = {
+        _id: doctor._id,
+        fullName: doctor.fullName,
+        email: doctor.email,
+        phoneNumber: doctor.phoneNumber,
+        personalPhoto: doctor.personalPhoto,
+        gender: doctor.gender,
+        specialization: doctor.doctorProfile?.specialization || "N/A",
+        yearsExperience: doctor.doctorProfile?.yearsExperience || 0,
+        about: doctor.doctorProfile?.about || "",
+        price: doctor.doctorProfile?.price || 0
+    };
 
-  sendResponse(res, 200, "DOCTOR_DETAILS_FETCHED", { doctor: doctorData });
+    sendResponse(res, 200, {
+        ar: "تم جلب بيانات الطبيب بنجاح",
+        en: "Doctor details fetched successfully"
+    }, { doctor: doctorData });
 });
 
 // 3. البحث عن الأطباء
@@ -71,21 +77,21 @@ export const searchDoctors = catchAsync(async (req, res, next) => {
   }
 
   if (specialization) {
-    query["doctorProfile.specialization"] = {
-      $regex: specialization,
-      $options: "i",
-    };
+    query["doctorProfile.specialization"] = { $regex: specialization, $options: "i" };
   }
 
   const doctors = await User.find(query).select(
-    "fullName personalPhoto doctorProfile.specialization doctorProfile.price",
+    "fullName personalPhoto doctorProfile.specialization doctorProfile.price"
   );
 
-  sendResponse(res, 200, "SEARCH_RESULTS_READY", {
-    results: doctors.length,
-    doctors,
-  });
+  sendResponse(res, 200, {
+    ar: "نتائج البحث جاهزة",
+    en: "Search results are ready"
+  }, { results: doctors.length, doctors });
 });
+
+
+
 
 // 4. المتابعة وإلغاء المتابعة
 export const toggleFollow = catchAsync(async (req, res, next) => {
@@ -93,12 +99,18 @@ export const toggleFollow = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
 
   if (doctorId === userId) {
-    return next(new AppError("CANNOT_FOLLOW_YOURSELF", 400));
+    return next(new AppError({
+        ar: "لا يمكنك متابعة نفسك!",
+        en: "You cannot follow yourself!"
+    }, 400));
   }
 
   const doctor = await User.findById(doctorId);
-  if (!doctor || doctor.role !== "doctor") {
-    return next(new AppError("DOCTOR_NOT_FOUND_GENERAL", 404));
+  if (!doctor || doctor.role !== 'doctor') {
+    return next(new AppError({
+        ar: "هذا الطبيب غير موجود",
+        en: "Doctor not found"
+    }, 404));
   }
 
   const isFollowing = doctor.followers.includes(userId);
@@ -106,16 +118,18 @@ export const toggleFollow = catchAsync(async (req, res, next) => {
   if (isFollowing) {
     await User.findByIdAndUpdate(userId, { $pull: { following: doctorId } });
     await User.findByIdAndUpdate(doctorId, { $pull: { followers: userId } });
-
-    sendResponse(res, 200, "UNFOLLOWED_SUCCESS");
+    
+    sendResponse(res, 200, {
+        ar: "تم إلغاء المتابعة",
+        en: "Unfollowed successfully"
+    });
   } else {
-    await User.findByIdAndUpdate(userId, {
-      $addToSet: { following: doctorId },
-    });
-    await User.findByIdAndUpdate(doctorId, {
-      $addToSet: { followers: userId },
-    });
+    await User.findByIdAndUpdate(userId, { $addToSet: { following: doctorId } });
+    await User.findByIdAndUpdate(doctorId, { $addToSet: { followers: userId } });
 
-    sendResponse(res, 200, "FOLLOWED_SUCCESS");
+    sendResponse(res, 200, {
+        ar: "تمت المتابعة بنجاح",
+        en: "Followed successfully"
+    });
   }
 });
