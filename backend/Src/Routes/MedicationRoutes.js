@@ -25,6 +25,11 @@ router.post(
   medController.addMedication
 );
 
+
+
+router.get("/dashboard", medController.getHomeDashboard);
+
+
 // تحديث دواء معين بواسطة المعرف (ID)
 router.patch(
   "/:id", 
@@ -46,5 +51,6 @@ router.get("/:id", medController.getSingleMedication);
 router.patch("/:id/taken", medController.markAsTaken);
 
 router.patch("/:id/skip", medController.skipDose);
+
 
 export default router;
