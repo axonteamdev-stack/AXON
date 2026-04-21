@@ -112,25 +112,32 @@ class MedicineList extends StatelessWidget {
                     nextTime: nextTime,
 
                     /// UPDATE
-                  onEdit: () {
-  Navigator.push(
+                onEdit: () async {
+  final result = await Navigator.push(
     context,
     MaterialPageRoute(
       builder: (_) => UpdateMedicineView(
         medicineId: item.id,
         medicineName: item.medicineName,
         frequency: item.frequency,
-
-        /// هنا التعديل 🔥
         intakeTime: item.intakeTime.isNotEmpty
             ? item.intakeTime.first
             : "08:00",
-
         startDate: item.startDate,
         endDate: item.endDate,
       ),
     ),
   );
+
+  print("UPDATE RESULT => $result");
+
+  if (result == true) {
+    print("REFRESH MEDICINES 🔥");
+
+    context
+        .read<MedicineListCubit>()
+        .getMedicines();
+  }
 },
 
                     /// DELETE
