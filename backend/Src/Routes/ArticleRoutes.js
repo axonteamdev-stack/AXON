@@ -37,7 +37,6 @@ router.get(
 
 router.get("/getArticle/:id",
     authMid.protect, 
-    authMid.restrictTo("doctor"),
     articleController.getArticleDetails);
 
 
