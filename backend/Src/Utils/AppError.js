@@ -1,56 +1,43 @@
-import { getMessage } from "./Translations.js";
-import CustomAPIError from "../Error/CustomErrorHandeler.js";
+class AppError extends Error {
+  constructor(messages, statusCode) {
+    // messages هنا هتكون عبارة عن { ar: 'رسالة بالعربي', en: 'English message' }
+    super(messages.en); // الافتراضي للـ Error الأصلي هو الإنجليزي
 
-// --- Named Export: Async Catch Wrapper ---
+    this.statusCode = statusCode;
+    this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
+    this.isOperational = true;
+    
+    // بنخزن اللغتين عشان الـ Global Handler يختار منهم
+    this.messages = messages; 
+
+    if (process.env.NODE_ENV === 'development') {
+      Error.captureStackTrace(this, this.constructor);
+    }
+  }
+}
+
+
+
+
+// دالة موحدة للردود الناجحة تدعم اللغتين
+export const sendResponse = (res, statusCode, messages, data = null) => {
+    // جلب اللغة التي تم تحديدها بواسطة الـ Middleware (setLanguage)
+    const lang = res.req.lang || 'ar'; 
+
+    res.status(statusCode).json({
+        status: 'success',
+        // اختيار الرسالة بناءً على اللغة
+        message: messages[lang] || messages['ar'], 
+        // إذا كان هناك بيانات أرسلها، وإذا لم يوجد لا ترسل الحقل
+        ...(data && { data })
+    });
+};
+
+
+
+
 export const catchAsync = (fn) => (req, res, next) => {
   fn(req, res, next).catch(next);
 };
-
-// --- Named Export: Success Response Handler ---
-export const sendResponse = (res, statusCode, messageKey, data = null) => {
-  const lang = res.req.lang || "ar";
-
-  let message;
-  if (typeof messageKey === "object" && messageKey.ar && messageKey.en) {
-    message = messageKey[lang] || messageKey["ar"];
-  } else if (typeof messageKey === "string") {
-    message = getMessage(messageKey, lang);
-  } else {
-    message = messageKey;
-  }
-
-  res.status(statusCode).json({
-    status: "success",
-    message: message,
-    ...(data && { data }),
-  });
-};
-
-// --- Default Export: The Main AppError Class ---
-class AppError extends CustomAPIError {
-  constructor(messageKey, statusCode) {
-    let messages;
-
-    if (typeof messageKey === "object" && messageKey.ar && messageKey.en) {
-      messages = messageKey;
-    } else if (typeof messageKey === "string") {
-      messages = {
-        ar: getMessage(messageKey, "ar"),
-        en: getMessage(messageKey, "en"),
-      };
-    } else {
-      messages = {
-        ar: messageKey,
-        en: messageKey,
-      };
-    }
-
-    // Call parent constructor (using English as the fallback for internal logs)
-    super(messages.en || "Error", statusCode);
-
-    // This property is what your app.js Global Error Handler reads
-    this.messages = messages;
-  }
-}
 
 export default AppError;
