@@ -21,6 +21,9 @@ class Endpoints {
   static const String resetPassword =
       "/auth/reset-password";
 
+      static const String refreshToken =
+    "/auth/refresh-token";
+
   // ================== ARTICLES ==================
   static const String getAllArticales =
       "/articles";

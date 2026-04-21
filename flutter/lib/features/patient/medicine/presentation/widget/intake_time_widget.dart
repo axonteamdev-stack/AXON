@@ -1,6 +1,7 @@
 import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
+import 'package:Axon/features/patient/medicine/presentation/manager/medicine%20cubit/medicine_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/time_cubit/intake-time_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/time_cubit/intake_time_state.dart';
 import 'package:flutter/material.dart';
@@ -14,64 +15,112 @@ class IntakeTime extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<IntakeTimeCubit, IntakeTimeState>(
       builder: (context, state) {
-        final cubit = context.read<IntakeTimeCubit>();
+        final intakeCubit =
+            context.read<IntakeTimeCubit>();
+
+        final medicineCubit =
+            context.read<MedicineCubit>();
 
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(
+              color: Colors.grey.shade300,
+            ),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment:
+                MainAxisAlignment.center,
             children: [
               GestureDetector(
-                onTap: () => _pickTime(context, cubit, state),
+                onTap: () => _pickTime(
+                  context,
+                  intakeCubit,
+                  medicineCubit,
+                  state,
+                ),
                 child: Column(
                   children: [
                     TextApp(
                       text: context.l10n.hour,
-                      color: AppColors.primaryColor,
-                      weight: AppTextWeight.bold,
+                      color:
+                          AppColors.primaryColor,
+                      weight:
+                          AppTextWeight.bold,
                       fontSize: 12,
                     ),
                     const SizedBox(height: 8),
-                    _box(state.hour.toString().padLeft(2, '0')),
+                    _box(
+                      state.hour
+                          .toString()
+                          .padLeft(2, '0'),
+                    ),
                   ],
                 ),
               ),
+
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text(":", style: TextStyle(fontSize: 28)),
+                padding:
+                    EdgeInsets.symmetric(
+                  horizontal: 8,
+                ),
+                child: Text(
+                  ":",
+                  style: TextStyle(
+                    fontSize: 28,
+                  ),
+                ),
               ),
+
               GestureDetector(
-                onTap: () => _pickTime(context, cubit, state),
+                onTap: () => _pickTime(
+                  context,
+                  intakeCubit,
+                  medicineCubit,
+                  state,
+                ),
                 child: Column(
                   children: [
                     TextApp(
-                     text: context.l10n.minute,
-                      color: AppColors.primaryColor,
-                      weight: AppTextWeight.bold,
+                      text:
+                          context.l10n.minute,
+                      color:
+                          AppColors.primaryColor,
+                      weight:
+                          AppTextWeight.bold,
                       fontSize: 12,
                     ),
                     const SizedBox(height: 8),
-                    _box(state.minute.toString().padLeft(2, '0')),
+                    _box(
+                      state.minute
+                          .toString()
+                          .padLeft(2, '0'),
+                    ),
                   ],
                 ),
               ),
+
               const SizedBox(width: 18),
+
               Column(
                 children: [
                   GestureDetector(
-                    onTap: cubit.setAm,
-                    child:_amPmBox(context.l10n.am, state.isAm),
-
-
+                    onTap: intakeCubit.setAm,
+                    child: _amPmBox(
+                      context.l10n.am,
+                      state.isAm,
+                    ),
                   ),
+
                   const SizedBox(height: 8),
+
                   GestureDetector(
-                    onTap: cubit.setPm,
-                    child: _amPmBox(context.l10n.pm, !state.isAm),
+                    onTap: intakeCubit.setPm,
+                    child: _amPmBox(
+                      context.l10n.pm,
+                      !state.isAm,
+                    ),
                   ),
                 ],
               ),
@@ -84,7 +133,8 @@ class IntakeTime extends StatelessWidget {
 
   Future<void> _pickTime(
     BuildContext context,
-    IntakeTimeCubit cubit,
+    IntakeTimeCubit intakeCubit,
+    MedicineCubit medicineCubit,
     IntakeTimeState state,
   ) async {
     final picked = await showTimePicker(
@@ -99,13 +149,27 @@ class IntakeTime extends StatelessWidget {
 
     if (picked != null) {
       final isAm = picked.hour < 12;
-      final hour12 = picked.hour % 12 == 0 ? 12 : picked.hour % 12;
 
-      cubit.setPickedTime(
+      final hour12 =
+          picked.hour % 12 == 0
+              ? 12
+              : picked.hour % 12;
+
+      intakeCubit.setPickedTime(
         hour: hour12,
         minute: picked.minute,
         isAm: isAm,
       );
+
+      final period = isAm ? "AM" : "PM";
+
+      final formattedTime =
+          "${hour12.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')} $period";
+
+      /// هنا الحل الحقيقي 🔥
+      medicineCubit.setIntakeTimes([
+        formattedTime,
+      ]);
     }
   }
 
@@ -116,9 +180,13 @@ class IntakeTime extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius:
+            BorderRadius.circular(16.r),
         boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 8)
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+          )
         ],
       ),
       child: TextApp(
@@ -129,18 +197,26 @@ class IntakeTime extends StatelessWidget {
     );
   }
 
-  Widget _amPmBox(String text, bool selected) {
+  Widget _amPmBox(
+    String text,
+    bool selected,
+  ) {
     return Container(
       width: 50.w,
       height: 36.h,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: selected ? AppColors.primaryColor : Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(12.r),
+        color: selected
+            ? AppColors.primaryColor
+            : Colors.grey.shade300,
+        borderRadius:
+            BorderRadius.circular(12.r),
       ),
       child: TextApp(
         text: text,
-        color: selected ? AppColors.white : AppColors.grey,
+        color: selected
+            ? AppColors.white
+            : AppColors.grey,
         weight: AppTextWeight.bold,
         fontSize: 14,
       ),

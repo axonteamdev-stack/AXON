@@ -19,6 +19,7 @@ class MedicineCubit extends Cubit<MedicineState> {
 
   final formKey = GlobalKey<FormState>();
 
+  /// القيمة الافتراضية المطلوبة من الـ API
   String selectedFrequency = "once daily";
 
   List<String> intakeTimes = [];
@@ -26,10 +27,32 @@ class MedicineCubit extends Cubit<MedicineState> {
   DateTime? startDate;
   DateTime? endDate;
 
+  /// =============================
+  /// FIX FREQUENCY HERE 🔥
+  /// =============================
   void changeFrequency(String value) {
     print("Frequency Changed => $value");
 
-    selectedFrequency = value;
+    switch (value) {
+      case "Once Daily":
+        selectedFrequency = "once daily";
+        break;
+
+      case "Twice Daily":
+        selectedFrequency = "twice daily";
+        break;
+
+      case "Three Times Daily":
+        selectedFrequency = "three times daily";
+        break;
+
+      default:
+        selectedFrequency = "once daily";
+    }
+
+    print("API Frequency => $selectedFrequency");
+
+    /// عند تغيير frequency نمسح الأوقات القديمة
     intakeTimes.clear();
 
     emit(MedicineFrequencyChangedState());
@@ -66,7 +89,9 @@ class MedicineCubit extends Cubit<MedicineState> {
       return;
     }
 
-    print("Medicine Name => ${medicineNameController.text.trim()}");
+    print(
+      "Medicine Name => ${medicineNameController.text.trim()}",
+    );
     print("Selected Frequency => $selectedFrequency");
     print("Intake Times => $intakeTimes");
 
@@ -74,7 +99,6 @@ class MedicineCubit extends Cubit<MedicineState> {
     print("End Date BEFORE => $endDate");
 
     /// لو المستخدم لم يختار تاريخ البداية
-    /// نخليه تلقائي = تاريخ اليوم
     startDate ??= DateTime.now();
 
     print("Start Date AFTER Default => $startDate");
@@ -117,27 +141,33 @@ class MedicineCubit extends Cubit<MedicineState> {
 
     print("Validation Passed ✅");
 
-    print("Start Date FINAL => ${startDate!.toIso8601String()}");
-    print("End Date FINAL => ${endDate!.toIso8601String()}");
+    print(
+      "Start Date FINAL => ${startDate!.toIso8601String()}",
+    );
+    print(
+      "End Date FINAL => ${endDate!.toIso8601String()}",
+    );
 
     emit(MedicineLoadingState());
 
     /// =============================
-/// medicine_cubit.dart
-/// =============================
+    /// API REQUEST
+    /// =============================
+    final result = await addMedicineUseCase.call(
+      medicineName:
+          medicineNameController.text.trim(),
 
-final result = await addMedicineUseCase.call(
-  medicineName: medicineNameController.text.trim(),
-  frequency: selectedFrequency,
+      /// الآن سيتم إرسال القيمة الصحيحة للـ API
+      frequency: selectedFrequency,
 
-  /// التعديل هنا فقط 🔥
-  intakeTime: intakeTimes.isNotEmpty
-      ? intakeTimes.first
-      : "08:00",
+      /// لو مفيش وقت مختار
+      intakeTime: intakeTimes.isNotEmpty
+          ? intakeTimes.first
+          : "08:00",
 
-  startDate: startDate!.toIso8601String(),
-  endDate: endDate!.toIso8601String(),
-);
+      startDate: startDate!.toIso8601String(),
+      endDate: endDate!.toIso8601String(),
+    );
 
     print("API Request Sent 🚀");
 

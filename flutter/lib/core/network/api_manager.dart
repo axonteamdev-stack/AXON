@@ -62,10 +62,85 @@ class ApiManager {
           handler.next(response);
         },
 
-        onError: (error, handler) {
-          print("❌ [ERROR] ${error.message}");
-          handler.next(error);
-        },
+       onError: (error, handler) async {
+  print("❌ [ERROR] ${error.message}");
+
+  /// لو access token انتهى
+  if (error.response?.statusCode == 401) {
+    print("🔄 Access token expired");
+
+    final refreshToken =
+        SharedPref().getString(
+      PrefKeys.refreshToken,
+    );
+
+    print("🔄 Refresh Token => $refreshToken");
+
+    if (refreshToken != null &&
+        refreshToken.isNotEmpty) {
+      try {
+        /// استدعاء refresh endpoint
+        final refreshResponse =
+            await dio.post(
+          Endpoints.refreshToken,
+          options: Options(
+            headers: {
+              "cookie":
+                  "refreshToken=$refreshToken",
+            },
+          ),
+        );
+
+        print("✅ Token refreshed successfully");
+
+        /// السيرفر يرجع:
+        /// data.token
+        final newToken =
+            refreshResponse.data["data"]["token"];
+
+        await SharedPref().setString(
+          PrefKeys.accessToken,
+          newToken,
+        );
+
+        print("🆕 New Access Token => $newToken");
+
+        /// إعادة نفس الطلب القديم
+        final requestOptions =
+            error.requestOptions;
+
+        requestOptions.headers[
+            "Authorization"] =
+            "Bearer $newToken";
+
+        final clonedResponse =
+            await dio.fetch(
+          requestOptions,
+        );
+
+        print("✅ Original request retried");
+
+        return handler.resolve(
+          clonedResponse,
+        );
+      } catch (e) {
+        print("❌ Refresh token failed");
+        print(e.toString());
+
+        /// لو refresh نفسه فشل
+        await SharedPref().removePreference(
+  PrefKeys.accessToken,
+);
+
+await SharedPref().removePreference(
+  PrefKeys.refreshToken,
+);
+      }
+    }
+  }
+
+  handler.next(error);
+}
       ),
     );
   }

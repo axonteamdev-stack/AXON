@@ -1,5 +1,4 @@
 import 'package:Axon/core/extensions/localization_ext.dart';
-import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 import 'package:flutter/material.dart';
@@ -7,22 +6,32 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MedicineCard extends StatelessWidget {
+  final String id;
   final String name;
   final String frequency;
   final String nextTime;
 
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
   const MedicineCard({
     super.key,
+    required this.id,
     required this.name,
     required this.frequency,
     required this.nextTime,
+    required this.onEdit,
+    required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 12.h, right: 12.h),
-      height: 200.h,
+      margin: EdgeInsets.only(
+        left: 12.h,
+        right: 12.h,
+      ),
+      height: 230.h,
       width: double.infinity,
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
@@ -43,29 +52,41 @@ class MedicineCard extends StatelessWidget {
       ),
       child: Column(
         children: [
+          /// TOP ROW (EDIT + DELETE)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                onPressed: onEdit,
+                icon: Icon(
+                  Icons.edit,
+                  color: AppColors.primaryColor,
+                  size: 22.sp,
+                ),
+              ),
+              IconButton(
+                onPressed: onDelete,
+                icon: Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                  size: 22.sp,
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: 8.h),
+
           SizedBox(
-            height: 90.h,
+            height: 80.h,
             child: Row(
               children: [
-                // Container(
-                //   height: 80.h,
-                //   width: 70.w,
-                //   padding: EdgeInsets.all(12.w),
-                //   decoration: BoxDecoration(
-                //     color: AppColors.primaryColor.withOpacity(0.05),
-                //     borderRadius: BorderRadius.circular(24.r),
-                //   ),
-                //   child: Image.asset(
-                //     AppImages.medicineIcon2,
-                //     height: 40.h,
-                //     width: 40.h,
-                //   ),
-                // ),
-                // SizedBox(width: 32.w),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
                     children: [
                       TextApp(
                         text: name,
@@ -73,14 +94,19 @@ class MedicineCard extends StatelessWidget {
                         fontSize: 16,
                         weight: AppTextWeight.bold,
                       ),
+
                       SizedBox(height: 8.h),
+
                       TextApp(
                         text: frequency,
                         color: AppColors.grey,
                         fontSize: 12,
-                        weight: AppTextWeight.semiBold,
+                        weight:
+                            AppTextWeight.semiBold,
                       ),
+
                       SizedBox(height: 8.h),
+
                       Row(
                         children: [
                           Icon(
@@ -88,12 +114,16 @@ class MedicineCard extends StatelessWidget {
                             size: 16,
                             color: AppColors.grey,
                           ),
+
                           SizedBox(width: 4.w),
+
                           TextApp(
-                              text: "${context.l10n.next}: $nextTime",
+                            text:
+                                "${context.l10n.next}: $nextTime",
                             color: AppColors.grey,
                             fontSize: 12,
-                            weight: AppTextWeight.semiBold,
+                            weight:
+                                AppTextWeight.semiBold,
                           ),
                         ],
                       ),
@@ -103,7 +133,9 @@ class MedicineCard extends StatelessWidget {
               ],
             ),
           ),
+
           SizedBox(height: 16.h),
+
           Expanded(
             child: Row(
               children: [
@@ -119,18 +151,29 @@ class MedicineCard extends StatelessWidget {
                       text: context.l10n.taken,
                       color: AppColors.white,
                       fontSize: 16,
-                      weight: AppTextWeight.semiBold,
+                      weight:
+                          AppTextWeight.semiBold,
                     ),
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      side: BorderSide(color: AppColors.primaryColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                      backgroundColor:
+                          AppColors.primaryColor,
+                      side: BorderSide(
+                        color:
+                            AppColors.primaryColor,
+                      ),
+                      shape:
+                          RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(
+                          12.r,
+                        ),
                       ),
                     ),
                   ),
                 ),
+
                 SizedBox(width: 12.w),
+
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {},
@@ -142,12 +185,19 @@ class MedicineCard extends StatelessWidget {
                     label: TextApp(
                       text: context.l10n.skip,
                       fontSize: 16,
-                      weight: AppTextWeight.semiBold,
+                      weight:
+                          AppTextWeight.semiBold,
                     ),
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.red),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                      side: const BorderSide(
+                        color: Colors.red,
+                      ),
+                      shape:
+                          RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(
+                          12.r,
+                        ),
                       ),
                     ),
                   ),

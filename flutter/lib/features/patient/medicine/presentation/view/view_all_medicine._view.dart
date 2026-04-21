@@ -4,9 +4,11 @@ import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_app_bar.dart';
 import 'package:Axon/core/widgets/custom_text_field.dart';
+import 'package:Axon/features/patient/medicine/presentation/manager/delete_medicine/delete_medicine_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/get_medicine.dart/medicine_list_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/medicine_filter/medicine_filter_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/medicine_filter/medicine_filter_state.dart';
+import 'package:Axon/features/patient/medicine/presentation/manager/update_medicine/update_medicine_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/widget/medicine_list__view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,18 +36,24 @@ class _ViewAllMedicineState
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        /// فلتر البحث والتاريخ
-        BlocProvider(
-          create: (_) => MedicineFilterCubit(),
-        ),
+  providers: [
+    BlocProvider(
+      create: (_) => MedicineFilterCubit(),
+    ),
 
-        /// API GET Medicines
-        BlocProvider(
-          create: (_) => getIt<MedicineListCubit>()
-            ..getMedicines(),
-        ),
-      ],
+    BlocProvider(
+      create: (_) => getIt<MedicineListCubit>()
+        ..getMedicines(),
+    ),
+
+    BlocProvider(
+      create: (_) => getIt<DeleteMedicineCubit>(),
+    ),
+
+    BlocProvider(
+      create: (_) => getIt<UpdateMedicineCubit>(),
+    ),
+  ],
 
       child: Builder(
         builder: (context) {

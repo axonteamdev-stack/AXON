@@ -83,10 +83,14 @@ import '../../features/patient/medicine/domain/usecases/get_medicine_usecase.dar
     as _i24;
 import '../../features/patient/medicine/domain/usecases/update_medicine_use_case.dart'
     as _i403;
+import '../../features/patient/medicine/presentation/manager/delete_medicine/delete_medicine_cubit.dart'
+    as _i227;
 import '../../features/patient/medicine/presentation/manager/get_medicine.dart/medicine_list_cubit.dart'
     as _i437;
 import '../../features/patient/medicine/presentation/manager/medicine%20cubit/medicine_cubit.dart'
     as _i621;
+import '../../features/patient/medicine/presentation/manager/update_medicine/update_medicine_cubit.dart'
+    as _i913;
 import '../network/api_manager.dart' as _i119;
 import '../network/network_info.dart' as _i932;
 import '../network/network_module.dart' as _i200;
@@ -159,9 +163,19 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i194.CreateArticleUseCase>(
       () => _i194.CreateArticleUseCase(gh<_i536.DoctorArticlesRepo>()),
     );
+    gh.factory<_i913.UpdateMedicineCubit>(
+      () => _i913.UpdateMedicineCubit(
+        updateMedicineUseCase: gh<_i403.UpdateMedicineUseCase>(),
+      ),
+    );
     gh.factory<_i170.AuthRepo>(
       () => _i279.AuthRepoImpl(
         authRemoteDataSource: gh<_i223.AuthRemoteDataSource>(),
+      ),
+    );
+    gh.factory<_i227.DeleteMedicineCubit>(
+      () => _i227.DeleteMedicineCubit(
+        deleteMedicineUseCase: gh<_i51.DeleteMedicineUseCase>(),
       ),
     );
     gh.factory<_i437.MedicineListCubit>(

@@ -1,10 +1,12 @@
 import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
+import 'package:Axon/features/patient/medicine/presentation/manager/delete_medicine/delete_medicine_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/get_medicine.dart/medicine_list_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/get_medicine.dart/medicine_list_state.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/medicine_filter/medicine_filter_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/medicine_filter/medicine_filter_state.dart';
+import 'package:Axon/features/patient/medicine/presentation/manager/update_medicine/update_medicine_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/widget/medicine_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,26 +38,11 @@ class MedicineList extends StatelessWidget {
 
         /// Success
         if (medicineState is MedicineListSuccess) {
-          return BlocBuilder<
-              MedicineFilterCubit,
-              MedicineFilterState>(
+          return BlocBuilder<MedicineFilterCubit, MedicineFilterState>(
             builder: (context, filterState) {
-              final selectedDate =
-                  filterState.date ?? DateTime.now();
-
+              /// عرض كل الأدوية + البحث فقط
               final filtered =
                   medicineState.medicines.where((medicine) {
-                final medicineDate =
-                    DateTime.parse(medicine.startDate);
-
-                final sameDay =
-                    medicineDate.day ==
-                            selectedDate.day &&
-                        medicineDate.month ==
-                            selectedDate.month &&
-                        medicineDate.year ==
-                            selectedDate.year;
-
                 final matchSearch = medicine
                     .medicineName
                     .toLowerCase()
@@ -63,14 +50,39 @@ class MedicineList extends StatelessWidget {
                       filterState.search.toLowerCase(),
                     );
 
-                return sameDay && matchSearch;
+                return matchSearch;
               }).toList();
 
+              /// ترتيب حسب التاريخ ثم الوقت
+              filtered.sort((a, b) {
+                final aDate = DateTime.parse(a.startDate);
+                final bDate = DateTime.parse(b.startDate);
+
+                final dateCompare =
+                    aDate.compareTo(bDate);
+
+                if (dateCompare != 0) {
+                  return dateCompare;
+                }
+
+                final aTime =
+                    a.intakeTime.isNotEmpty
+                        ? a.intakeTime.first
+                        : "23:59";
+
+                final bTime =
+                    b.intakeTime.isNotEmpty
+                        ? b.intakeTime.first
+                        : "23:59";
+
+                return aTime.compareTo(bTime);
+              });
+
+              /// لو لا يوجد أدوية
               if (filtered.isEmpty) {
                 return Center(
                   child: TextApp(
-                    text:
-                        context.l10n.no_medicine_today,
+                    text: "No medicines found",
                     color: AppColors.grey,
                   ),
                 );
@@ -82,23 +94,53 @@ class MedicineList extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final item = filtered[index];
 
-                  /// الوقت من الـ API
+                  /// الوقت القادم
                   final nextTime =
                       item.intakeTime.isNotEmpty
                           ? item.intakeTime.first
                           : "08:00";
 
-                  /// عدد المرات من الـ API
-                  final frequency = item.frequency;
+                  /// عدد المرات
+                  final frequency =
+                      item.frequency;
 
                   return MedicineCard(
+                    id: item.id,
                     name: item.medicineName,
-
-                    /// بدل once daily الثابت
                     frequency: frequency,
-
-                    /// بدل 09:00 PM الثابت
                     nextTime: nextTime,
+
+                    /// UPDATE
+                    onEdit: () {
+                      context
+                          .read<UpdateMedicineCubit>()
+                          .updateMedicine(
+                            medicineId: item.id,
+                            medicineName:
+                                item.medicineName,
+                            frequency:
+                                item.frequency,
+                            intakeTime:
+                                item.intakeTime,
+                            startDate:
+                                item.startDate,
+                            endDate:
+                                item.endDate,
+                          );
+                    },
+
+                    /// DELETE
+                    onDelete: () async {
+  await context
+      .read<DeleteMedicineCubit>()
+      .deleteMedicine(
+        item.id,
+      );
+
+  context
+      .read<MedicineListCubit>()
+      .getMedicines();
+}
                   );
                 },
                 separatorBuilder: (_, __) =>
