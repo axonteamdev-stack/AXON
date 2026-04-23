@@ -1,27 +1,15 @@
-import 'package:flutter/widgets.dart';
+import 'package:Axon/core/errors/failures.dart';
 
-class PatientEditBasicInfoState {
-  final bool isEditMode;
+abstract class PatientEditBasicInfoState {}
 
-  final TextEditingController nameCtrl;
-  final TextEditingController emailCtrl;
-  final TextEditingController phoneCtrl;
+class PatientEditBasicInfoInitial extends PatientEditBasicInfoState {}
 
-  PatientEditBasicInfoState({
-    required this.isEditMode,
-    required this.nameCtrl,
-    required this.emailCtrl,
-    required this.phoneCtrl,
-  });
+class PatientEditBasicInfoLoading extends PatientEditBasicInfoState {}
 
-  PatientEditBasicInfoState copyWith({
-    bool? isEditMode,
-  }) {
-    return PatientEditBasicInfoState(
-      isEditMode: isEditMode ?? this.isEditMode,
-      nameCtrl: nameCtrl,
-      emailCtrl: emailCtrl,
-      phoneCtrl: phoneCtrl,
-    );
-  }
+class PatientEditBasicInfoSuccess extends PatientEditBasicInfoState {}
+
+class PatientEditBasicInfoError extends PatientEditBasicInfoState {
+  final Failure failure;
+
+  PatientEditBasicInfoError({required this.failure});
 }

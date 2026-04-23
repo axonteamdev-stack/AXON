@@ -23,7 +23,6 @@ class ArticleDetailsCubit extends Cubit<ArticleDetailsState> {
   }
 }
 
-/// Dummy data (simulate API)
 final Map<String, ArticleDetailsModel> _dummyArticles = {
   "1": ArticleDetailsModel(
     id: "1",

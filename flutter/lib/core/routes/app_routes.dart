@@ -226,10 +226,8 @@ static const viewAll = 'viewAll';
 
   case AppRoutes.patientEditBasicInfo:
   return BaseRoute(
-    page: BlocProvider(
-      create: (_) => PatientEditProfileCubit(),
-      child: const PatientEditBasicInfoView(),
-    ),
+    page: PatientEditBasicInfoView(),
+   
   );
 
 

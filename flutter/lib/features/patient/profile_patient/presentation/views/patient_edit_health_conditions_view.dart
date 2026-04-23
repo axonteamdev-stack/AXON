@@ -1,23 +1,38 @@
 import 'package:Axon/core/extensions/localization_ext.dart';
-import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/empty_state_message.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:Axon/core/service/shared_pref/pref_keys.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/patient_dynamic_input_card.dart';
+import 'package:Axon/features/patient/profile_patient/domain/usecases/update_profile_patient_use_case.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/Patient Dynamic List/patient_edit_dynamic_list_cubit.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/Patient Dynamic List/patient_edit_dynamic_list_state.dart';
+import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/empty_state_message.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 
-class PatientEditHealthConditionsView extends StatelessWidget {
-  const PatientEditHealthConditionsView({super.key});
+class PatientEditHealthConditionsView
+    extends StatelessWidget {
+  const PatientEditHealthConditionsView({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => PatientEditDynamicListCubit(),
+      create: (context) => PatientEditDynamicListCubit(
+        updateProfilePatientUseCase:
+            GetIt.instance<UpdateProfilePatientUseCase>(),
+
+        /// conditions
+        prefKey: PrefKeys.conditions,
+
+        /// false = مش allergies
+        isAllergies: false,
+      ),
+
       child: BlocBuilder<
           PatientEditDynamicListCubit,
           PatientEditDynamicListState>(
@@ -30,19 +45,34 @@ class PatientEditHealthConditionsView extends StatelessWidget {
 
             floatingActionButton: state.isEditMode
                 ? FloatingActionButton(
-                    backgroundColor: AppColors.primaryColor,
+                    backgroundColor:
+                        AppColors.primaryColor,
                     onPressed: cubit.addItem,
-                    child: const Icon(Icons.add, color: Colors.white),
+                    child: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
                   )
                 : null,
 
             bottomNavigationBar: Padding(
-              padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
+              padding: EdgeInsets.fromLTRB(
+                20.w,
+                12.h,
+                20.w,
+                24.h,
+              ),
               child: CustomButton(
                 text: state.isEditMode
                     ? context.l10n.save
                     : context.l10n.edit,
-                onPressed: cubit.toggleEdit,
+                onPressed: () {
+                  if (state.isEditMode) {
+                    cubit.saveData();
+                  } else {
+                    cubit.toggleEdit();
+                  }
+                },
               ),
             ),
 
@@ -52,8 +82,11 @@ class PatientEditHealthConditionsView extends StatelessWidget {
 
                 CenterIconHeader(
                   icon: Icons.favorite_outline,
-                  title: context.l10n.health_conditions,
-                  subtitle: context.l10n.your_health_conditions,
+                  title:
+                      context.l10n.health_conditions,
+                  subtitle: context
+                      .l10n
+                      .your_health_conditions,
                 ),
 
                 SizedBox(height: 30.h),
@@ -62,25 +95,35 @@ class PatientEditHealthConditionsView extends StatelessWidget {
                   child: state.items.isEmpty
                       ? EmptyStateMessage(
                           icon: Icons.info_outline,
-                          title:
-                              context.l10n.no_health_conditions,
-                          subtitle: context.l10n.tap_edit_add,
+                          title: context.l10n
+                              .no_health_conditions,
+                          subtitle:
+                              context.l10n.tap_edit_add,
                         )
                       : SingleChildScrollView(
                           padding:
-                              EdgeInsets.symmetric(horizontal: 20.w),
+                              EdgeInsets.symmetric(
+                            horizontal: 20.w,
+                          ),
                           child: Column(
                             children: List.generate(
                               state.items.length,
                               (index) {
-                                final item = state.items[index];
+                                final item =
+                                    state.items[index];
+
                                 return PatientDynamicInputCard(
-                                  controller: item.controller,
-                                  hint:
-                                      context.l10n.condition_name,
-                                  enabled: state.isEditMode,
+                                  controller:
+                                      item.controller,
+                                  hint: context
+                                      .l10n
+                                      .condition_name,
+                                  enabled:
+                                      state.isEditMode,
                                   onRemove: () =>
-                                      cubit.removeItem(index),
+                                      cubit.removeItem(
+                                    index,
+                                  ),
                                 );
                               },
                             ),

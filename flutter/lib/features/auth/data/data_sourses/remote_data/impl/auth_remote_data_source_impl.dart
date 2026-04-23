@@ -71,8 +71,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   //todo : save user data
 
-  Future<void> saveUserData(Map<String, dynamic> json) async {
+ Future<void> saveUserData(Map<String, dynamic> json) async {
   final pref = SharedPref();
+
+  final data = json["data"] ?? {};
+
+  /// patient
+  final medicalProfile = data["medicalProfile"] ?? {};
+
+  /// doctor
+  final doctorProfile = data["doctorProfile"] ?? {};
+
+  /// ==============================
+  /// General Response
+  /// ==============================
 
   await pref.setString(
     PrefKeys.status,
@@ -84,24 +96,169 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     json["message"]?.toString() ?? "",
   );
 
+  /// ==============================
+  /// User Basic Data
+  /// ==============================
+
   await pref.setString(
     PrefKeys.userId,
-    json["data"]?["_id"]?.toString() ?? "",
+    data["_id"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.userRole,
-    json["data"]?["role"]?.toString() ?? "",
+    data["role"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.userEmail,
-    json["data"]?["email"]?.toString() ?? "",
+    data["email"]?.toString() ?? "",
   );
 
-  print("SAVED ROLE ======> ${json["data"]?["role"]}");
-}
+  await pref.setString(
+    PrefKeys.fullName,
+    data["fullName"]?.toString() ?? "",
+  );
 
+  await pref.setString(
+    PrefKeys.email,
+    data["email"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.phoneNumber,
+    data["phoneNumber"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.gender,
+    data["gender"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.role,
+    data["role"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.personalPhoto,
+    data["personalPhoto"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.isVerified,
+    data["isVerified"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.createdAt,
+    data["createdAt"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.updatedAt,
+    data["updatedAt"]?.toString() ?? "",
+  );
+
+  /// ==============================
+  /// PATIENT DATA
+  /// ==============================
+
+  await pref.setString(
+    PrefKeys.bloodType,
+    medicalProfile["bloodType"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.height,
+    medicalProfile["height"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.weight,
+    medicalProfile["weight"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.conditions,
+    (medicalProfile["conditions"] ?? []).join(","),
+  );
+
+  await pref.setString(
+    PrefKeys.allergies,
+    (medicalProfile["allergies"] ?? []).join(","),
+  );
+
+  await pref.setString(
+    PrefKeys.radiologyTests,
+    (medicalProfile["radiologyTests"] ?? []).toString(),
+  );
+
+  await pref.setString(
+    PrefKeys.labTests,
+    (medicalProfile["labTests"] ?? []).toString(),
+  );
+
+  /// ==============================
+  /// DOCTOR DATA
+  /// ==============================
+
+  await pref.setString(
+    PrefKeys.specialization,
+    doctorProfile["specialization"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.yearsExperience,
+    doctorProfile["yearsExperience"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.medicalLicenseNumber,
+    doctorProfile["medicalLicenseNumber"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.price,
+    doctorProfile["price"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.about,
+    doctorProfile["about"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.licenseImage,
+    doctorProfile["licenseImage"]?.toString() ?? "",
+  );
+
+  /// ==============================
+  /// DEBUG PRINTS
+  /// ==============================
+
+  print("============== SAVED USER DATA ==============");
+  print("Full Name => ${data["fullName"]}");
+  print("Email => ${data["email"]}");
+  print("Phone => ${data["phoneNumber"]}");
+  print("Role => ${data["role"]}");
+
+  print("----------- PATIENT DATA -----------");
+  print("Blood Type => ${medicalProfile["bloodType"]}");
+  print("Height => ${medicalProfile["height"]}");
+  print("Weight => ${medicalProfile["weight"]}");
+  print("Conditions => ${medicalProfile["conditions"]}");
+  print("Allergies => ${medicalProfile["allergies"]}");
+
+  print("----------- DOCTOR DATA -----------");
+  print("Specialization => ${doctorProfile["specialization"]}");
+  print("Years Experience => ${doctorProfile["yearsExperience"]}");
+  print("Medical License => ${doctorProfile["medicalLicenseNumber"]}");
+  print("Price => ${doctorProfile["price"]}");
+  print("About => ${doctorProfile["about"]}");
+
+  print("====================================");
+}
 
   // todo : login
 

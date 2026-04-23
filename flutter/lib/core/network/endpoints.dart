@@ -43,4 +43,8 @@ class Endpoints {
 
   static const String deleteMedicine =
       "/medications";
+
+
+
+      static const String updateMe = "/auth/updateMe";
 }

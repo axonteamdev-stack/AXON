@@ -43,12 +43,16 @@ class ArticleCard extends StatelessWidget {
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(14.r),
               ),
+              
               child: Image.network(
-                "${Endpoints.baseUrlImage}${item.image}",
+                // "${Endpoints.baseUrlImage}${item.image}"
+                Endpoints.baseUrlImage + item.image,
                 height: 120.h,
                 width: double.infinity,
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
+                  print("Image Error: $error");
+      print("Image URL: ${Endpoints.baseUrlImage}${item.image}");
                   return Container(
                     width: double.infinity,
                     height: 120.h,

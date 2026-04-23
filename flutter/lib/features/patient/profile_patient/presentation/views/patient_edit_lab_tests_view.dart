@@ -1,37 +1,31 @@
 import 'package:Axon/core/extensions/localization_ext.dart';
-import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/empty_state_message.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/upload_document_card.dart';
+import 'package:Axon/features/patient/profile_patient/domain/usecases/update_profile_patient_use_case.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/patient_edit_documents/patient_edit_documents_cubit.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/manager/patient_edit_documents/patient_edit_documents_state.dart';
-
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/empty_state_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 
-import 'package:Axon/core/style/colors.dart';
-import 'package:Axon/core/widgets/custom_button.dart';
-import 'package:Axon/features/auth/Presentation/views/widgets/center_icon_header.dart';
-import 'package:Axon/features/auth/Presentation/views/widgets/upload_document_card.dart';
-import 'package:Axon/features/patient/profile_patient/presentation/manager/patient_edit_documents/patient_edit_documents_cubit.dart';
-import 'package:Axon/features/patient/profile_patient/presentation/manager/patient_edit_documents/patient_edit_documents_state.dart';
-import 'package:Axon/core/extensions/context_extension.dart';
-
-class PatientEditLabTestsView extends StatelessWidget {
-  const PatientEditLabTestsView({super.key});
+class PatientEditLabTestsView
+    extends StatelessWidget {
+  const PatientEditLabTestsView({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          PatientEditDocumentsCubit()..loadEditLabTests(),
+      create: (context) => PatientEditDocumentsCubit(
+        updateProfilePatientUseCase:
+            GetIt.I<UpdateProfilePatientUseCase>(),
+        isRadiology: false,
+      ),
       child: BlocBuilder<
           PatientEditDocumentsCubit,
           PatientEditDocumentsState>(
@@ -44,7 +38,8 @@ class PatientEditLabTestsView extends StatelessWidget {
 
             floatingActionButton: state.isEditMode
                 ? FloatingActionButton(
-                    backgroundColor: AppColors.primaryColor,
+                    backgroundColor:
+                        AppColors.primaryColor,
                     onPressed: cubit.addDocument,
                     child: const Icon(
                       Icons.add,
@@ -54,13 +49,23 @@ class PatientEditLabTestsView extends StatelessWidget {
                 : null,
 
             bottomNavigationBar: Padding(
-              padding:
-                  EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
+              padding: EdgeInsets.fromLTRB(
+                20.w,
+                12.h,
+                20.w,
+                24.h,
+              ),
               child: CustomButton(
                 text: state.isEditMode
                     ? context.l10n.save
                     : context.l10n.edit,
-                onPressed: cubit.toggleEditMode,
+                onPressed: () {
+                  if (state.isEditMode) {
+                    cubit.saveData();
+                  } else {
+                    cubit.toggleEditMode();
+                  }
+                },
               ),
             ),
 
@@ -69,9 +74,13 @@ class PatientEditLabTestsView extends StatelessWidget {
                 SizedBox(height: 55.h),
 
                 CenterIconHeader(
-                  icon: Icons.science_outlined,
-                  title: context.l10n.lab_tests,
-                  subtitle: context.l10n.medical_lab_tests,
+                  icon:
+                      Icons.science_outlined,
+                  title:
+                      context.l10n.lab_tests,
+                  subtitle: context
+                      .l10n
+                      .medical_lab_tests,
                 ),
 
                 SizedBox(height: 30.h),
@@ -79,34 +88,51 @@ class PatientEditLabTestsView extends StatelessWidget {
                 Expanded(
                   child: state.documents.isEmpty
                       ? EmptyStateMessage(
-                          icon: Icons.info_outline,
-                          title: context.l10n.no_lab_tests,
-                          subtitle: context.l10n.tap_edit_add,
+                          icon:
+                              Icons.info_outline,
+                          title: context
+                              .l10n.no_lab_tests,
+                          subtitle: context
+                              .l10n.tap_edit_add,
                         )
                       : SingleChildScrollView(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20.w),
+                          padding:
+                              EdgeInsets.symmetric(
+                            horizontal: 20.w,
+                          ),
                           child: Column(
-                            children: List.generate(
-                              state.documents.length,
+                            children:
+                                List.generate(
+                              state.documents
+                                  .length,
                               (index) {
                                 final document =
-                                    state.documents[index];
+                                    state.documents[
+                                        index];
 
                                 return UploadDocumentCard(
-                                  file: document.file,
+                                  file:
+                                      document.file,
                                   labelController:
-                                      document.labelController,
-                                  enabled: state.isEditMode,
+                                      document
+                                          .labelController,
+                                  enabled: state
+                                      .isEditMode,
                                   onPick: () =>
-                                      cubit.pickImage(index),
+                                      cubit.pickImage(
+                                          index),
                                   onRemove: () =>
-                                      cubit.removeDocument(index),
-                                  onLabelChanged: (value) =>
-                                      cubit.updateLabel(
-                                          index, value),
-                                  hintText:
-                                      context.l10n.test_name,
+                                      cubit.removeDocument(
+                                          index),
+                                  onLabelChanged:
+                                      (value) =>
+                                          cubit.updateLabel(
+                                    index,
+                                    value,
+                                  ),
+                                  hintText: context
+                                      .l10n
+                                      .test_name,
                                 );
                               },
                             ),

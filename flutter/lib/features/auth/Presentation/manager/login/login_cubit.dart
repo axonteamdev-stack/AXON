@@ -11,7 +11,7 @@ class LoginCubit extends Cubit<LoginState> {
   final LoginUseCase loginUseCase;
   LoginCubit({required this.loginUseCase}) : super(LoginInitial());
 
-  final emailController = TextEditingController(text: "abdallah12@gmail.com");
+  final emailController = TextEditingController(text: "shroukkaoud777@gmail.com");
   final passwordController = TextEditingController(text: "P@assword123");
 
   final formKey = GlobalKey<FormState>();
