@@ -125,4 +125,4 @@ export const getArticleDetails = catchAsync(async (req, res, next) => {
         ar: "تم جلب بيانات المقال بنجاح",
         en: "Doctor article fetched successfully"
     }, { article: articleData });
-});
+}); 
