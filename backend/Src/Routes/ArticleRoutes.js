@@ -13,6 +13,14 @@ router.get("/", articleController.getAllArticles);
 // --- كل المسارات القادمة تحتاج تسجيل دخول ---
 router.use(authMid.protect);
 
+
+
+router.get("/getArticle/:id",
+    authMid.protect, 
+    articleController.getArticleDetails); 
+
+
+
 // 2. الميزة الجديدة: جلب مقالات الدكاترة المتابعين فقط
 router.get("/following-feed", articleController.getFollowingArticles); 
 
@@ -35,9 +43,7 @@ router.get(
 
 
 
-router.get("/getArticle/:id",
-    authMid.protect, 
-    articleController.getArticleDetails); 
+
 
 
 
