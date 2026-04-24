@@ -37,7 +37,7 @@ router.get(
 
 router.get("/getArticle/:id",
     authMid.protect, 
-    articleController.getArticleDetails);
+    articleController.getArticleDetails); 
 
 
 
