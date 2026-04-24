@@ -14,7 +14,7 @@ router.get("/", articleController.getAllArticles);
 router.use(authMid.protect);
 
 // 2. الميزة الجديدة: جلب مقالات الدكاترة المتابعين فقط
-router.get("/following-feed", articleController.getFollowingArticles);
+router.get("/following-feed", articleController.getFollowingArticles); 
 
 // 3. إنشاء مقال جديد (للدكاترة فقط)
 router.post(
