@@ -358,10 +358,13 @@ export const updateMe = catchAsync(async (req, res, next) => {
     });
   }
 
-  // 4) تحديث بيانات المريض (البيانات العادية)
+  // داخل جزء الـ (4) تحديث بيانات المريض
   if (req.user.role === 'patient') {
-    ['bloodType', 'height', 'weight'].forEach(field => {
-      if (body[field] !== undefined) updateData[`medicalProfile.${field}`] = body[field];
+    // أضفنا conditions و allergies للقائمة
+    ['bloodType', 'height', 'weight', 'conditions', 'allergies'].forEach(field => {
+      if (body[field] !== undefined) {
+        updateData[`medicalProfile.${field}`] = body[field];
+      }
     });
   }
 
