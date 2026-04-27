@@ -1,52 +1,35 @@
 import express from "express";
 import * as medController from "../Controllers/MedicationController.js";
 import { protect, restrictTo } from "../Middlewares/AuthMiddleware.js";
-import validateMiddleware from "../Middlewares/ValidateMiddleware.js"; // تأكد من المسار والاسم
-import { upload } from "../Middlewares/UploadMiddleware.js";
+import validateMiddleware from "../Middlewares/ValidateMiddleware.js";
+import uploadMiddleware from "../Middlewares/UploadMiddleware.js";
 
 const router = express.Router();
 
-// 1. حماية جميع المسارات القادمة
+// 1. Protect all routes
 router.use(protect);
 
-// 2. قصر الوصول للمرضى فقط (لأن الأدوية خاصة بالمريض)
-router.use(restrictTo('patient'));
+// 2. Restrict to patients only
+router.use(restrictTo("patient"));
 
-// --- المسارات الأساسية ---
+// --- Base Routes ---
 
-// جلب كل أدوية المريض الحالي
 router.get("/", medController.getMyMedications);
 
-// إضافة دواء جديد
 router.post(
-  "/", 
-  upload.none(), 
-  validateMiddleware.addMedication, 
+  "/",
+  validateMiddleware.addMedication,
   medController.addMedication
 );
 
-
-
-router.get("/dashboard", medController.getHomeDashboard);
-
-
-// تحديث دواء معين بواسطة المعرف (ID)
 router.patch(
-  "/:id", 
-  upload.none(), 
+  "/:id",
   medController.updateMedication
 );
 
-// حذف دواء معين بواسطة المعرف (ID)
-router.delete(
-  "/:id", 
-  medController.deleteMedication
-);
-
-
+router.delete("/:id", medController.deleteMedication);
 
 router.get("/:id", medController.getSingleMedication);
-
 
 router.patch("/:id/taken", medController.markAsTaken);
 

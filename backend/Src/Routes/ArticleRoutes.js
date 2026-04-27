@@ -1,53 +1,46 @@
 import express from "express";
 import * as articleController from "../Controllers/ArticleController.js";
-import * as authController from "../Controllers/AuthController.js";
+import { protect, restrictTo } from "../Middlewares/AuthMiddleware.js";
 import uploadMiddleware from "../Middlewares/UploadMiddleware.js";
-import * as authMid from "../Middlewares/AuthMiddleware.js";
-
 
 const router = express.Router();
 
-// 1. عرض كل المقالات (للجميع - Public)
+// 1. Public - all articles
 router.get("/", articleController.getAllArticles);
 
-// --- كل المسارات القادمة تحتاج تسجيل دخول ---
-router.use(authMid.protect);
+// --- All following routes require authentication ---
+router.use(protect);
 
+// 2. Following doctors' articles
+router.get("/following-feed", articleController.getFollowingArticles);
 
-
-router.get("/getArticle/:id",
-    authMid.protect, 
-    articleController.getArticleDetails); 
-
-
-
-// 2. الميزة الجديدة: جلب مقالات الدكاترة المتابعين فقط
-router.get("/following-feed", articleController.getFollowingArticles); 
-
-// 3. إنشاء مقال جديد (للدكاترة فقط)
+// 3. Create article (doctors only)
 router.post(
-    "/create",
-    authMid.restrictTo("doctor"),
-    uploadMiddleware.post,
-    articleController.createArticle
+  "/create",
+  restrictTo("doctor"),
+  uploadMiddleware.post,
+  articleController.createArticle
 );
 
-
-
+// 4. My articles (doctors only)
 router.get(
-    "/my-articles", 
-    authMid.protect, 
-    authMid.restrictTo("doctor"), 
-    articleController.getMyArticles
+  "/my-articles",
+  restrictTo("doctor"),
+  articleController.getMyArticles
 );
 
+// 5. Article details (any authenticated user)
+router.get(
+  "/getArticle/:id",
+  articleController.getArticleDetails
+);
 
+// --- Community routes ---
 
+// 6. Like/unlike article
+router.patch("/:id/like", articleController.toggleLike);
 
-
-
-
-
-
+// 7. Delete article (owner or admin)
+router.delete("/deleteArticle/:id", articleController.deleteArticle);
 
 export default router;

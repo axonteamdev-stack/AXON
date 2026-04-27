@@ -1,135 +1,179 @@
-import User from "../Models/UserModel.js";
+import { UserService } from "../Services/UserService.js";
 import { catchAsync, sendResponse } from "../Utils/AppError.js";
 import AppError from "../Utils/AppError.js";
+import { msg } from "../Utils/ResponseHelper.js";
 
-// 1. جلب قائمة كل الأطباء
+// Get all verified doctors with pagination
 export const getAllDoctors = catchAsync(async (req, res, next) => {
-    // 1. جلب الأطباء من القاعدة
-    const doctors = await User.find({ role: "doctor", isVerified: true })
-        .select("fullName email phoneNumber personalPhoto gender role doctorProfile");
+  const { page = 1, limit = 10 } = req.query;
 
-    // 2. تجميع البيانات (Flattening)
-    const flatDoctors = doctors.map(doc => {
-        return {
-            _id: doc._id,
-            fullName: doc.fullName,
-            email: doc.email,
-            phoneNumber: doc.phoneNumber,
-            personalPhoto: doc.personalPhoto,
-            gender: doc.gender,
-            role: doc.role,
-            // دمج بيانات البروفايل في نفس المستوى
-            specialization: doc.doctorProfile?.specialization || "N/A",
-            yearsExperience: doc.doctorProfile?.yearsExperience || 0,
-            about: doc.doctorProfile?.about || "",
-            price: doc.doctorProfile?.price || 0
-        };
-    });
-
-    // 3. الرد النهائي
-    sendResponse(res, 200, {
-        ar: "تم جلب جميع بيانات الأطباء مدمجة بنجاح",
-        en: "All doctors data merged and fetched successfully"
-    }, { 
-        results: flatDoctors.length, 
-        doctors: flatDoctors 
-    });
-});
-
-// 2. جلب بيانات طبيب واحد بالتفصيل
-export const getDoctorDetails = catchAsync(async (req, res, next) => {
-    const doctor = await User.findOne({ _id: req.params.id, role: "doctor" })
-        .select("fullName email phoneNumber personalPhoto gender doctorProfile"); 
-
-    if (!doctor) {
-        return next(new AppError({
-            ar: "هذا الطبيب غير موجود",
-            en: "This doctor was not found"
-        }, 404));
-    }
-
-    const doctorData = {
-        _id: doctor._id,
-        fullName: doctor.fullName,
-        email: doctor.email,
-        phoneNumber: doctor.phoneNumber,
-        personalPhoto: doctor.personalPhoto,
-        gender: doctor.gender,
-        specialization: doctor.doctorProfile?.specialization || "N/A",
-        yearsExperience: doctor.doctorProfile?.yearsExperience || 0,
-        about: doctor.doctorProfile?.about || "",
-        price: doctor.doctorProfile?.price || 0
-    };
-
-    sendResponse(res, 200, {
-        ar: "تم جلب بيانات الطبيب بنجاح",
-        en: "Doctor details fetched successfully"
-    }, { doctor: doctorData });
-});
-
-// 3. البحث عن الأطباء
-export const searchDoctors = catchAsync(async (req, res, next) => {
-  const { keyword, specialization } = req.body;
-  let query = { role: "doctor" };
-
-  if (keyword) {
-    query.fullName = { $regex: keyword, $options: "i" };
-  }
-
-  if (specialization) {
-    query["doctorProfile.specialization"] = { $regex: specialization, $options: "i" };
-  }
-
-  const doctors = await User.find(query).select(
-    "fullName personalPhoto doctorProfile.specialization doctorProfile.price"
+  const doctors = await UserService.getAllDoctors(
+    parseInt(page),
+    parseInt(limit),
   );
 
-  sendResponse(res, 200, {
-    ar: "نتائج البحث جاهزة",
-    en: "Search results are ready"
-  }, { results: doctors.length, doctors });
+  sendResponse(
+    res,
+    200,
+    msg("تم جلب الأطباء بنجاح", "Doctors fetched successfully"),
+    {
+      results: doctors.length,
+      doctors,
+    },
+  );
 });
 
+// Get detailed doctor profile
+export const getDoctorDetails = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
 
+  const doctor = await UserService.getDoctorDetails(id);
 
+  if (!doctor) {
+    return next(new AppError(msg("الطبيب غير موجود", "Doctor not found"), 404));
+  }
 
-// 4. المتابعة وإلغاء المتابعة
+  sendResponse(
+    res,
+    200,
+    msg("تم جلب بيانات الطبيب بنجاح", "Doctor details fetched successfully"),
+    { doctor },
+  );
+});
+
+// Search doctors with keyword and specialization
+export const searchDoctors = catchAsync(async (req, res, next) => {
+  const { keyword, specialization, page = 1, limit = 10 } = req.body;
+
+  const doctors = await UserService.searchDoctors({
+    keyword,
+    specialization,
+    page: parseInt(page),
+    limit: parseInt(limit),
+  });
+
+  sendResponse(res, 200, msg("نتائج البحث جاهزة", "Search results ready"), {
+    results: doctors.length,
+    doctors,
+  });
+});
+
+// Follow/Unfollow a doctor
 export const toggleFollow = catchAsync(async (req, res, next) => {
-  const doctorId = req.params.id;
+  const { id: doctorId } = req.params;
   const userId = req.user.id;
 
+  // Validate self-follow attempt
   if (doctorId === userId) {
-    return next(new AppError({
-        ar: "لا يمكنك متابعة نفسك!",
-        en: "You cannot follow yourself!"
-    }, 400));
+    return next(
+      new AppError(
+        msg("لا يمكنك متابعة نفسك", "You cannot follow yourself"),
+        400,
+      ),
+    );
   }
 
-  const doctor = await User.findById(doctorId);
-  if (!doctor || doctor.role !== 'doctor') {
-    return next(new AppError({
-        ar: "هذا الطبيب غير موجود",
-        en: "Doctor not found"
-    }, 404));
+  // Check if doctor exists
+  const doctor = await UserService.getDoctorDetails(doctorId);
+  if (!doctor) {
+    return next(new AppError(msg("الطبيب غير موجود", "Doctor not found"), 404));
   }
 
-  const isFollowing = doctor.followers.includes(userId);
+  // Toggle follow
+  const result = await UserService.toggleFollow(userId, doctorId);
 
-  if (isFollowing) {
-    await User.findByIdAndUpdate(userId, { $pull: { following: doctorId } });
-    await User.findByIdAndUpdate(doctorId, { $pull: { followers: userId } });
-    
-    sendResponse(res, 200, {
-        ar: "تم إلغاء المتابعة",
-        en: "Unfollowed successfully"
-    });
-  } else {
-    await User.findByIdAndUpdate(userId, { $addToSet: { following: doctorId } });
-    await User.findByIdAndUpdate(doctorId, { $addToSet: { followers: userId } });
+  sendResponse(
+    res,
+    200,
+    result.followed
+      ? msg("تم الاتباع بنجاح", "Followed successfully")
+      : msg("تم إلغاء الاتباع بنجاح", "Unfollowed successfully"),
+    { followed: result.followed },
+  );
+});
 
-    sendResponse(res, 200, {
-        ar: "تمت المتابعة بنجاح",
-        en: "Followed successfully"
-    });
+// Get current user profile
+export const getProfile = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+
+  const user = await UserService.getUserProfile(userId);
+
+  if (!user) {
+    return next(new AppError(msg("المستخدم غير موجود", "User not found"), 404));
   }
+
+  sendResponse(
+    res,
+    200,
+    msg("تم جلب الملف الشخصي بنجاح", "Profile fetched successfully"),
+    { user },
+  );
+});
+
+// Update current user profile
+export const updateProfile = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const updateData = req.body;
+  const files = req.files || {};
+
+  try {
+    const updatedUser = await UserService.updateProfile(
+      userId,
+      updateData,
+      files,
+    );
+
+    sendResponse(
+      res,
+      200,
+      msg("تم تحديث الملف الشخصي بنجاح", "Profile updated successfully"),
+      { user: updatedUser },
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get user's following list
+export const getFollowing = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const { page = 1, limit = 10 } = req.query;
+
+  const following = await UserService.getFollowing(
+    userId,
+    parseInt(page),
+    parseInt(limit),
+  );
+
+  sendResponse(
+    res,
+    200,
+    msg("تم جلب قائمة المتابعة بنجاح", "Following list fetched successfully"),
+    {
+      results: following.length,
+      users: following,
+    },
+  );
+});
+
+// Get user's followers list
+export const getFollowers = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const { page = 1, limit = 10 } = req.query;
+
+  const followers = await UserService.getFollowers(
+    userId,
+    parseInt(page),
+    parseInt(limit),
+  );
+
+  sendResponse(
+    res,
+    200,
+    msg("تم جلب قائمة المتابعين بنجاح", "Followers list fetched successfully"),
+    {
+      results: followers.length,
+      users: followers,
+    },
+  );
 });

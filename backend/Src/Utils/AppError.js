@@ -1,43 +1,41 @@
-class AppError extends Error {
-  constructor(messages, statusCode) {
-    // messages هنا هتكون عبارة عن { ar: 'رسالة بالعربي', en: 'English message' }
-    super(messages.en); // الافتراضي للـ Error الأصلي هو الإنجليزي
+import CustomAPIError from "../Error/CustomAPIError.js";
+import { createErrorMessages } from "./ResponseHelper.js";
+import { getLanguage, getLocalizedString } from "./LanguageDetector.js";
 
-    this.statusCode = statusCode;
-    this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
-    this.isOperational = true;
-    
-    // بنخزن اللغتين عشان الـ Global Handler يختار منهم
-    this.messages = messages; 
-
-    if (process.env.NODE_ENV === 'development') {
-      Error.captureStackTrace(this, this.constructor);
-    }
-  }
-}
-
-
-
-
-// دالة موحدة للردود الناجحة تدعم اللغتين
-export const sendResponse = (res, statusCode, messages, data = null) => {
-    // جلب اللغة التي تم تحديدها بواسطة الـ Middleware (setLanguage)
-    const lang = res.req.lang || 'ar'; 
-
-    res.status(statusCode).json({
-        status: 'success',
-        // اختيار الرسالة بناءً على اللغة
-        message: messages[lang] || messages['ar'], 
-        // إذا كان هناك بيانات أرسلها، وإذا لم يوجد لا ترسل الحقل
-        ...(data && { data })
-    });
-};
-
-
-
-
+// --- Named Export: Async Catch Wrapper ---
 export const catchAsync = (fn) => (req, res, next) => {
   fn(req, res, next).catch(next);
 };
+
+// --- Named Export: Success Response Handler ---
+export const sendResponse = (res, statusCode, messageObj, data = null) => {
+  const lang = getLanguage(res);
+  const message = getLocalizedString(messageObj, lang);
+
+  const responseObj = {
+    status: "success",
+    message: message,
+  };
+
+  if (data) {
+    responseObj.data = data;
+  }
+
+  res.status(statusCode).json(responseObj);
+};
+
+// --- Default Export: The Main AppError Class ---
+class AppError extends CustomAPIError {
+  constructor(messageObj, statusCode) {
+    // Convert various input types to bilingual message object
+    const messages = createErrorMessages(messageObj);
+
+    // Call parent constructor (using English as the fallback for internal logs)
+    super(messages.en || "Error", statusCode);
+
+    // This property is what the global error handler reads
+    this.messages = messages;
+  }
+}
 
 export default AppError;
