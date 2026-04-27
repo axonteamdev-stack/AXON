@@ -231,9 +231,8 @@ userSchema.pre("save", async function () {
 });
 
 // --- Query Hook: Soft Delete Filter ---
-userSchema.pre(/^find/, function (next) {
+userSchema.pre(/^find/, function () {
   this.find({ isDeleted: { $ne: true } });
-  next();
 });
 
 // --- Instance Methods ---

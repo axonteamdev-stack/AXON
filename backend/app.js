@@ -16,6 +16,9 @@ import medicationRouter from "./Src/Routes/MedicationRoutes.js";
 import postRouter from "./Src/Routes/PostRoutes.js";
 import commentRouter from "./Src/Routes/CommentRoutes.js";
 import { RATE_LIMIT } from "./Src/Constants/index.js";
+import { msg } from "./Src/Utils/ResponseHelper.js";
+import { getLanguage } from "./Src/Utils/LanguageDetector.js";
+
 
 const app = express();
 
@@ -143,18 +146,20 @@ app.get("/", (req, res) => {
   });
 });
 
+
 // --- 7. Error Handling ---
 
 // 404 handler
 app.use((req, res, next) => {
-  const error = new AppError(
-    {
-      ar: `العنوان المطلوب ${req.originalUrl} غير موجود!`,
-      en: `The requested path ${req.originalUrl} was not found!`,
-    },
-    404
+  next(
+    new AppError(
+      msg(
+        `العنوان المطلوب ${req.originalUrl} غير موجود!`,
+        `The requested path ${req.originalUrl} was not found!`,
+      ),
+      404,
+    ),
   );
-  next(error);
 });
 
 // Global error handler
@@ -162,13 +167,25 @@ app.use((err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
-  const lang = req.lang || "ar";
-  let message = err.message;
+  const lang = getLanguage(req);
+  let message;
+
+  // Resolve bilingual messages
+  const resolveMsg = (msgObj, language) => {
+    if (typeof msgObj === "string") return msgObj;
+    if (typeof msgObj === "object" && msgObj !== null) {
+      return msgObj[language] || msgObj["ar"] || msgObj["en"] || String(msgObj);
+    }
+    return String(msgObj);
+  };
 
   if (err.messages && typeof err.messages === "object") {
-    message = err.messages[lang] || err.messages["ar"];
+    message = resolveMsg(err.messages, lang);
+  } else {
+    message = resolveMsg(err.message, lang);
   }
 
+  // Production logging for server errors
   if (process.env.NODE_ENV === "production" && err.statusCode >= 500) {
     console.error("Production Error:", {
       statusCode: err.statusCode,

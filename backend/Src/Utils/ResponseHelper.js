@@ -47,9 +47,10 @@ const resolveMessage = (messageObj, lang = "ar") => {
 export const sendResponse = (res, statusCode = 200, message, data = null) => {
   const lang = getLanguage(res);
   const resolvedMessage = resolveMessage(message, lang);
+  const isSuccess = statusCode >= 200 && statusCode < 300;
 
   const responseObj = {
-    status: "success",
+    status: isSuccess ? "success" : "fail",
     message: resolvedMessage,
   };
 
@@ -77,9 +78,10 @@ export const sendErrorResponse = (
 ) => {
   const lang = getLanguage(res);
   const resolvedMessage = resolveMessage(message, lang);
+  const isClientError = statusCode >= 400 && statusCode < 500;
 
   const responseObj = {
-    status: "fail",
+    status: isClientError ? "fail" : "error",
     message: resolvedMessage,
   };
 
