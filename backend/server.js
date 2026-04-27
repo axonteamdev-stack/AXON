@@ -68,18 +68,14 @@ connectDB()
       }
     });
 
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT || 5000;
+    const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
+
     const server_instance = server.listen(PORT, () => {
-      console.log(
-        `✅ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
-      );
-      console.log(
-        `📡 API Documentation: http://localhost:${PORT}/`
-      );
-      console.log(
-        `🏥 Health Check: http://localhost:${PORT}/health`
-      );
-    });
+        console.log(`✅ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+        console.log(`📡 API URL: ${APP_URL}`);
+        console.log(`🏥 Health Check: ${APP_URL}/health`);
+});
 
     // --- 4. Graceful shutdown handlers ---
     process.on("SIGTERM", () => {
