@@ -1,13 +1,22 @@
+// 1. Move dotenv and path to the very top to load envs immediately
+import dotenv from "dotenv";
+import path from "path";
+import fs from "fs";
+import http from "http";
+import { fileURLToPath } from "url";
+
+// Determine which file to load based on NODE_ENV
+const envFile = process.env.NODE_ENV === 'production' 
+  ? '.env.production' 
+  : '.env.local';
+
+dotenv.config({ path: path.resolve(process.cwd(), envFile) });
+dotenv.config(); // Fallback to standard .env
+
+// 2. Now import your local files that depend on those environment variables
 import app from "./app.js";
 import connectDB from "./Src/Config/db.js";
-import http from "http";
-import dotenv from "dotenv";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import AuthService from "./Src/Services/AuthService.js";
-
-dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -72,10 +81,10 @@ connectDB()
     const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
 
     const server_instance = server.listen(PORT, () => {
-        console.log(`✅ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-        console.log(`📡 API URL: ${APP_URL}`);
-        console.log(`🏥 Health Check: ${APP_URL}/health`);
-});
+      console.log(`✅ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+      console.log(`📡 API URL: ${APP_URL}`);
+      console.log(`🏥 Health Check: ${APP_URL}/health`);
+    });
 
     // --- 4. Graceful shutdown handlers ---
     process.on("SIGTERM", () => {
@@ -85,7 +94,6 @@ connectDB()
         process.exit(0);
       });
 
-      // Force close after 10 seconds
       setTimeout(() => {
         console.error("❌ Could not close connections in time, forcefully shutting down");
         process.exit(1);
@@ -119,7 +127,7 @@ connectDB()
         process.exit(1);
       });
     });
-  })
+  }) // This closing brace for .then() was missing in your original logic
   .catch((err) => {
     console.error("❌ Failed to connect to database:", err.message);
     process.exit(1);
