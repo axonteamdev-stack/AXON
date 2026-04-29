@@ -62,9 +62,8 @@ articleSchema.virtual("likeCount").get(function () {
 });
 
 // Middleware — soft-delete filter
-articleSchema.pre(/^find/, function (next) {
+articleSchema.pre(/^find/, function () {
   this.find({ isDeleted: { $ne: true } });
-  next();
 });
 
 export default mongoose.model("Article", articleSchema);

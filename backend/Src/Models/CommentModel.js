@@ -86,17 +86,16 @@ commentSchema.virtual("replyCount").get(function () {
 });
 
 // --- Pre-save Hooks ---
-commentSchema.pre("save", function (next) {
+commentSchema.pre("save", function () {
   if (this.isModified("content") && !this.isNew) {
     this.editedAt = new Date();
   }
-  next();
 });
 
 // --- Query Hooks ---
-commentSchema.pre(/^find/, function (next) {
+commentSchema.pre(/^find/, function () {
   this.find({ isDeleted: { $ne: true } });
-  next();
+
 });
 
 export default mongoose.model("Comment", commentSchema);

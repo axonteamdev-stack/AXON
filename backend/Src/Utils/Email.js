@@ -7,6 +7,7 @@ import nodemailer from "nodemailer";
 import validator from "email-validator";
 
 /**
+ * 
  * ✅ FIXED: Strict email validation to prevent header injection
  */
 const validateEmail = (email) => {

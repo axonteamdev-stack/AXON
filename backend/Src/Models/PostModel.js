@@ -97,17 +97,17 @@ postSchema.virtual("commentCount").get(function () {
 });
 
 // --- Pre-save Hook ---
-postSchema.pre("save", function (next) {
+postSchema.pre("save", function () {
   if (this.isModified("content") && !this.isNew) {
     this.editedAt = new Date();
   }
-  next();
+
 });
 
 // --- Query Hook ---
-postSchema.pre(/^find/, function (next) {
+postSchema.pre(/^find/, function () {
   this.find({ isDeleted: { $ne: true } });
-  next();
+
 });
 
 export default mongoose.model("Post", postSchema);

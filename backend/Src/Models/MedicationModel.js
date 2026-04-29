@@ -104,7 +104,7 @@ medicationSchema.virtual("pendingDoses").get(function () {
 });
 
 // --- Pre-save Hook ---
-medicationSchema.pre("save", function (next) {
+medicationSchema.pre("save", function () {
   // Validate endDate > startDate
   if (this.endDate <= this.startDate) {
     return next(new Error("End date must be after start date"));
@@ -115,17 +115,14 @@ medicationSchema.pre("save", function (next) {
   if (this.lastResetDate !== today && this.isModified("dailyTracker")) {
     this.lastResetDate = today;
   }
-
-  next();
 });
 
 // --- Query Hook ---
-medicationSchema.pre(/^find/, function (next) {
+medicationSchema.pre(/^find/, function () {
   // Only show active medications by default, unless explicitly querying inactive
   if (!this.getQuery().hasOwnProperty("isActive")) {
     this.where({ isActive: true });
   }
-  next();
 });
 
 export default mongoose.model("Medication", medicationSchema);
