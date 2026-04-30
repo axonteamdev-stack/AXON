@@ -1,8 +1,23 @@
 import multer from "multer";
+import path from "path";
+import fs from "fs";
 import { msg } from "../Utils/ResponseHelper.js";
 
-// ─── 1. Memory Storage ─────────────────────────────────────
-const storage = multer.memoryStorage();
+// ✅ MEDIUM FIX: Use disk storage instead of memory to prevent RAM exhaustion
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(process.cwd(), "Uploads/.temp");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+  },
+});
 
 // ─── 2. File Filter with Bilingual Error ───────────────────
 const fileFilter = (req, file, cb) => {
@@ -22,7 +37,7 @@ const fileFilter = (req, file, cb) => {
 
 // ─── 3. Multer Instance ────────────────────────────────────
 const upload = multer({
-  storage,
+  storage, // Uses disk now, not memory
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB
     files: 10, // Max total files per request
@@ -46,9 +61,7 @@ const uploadMiddleware = {
   ]),
 
   // Posts & articles
-  post: upload.fields([
-    { name: "postImage", maxCount: 10 },
-  ]),
+  post: upload.fields([{ name: "postImage", maxCount: 10 }]),
 
   // Admin general
   general: upload.fields([
@@ -66,7 +79,10 @@ const uploadMiddleware = {
  * router.post("/upload", uploadMiddleware.post, handleMulterError, controller)
  */
 export const handleMulterError = (err, req, res, next) => {
-  if (!(err instanceof multer.MulterError) && err.code !== "INVALID_FILE_TYPE") {
+  if (
+    !(err instanceof multer.MulterError) &&
+    err.code !== "INVALID_FILE_TYPE"
+  ) {
     return next(err); // Pass to global error handler
   }
 
@@ -100,10 +116,7 @@ export const handleMulterError = (err, req, res, next) => {
       break;
 
     default:
-      message = msg(
-        "فشل في رفع الملف",
-        "File upload failed",
-      );
+      message = msg("فشل في رفع الملف", "File upload failed");
       statusCode = 500;
   }
 

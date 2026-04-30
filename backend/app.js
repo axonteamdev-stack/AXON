@@ -22,20 +22,38 @@ import { getLanguage } from "./Src/Utils/LanguageDetector.js";
 import chatRouter from './Src/Routes/ChatRoutes.js';
 import appointmentRouter from './Src/Routes/AppointmentRoutes.js';
 
-
 const app = express();
 
 // --- 1. Global Settings & Security ---
 
 // Trust proxy is required for rate-limiting to find the correct IP
+// Trust proxy is required for rate-limiting to find the correct IP
 app.set("trust proxy", 1);
 
-// CORS configuration
+// ✅ LOW FIX: CORS validation improved - whitelist origins in production
+const ALLOWED_ORIGINS = (process.env.FRONTEND_URLS || "")
+  .split(",")
+  .filter(Boolean)
+  .concat(["http://localhost:3000", "http://localhost:3001"]);
+
 app.use(
   cors({
-    origin: process.env.NODE_ENV === "production" ? process.env.FRONTEND_URL : true,
+    origin: function (origin, callback) {
+      // ✅ STRICT: Only allow whitelisted origins
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true);
+      } else if (process.env.NODE_ENV !== "production") {
+        // Allow any origin in development
+        callback(null, true);
+      } else {
+        callback(new Error(msg("أصل الطلب غير مسموح", "Origin not allowed")));
+      }
+    },
     credentials: true,
-  })
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    maxAge: 3600,
+  }),
 );
 
 // Secure Headers
@@ -58,7 +76,7 @@ app.use(
     },
     frameguard: { action: "deny" },
     referrerPolicy: { policy: "strict-origin-when-cross-origin" },
-  })
+  }),
 );
 
 // --- 2. Body Parsers ---
@@ -104,6 +122,16 @@ const apiLimiter = rateLimit({
   skip: (req) => req.path === "/health",
 });
 
+// ✅ LOW FIX: Add rate limiting for password reset to prevent email spam
+const passwordResetLimiter = rateLimit({
+  max: 3, // 3 attempts
+  windowMs: 1 * 60 * 60 * 1000, // per hour
+  message: "Too many password reset attempts, try again later",
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => process.env.NODE_ENV !== "production", // Only in prod
+});
+
 // --- 5. Static Files & Language ---
 
 const __filename = fileURLToPath(import.meta.url);
@@ -119,7 +147,7 @@ app.use(setLanguage);
 app.use("/api/v1/auth/login", authLimiter);
 app.use("/api/v1/auth/signup-patient", authLimiter);
 app.use("/api/v1/auth/signup-doctor", authLimiter);
-app.use("/api/v1/auth/forgot-password", authLimiter);
+app.use("/api/v1/auth/forgot-password", passwordResetLimiter); // ✅ NEW
 app.use("/api/v1/auth/reset-password", authLimiter);
 app.use("/api/v1/auth/refresh-token", authLimiter);
 
@@ -152,7 +180,6 @@ app.get("/", (req, res) => {
     version: "1.0.0",
   });
 });
-
 
 // --- 7. Error Handling ---
 

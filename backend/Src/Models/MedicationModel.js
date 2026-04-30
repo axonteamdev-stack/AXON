@@ -16,6 +16,23 @@ const medicationSchema = new Schema(
       trim: true,
       minlength: [2, "Medicine name must be at least 2 characters"],
     },
+    // ✅ CRITICAL FIX: Add dosage field with strict validation
+    dosage: {
+      value: {
+        type: Number,
+        required: [true, "Dosage value is required"],
+        min: [0.1, "Dosage must be greater than 0"],
+        max: [10000, "Dosage must not exceed 10,000 units"],
+      },
+      unit: {
+        type: String,
+        enum: {
+          values: ["mg", "mcg", "g", "ml", "units", "IU", "meq"],
+          message: "Invalid dosage unit",
+        },
+        required: [true, "Dosage unit is required"],
+      },
+    },
     frequency: {
       type: String,
       enum: ["once daily", "twice daily", "three times daily"],
@@ -39,6 +56,23 @@ const medicationSchema = new Schema(
       type: Date,
       required: [true, "End date is required"],
     },
+    // ✅ NEW: Prescriber information (doctor who prescribed)
+    prescribedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Prescriber is required for medication audit trail"],
+    },
+    // ✅ NEW: Medical indication
+    indication: {
+      type: String,
+      trim: true,
+      maxlength: [500, "Indication must not exceed 500 characters"],
+    },
+    // ✅ NEW: Contraindications tracking
+    contraindications: {
+      type: [String],
+      default: [],
+    },
     isActive: {
       type: Boolean,
       default: true,
@@ -47,6 +81,17 @@ const medicationSchema = new Schema(
       type: String,
       trim: true,
       maxlength: [500, "Notes must not exceed 500 characters"],
+    },
+    // ✅ NEW: DDI Risk Assessment
+    ddiRisk: {
+      checkedAt: Date,
+      riskLevel: {
+        type: String,
+        enum: ["none", "mild", "moderate", "severe", "unknown"],
+        default: "unknown",
+      },
+      conflicts: [String],
+      recommendation: String,
     },
 
     // --- Daily Tracker ---
@@ -72,6 +117,15 @@ const medicationSchema = new Schema(
       type: String,
       default: () => new Date().toISOString().split("T")[0],
     },
+    // ✅ NEW: Audit Trail for compliance
+    auditTrail: [
+      {
+        action: String, // 'created', 'updated', 'dose_taken', 'dose_skipped'
+        actor: { type: Schema.Types.ObjectId, ref: "User" },
+        timestamp: { type: Date, default: Date.now },
+        details: Schema.Types.Mixed,
+      },
+    ],
   },
   {
     timestamps: true,

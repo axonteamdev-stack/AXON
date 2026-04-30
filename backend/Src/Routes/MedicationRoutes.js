@@ -1,6 +1,7 @@
 import express from "express";
 import * as medController from "../Controllers/MedicationController.js";
 import { protect, restrictTo } from "../Middlewares/AuthMiddleware.js";
+import { checkMedicationOwnership } from "../Middlewares/OwnershipMiddleware.js";
 import validateMiddleware from "../Middlewares/ValidateMiddleware.js";
 import uploadMiddleware from "../Middlewares/UploadMiddleware.js";
 
@@ -16,24 +17,19 @@ router.use(restrictTo("patient"));
 
 router.get("/", medController.getMyMedications);
 
-router.post(
-  "/",
-  validateMiddleware.addMedication,
-  medController.addMedication
-);
+router.post("/", validateMiddleware.addMedication, medController.addMedication);
 
-router.patch(
-  "/:id",
-  medController.updateMedication
-);
+// ✅ CRITICAL FIX: Add ownership verification before updates
+router.patch("/:id", checkMedicationOwnership, medController.updateMedication);
 
-router.delete("/:id", medController.deleteMedication);
+// ✅ CRITICAL FIX: Add ownership verification before deletion
+router.delete("/:id", checkMedicationOwnership, medController.deleteMedication);
 
-router.get("/:id", medController.getSingleMedication);
+router.get("/:id", checkMedicationOwnership, medController.getSingleMedication);
 
-router.patch("/:id/taken", medController.markAsTaken);
+// ✅ CRITICAL FIX: Add ownership verification before dose marking
+router.patch("/:id/taken", checkMedicationOwnership, medController.markAsTaken);
 
-router.patch("/:id/skip", medController.skipDose);
-
+router.patch("/:id/skip", checkMedicationOwnership, medController.skipDose);
 
 export default router;

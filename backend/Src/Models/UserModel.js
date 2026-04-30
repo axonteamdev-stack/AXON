@@ -46,6 +46,24 @@ const userSchema = new Schema(
       default: null,
     },
 
+    // ✅ CRITICAL FIX: Add timezone for medication reminders
+    timezone: {
+      type: String,
+      enum: [
+        "Africa/Cairo",
+        "Africa/Johannesburg",
+        "Asia/Dubai",
+        "Asia/Kolkata",
+        "Europe/London",
+        "Europe/Paris",
+        "America/New_York",
+        "America/Los_Angeles",
+        "America/Toronto",
+        "Australia/Sydney",
+      ],
+      default: "Africa/Cairo",
+    },
+
     // --- Role & Permissions ---
     role: {
       type: String,

@@ -5,32 +5,43 @@ import { msg } from "../Utils/ResponseHelper.js";
 import AppError from "../Utils/AppError.js";
 import path from "path";
 import fs from "fs";
+import { promises as fsPromises } from "fs";
 
 /**
- * دالة مساعدة لحفظ صورة المقال
+ * ✅ MEDIUM FIX: Convert to async file operations
+ * Prevents blocking event loop with synchronous fs.writeFileSync
  */
-const savePostFile = (file) => {
+const savePostFile = async (file) => {
   if (!file || !file.buffer) return null;
   const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-  const fileName = `article-${uniqueSuffix}${path.extname(file.originalname)}`;
+  const fileName = `article-${uniqueSuffix}${path.extname(file.originalname).toLowerCase()}`;
   const targetDir = path.join(process.cwd(), "Uploads/Articles");
 
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true });
-  }
+  try {
+    // ✅ ASYNC: Non-blocking directory creation
+    await fsPromises.mkdir(targetDir, { recursive: true });
 
-  const filePath = path.join(targetDir, fileName);
-  fs.writeFileSync(filePath, file.buffer);
-  return `Uploads/Articles/${fileName}`.replace(/\\/g, "/");
+    const filePath = path.join(targetDir, fileName);
+
+    // ✅ ASYNC: Non-blocking file write
+    await fsPromises.writeFile(filePath, file.buffer, { mode: 0o644 });
+
+    return `Uploads/Articles/${fileName}`.replace(/\\/g, "/");
+  } catch (error) {
+    console.error("File save error:", error.message);
+    throw new AppError(msg("فشل حفظ الصورة", "Failed to save image"), 500);
+  }
 };
 
 // 1. إنشاء مقال جديد
+// ✅ MEDIUM FIX: Await async file operation
 export const createArticle = catchAsync(async (req, res, next) => {
   const { title, content } = req.body;
 
   let imagePath = null;
   if (req.files?.postImage) {
-    imagePath = savePostFile(req.files.postImage[0]);
+    // ✅ AWAIT: Non-blocking file save
+    imagePath = await savePostFile(req.files.postImage[0]);
   }
 
   const newArticle = await Article.create({
