@@ -1,7 +1,7 @@
 POST     /api/v1/appointments
 { "doctorId": "ID_الدكتور_هنا", "amount": 200 }
 
-
+      
 
 GET    /api/v1/appointments/doctor-requests
 
