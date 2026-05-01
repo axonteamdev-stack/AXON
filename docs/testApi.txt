@@ -8,7 +8,7 @@ GET    /api/v1/appointments/doctor-requests
 
 
 PATCH  /api/v1/appointments/اي دي الحجز/accept
-
+ 
 POST   /api/v1/chat/start/id الدكتور
 
 
