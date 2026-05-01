@@ -1,0 +1,31 @@
+POST     /api/v1/appointments
+{ "doctorId": "ID_الدكتور_هنا", "amount": 200 }
+
+
+
+GET    /api/v1/appointments/doctor-requests
+
+
+
+PATCH  /api/v1/appointments/اي دي الحجز/accept
+
+POST   /api/v1/chat/start/id الدكتور
+
+
+POST   /api/v1/chat/send
+
+{
+  "conversationId": "ID_المحادثة_اللي_طلعت_فوق",
+  "text": "أهلاً يا دكتور، عندي استفسار"
+}
+
+
+
+
+GET   /api/v1/chat
+
+
+GET     /api/v1/chat/ID المحادثه
+
+
+
