@@ -15,7 +15,7 @@ import articleRouter from "./Src/Routes/ArticleRoutes.js";
 import medicationRouter from "./Src/Routes/MedicationRoutes.js";
 import postRouter from "./Src/Routes/PostRoutes.js";
 import commentRouter from "./Src/Routes/CommentRoutes.js";
-import { RATE_LIMIT } from "./Src/Constants/index.js";
+import { RATE_LIMIT } from "./Src/Constants/index.js";   
 import { msg } from "./Src/Utils/ResponseHelper.js";
 import { getLanguage } from "./Src/Utils/LanguageDetector.js";
 
