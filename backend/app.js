@@ -19,6 +19,9 @@ import { RATE_LIMIT } from "./Src/Constants/index.js";
 import { msg } from "./Src/Utils/ResponseHelper.js";
 import { getLanguage } from "./Src/Utils/LanguageDetector.js";
 
+import chatRouter from './Src/Routes/ChatRoutes.js';
+import appointmentRouter from './Src/Routes/AppointmentRoutes.js';
+
 
 const app = express();
 
@@ -127,6 +130,10 @@ app.use("/api/v1/medications", apiLimiter, medicationRouter);
 app.use("/api/v1/posts", apiLimiter, postRouter);
 app.use("/api/v1/comments", apiLimiter, commentRouter);
 app.use("/api/v1/admin", apiLimiter, adminRouter);
+
+
+app.use('/api/v1/chat', chatRouter);
+app.use('/api/v1/appointments', appointmentRouter);
 
 // Health check
 app.get("/health", (req, res) => {
