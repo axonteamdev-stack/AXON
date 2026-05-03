@@ -28,6 +28,7 @@ const app = express();
 
 // Trust proxy is required for rate-limiting to find the correct IP
 // Trust proxy is required for rate-limiting to find the correct IP
+// Trust proxy is required for rate-limiting to find the correct IP
 app.set("trust proxy", 1);
 
 // ✅ LOW FIX: CORS validation improved - whitelist origins in production
@@ -49,12 +50,23 @@ app.use(
         callback(new Error(msg("أصل الطلب غير مسموح", "Origin not allowed")));
       }
     },
+    origin: function (origin, callback) {
+      // ✅ STRICT: Only allow whitelisted origins
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true);
+      } else if (process.env.NODE_ENV !== "production") {
+        // Allow any origin in development
+        callback(null, true);
+      } else {
+        callback(new Error(msg("أصل الطلب غير مسموح", "Origin not allowed")));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     maxAge: 3600,
   }),
-);
+
 
 // Secure Headers
 app.use(
@@ -77,11 +89,8 @@ app.use(
     frameguard: { action: "deny" },
     referrerPolicy: { policy: "strict-origin-when-cross-origin" },
   }),
-);
-
+));
 // --- 2. Body Parsers ---
-
-app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ limit: "10kb", extended: true }));
 
 // --- 3. ✅ FIXED: Data Sanitization (The "Getter" Crash Fix) ---
@@ -147,6 +156,7 @@ app.use(setLanguage);
 app.use("/api/v1/auth/login", authLimiter);
 app.use("/api/v1/auth/signup-patient", authLimiter);
 app.use("/api/v1/auth/signup-doctor", authLimiter);
+app.use("/api/v1/auth/forgot-password", passwordResetLimiter); // ✅ NEW
 app.use("/api/v1/auth/forgot-password", passwordResetLimiter); // ✅ NEW
 app.use("/api/v1/auth/reset-password", authLimiter);
 app.use("/api/v1/auth/refresh-token", authLimiter);

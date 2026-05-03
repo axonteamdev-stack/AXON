@@ -17,6 +17,7 @@ dotenv.config(); // Fallback to standard .env
 import app from "./app.js";
 import connectDB from "./Src/Config/db.js";
 import AuthService from "./Src/Services/AuthService.js";
+import initSocket from "./Src/Socket/socket.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,7 +32,8 @@ try {
 }
 
 // --- 2. Setup directories ---
-const UPLOADS_PATH = process.env.UPLOADS_PATH || path.join(__dirname, "Uploads");
+const UPLOADS_PATH =
+  process.env.UPLOADS_PATH || path.join(__dirname, "Uploads");
 
 const uploadDirs = [
   path.join(UPLOADS_PATH, "Certificates"),
@@ -84,7 +86,9 @@ connectDB()
 
     // 4. بدء الاستماع للطلبات
     const server_instance = server.listen(PORT, () => {
-      console.log(`✅ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+      console.log(
+        `✅ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`,
+      );
       console.log(`📡 API URL: ${APP_URL}`);
       console.log(`🏥 Health Check: ${APP_URL}/health`);
     });
