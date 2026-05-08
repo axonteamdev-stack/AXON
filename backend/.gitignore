@@ -1,4 +1,4 @@
-# Dependencies
+z# Dependencies
 # ALWAYS keep package-lock.json in Git for version consistency
 node_modules/
 /.pnp
@@ -25,6 +25,8 @@ pids
 .env.local
 .env.development
 .env.production
+.env.test
+temp
 
 # TypeScript
 *.tsbuildinfo
@@ -38,6 +40,9 @@ pids
 Thumbs.db
 .idea/
 .vscode/
+.claude/
+.cache/
+reports/
 
 # Accidental/Temp Files
 Notes/

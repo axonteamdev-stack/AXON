@@ -1,252 +1,141 @@
 import express from "express";
-import rateLimit from "express-rate-limit";
-import mongoSanitize from "express-mongo-sanitize";
-import helmet from "helmet";
-import cookieParser from "cookie-parser";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
+import swaggerUi from "swagger-ui-express";
+import mongoose from "mongoose";
 
-import AppError from "./Src/Utils/AppError.js";
-import { setLanguage } from "./Src/Middlewares/langMiddleware.js";
-import authRouter from "./Src/Routes/AuthRoutes.js";
-import adminRouter from "./Src/Routes/AdminRoutes.js";
-import articleRouter from "./Src/Routes/ArticleRoutes.js";
-import medicationRouter from "./Src/Routes/MedicationRoutes.js";
-import postRouter from "./Src/Routes/PostRoutes.js";
-import commentRouter from "./Src/Routes/CommentRoutes.js";
-import { RATE_LIMIT } from "./Src/Constants/index.js";   
-import { msg } from "./Src/Utils/ResponseHelper.js";
-import { getLanguage } from "./Src/Utils/LanguageDetector.js";
+import AppError from "./src/utils/appError.js";
+import { setLanguage, getLanguage, msg } from "./src/utils/i18n.js";
+import { requestId } from "./src/middlewares/requestId.js";
+import { logger, requestLogger } from "./src/config/logger.js";
+import { swaggerSpec } from "./src/config/swagger.js";
+import { errorHandler } from "./src/middlewares/errorHandler.js";
 
-import chatRouter from './Src/Routes/ChatRoutes.js';
-import appointmentRouter from './Src/Routes/AppointmentRoutes.js';
+// Routes
+import authRouter from "./src/routes/authRoutes.js";
+import userRouter from "./src/routes/userRoutes.js";
+import adminRouter from "./src/routes/adminRoutes.js";
+import articleRouter from "./src/routes/articleRoutes.js";
+import medicationRouter from "./src/routes/medicationRoutes.js";
+import postRouter from "./src/routes/postRoutes.js";
+import commentRouter from "./src/routes/commentRoutes.js";
+import chatRouter from "./src/routes/chatRoutes.js";
+import appointmentRouter from "./src/routes/appointmentRoutes.js";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
-// --- 1. Global Settings & Security ---
+// Trust proxy only in production
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
 
-// Trust proxy is required for rate-limiting to find the correct IP
-// Trust proxy is required for rate-limiting to find the correct IP
-// Trust proxy is required for rate-limiting to find the correct IP
-app.set("trust proxy", 1);
+// Security middleware
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || ["http://localhost:3000"];
 
-// ✅ LOW FIX: CORS validation improved - whitelist origins in production
-const ALLOWED_ORIGINS = (process.env.FRONTEND_URLS || "")
-  .split(",")
-  .filter(Boolean)
-  .concat(["http://localhost:3000", "http://localhost:3001"]);
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== "production") {
+      callback(null, true);
+    } else {
+      callback(new Error("Origin not allowed"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-API-Version"],
+  maxAge: 3600,
+}));
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // ✅ STRICT: Only allow whitelisted origins
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-        callback(null, true);
-      } else if (process.env.NODE_ENV !== "production") {
-        // Allow any origin in development
-        callback(null, true);
-      } else {
-        callback(new Error(msg("أصل الطلب غير مسموح", "Origin not allowed")));
-      }
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'", "https://fonts.googleapis.com"],
     },
-    origin: function (origin, callback) {
-      // ✅ STRICT: Only allow whitelisted origins
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-        callback(null, true);
-      } else if (process.env.NODE_ENV !== "production") {
-        // Allow any origin in development
-        callback(null, true);
-      } else {
-        callback(new Error(msg("أصل الطلب غير مسموح", "Origin not allowed")));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    maxAge: 3600,
-  }),
+  },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  frameguard: { action: "deny" },
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+}));
 
-
-// Secure Headers
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'"],
-        fontSrc: ["'self'", "https://fonts.googleapis.com"],
-      },
-    },
-    hsts: {
-      maxAge: 31536000,
-      includeSubDomains: true,
-      preload: true,
-    },
-    frameguard: { action: "deny" },
-    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
-  }),
-));
-// --- 2. Body Parsers ---
+app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ limit: "10kb", extended: true }));
-
-// --- 3. ✅ FIXED: Data Sanitization (The "Getter" Crash Fix) ---
-
-// We call sanitize manually to avoid the "Cannot set property query" error
-app.use((req, res, next) => {
-  const sanitizeOptions = { replaceWith: "_" };
-  if (req.body) mongoSanitize.sanitize(req.body, sanitizeOptions);
-  if (req.params) mongoSanitize.sanitize(req.params, sanitizeOptions);
-  if (req.query) mongoSanitize.sanitize(req.query, sanitizeOptions);
-  next();
-});
-
+app.use(mongoSanitize({ replaceWith: "_" }));
 app.use(cookieParser());
 
-// --- 4. Rate Limiters ---
-
-const authLimiter = rateLimit({
-  max: RATE_LIMIT.AUTH.MAX_ATTEMPTS,
-  windowMs: RATE_LIMIT.AUTH.WINDOW_MINUTES * 60 * 1000,
-  message: RATE_LIMIT.AUTH.MESSAGE,
-  standardHeaders: true,
-  legacyHeaders: false,
-  handler: (req, res) => {
-    res.status(429).json({
-      status: "error",
-      message: RATE_LIMIT.AUTH.MESSAGE,
-    });
-  },
-});
-
-const apiLimiter = rateLimit({
-  max: RATE_LIMIT.API.MAX_REQUESTS,
-  windowMs: RATE_LIMIT.API.WINDOW_HOURS * 60 * 60 * 1000,
-  message: RATE_LIMIT.API.MESSAGE,
-  standardHeaders: true,
-  legacyHeaders: false,
-  skip: (req) => req.path === "/health",
-});
-
-// ✅ LOW FIX: Add rate limiting for password reset to prevent email spam
-const passwordResetLimiter = rateLimit({
-  max: 3, // 3 attempts
-  windowMs: 1 * 60 * 60 * 1000, // per hour
-  message: "Too many password reset attempts, try again later",
-  standardHeaders: true,
-  legacyHeaders: false,
-  skip: (req) => process.env.NODE_ENV !== "production", // Only in prod
-});
-
-// --- 5. Static Files & Language ---
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
-app.use(express.static("public"));
-
+// Request ID + Language + Logging
+app.use(requestId);
 app.use(setLanguage);
+app.use(requestLogger);
 
-// --- 6. Routes ---
+// Static files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Auth-specific rate limiting
-app.use("/api/v1/auth/login", authLimiter);
-app.use("/api/v1/auth/signup-patient", authLimiter);
-app.use("/api/v1/auth/signup-doctor", authLimiter);
-app.use("/api/v1/auth/forgot-password", passwordResetLimiter); // ✅ NEW
-app.use("/api/v1/auth/forgot-password", passwordResetLimiter); // ✅ NEW
-app.use("/api/v1/auth/reset-password", authLimiter);
-app.use("/api/v1/auth/refresh-token", authLimiter);
+// API Routes (v2)
+app.use("/api/v2/auth", authRouter);
+app.use("/api/v2/users", userRouter);
+app.use("/api/v2/articles", articleRouter);
+app.use("/api/v2/medications", medicationRouter);
+app.use("/api/v2/posts", postRouter);
+app.use("/api/v2/comments", commentRouter);
+app.use("/api/v2/admin", adminRouter);
+app.use("/api/v2/chat", chatRouter);
+app.use("/api/v2/appointments", appointmentRouter);
 
-// Resource Routes
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/articles", apiLimiter, articleRouter);
-app.use("/api/v1/medications", apiLimiter, medicationRouter);
-app.use("/api/v1/posts", apiLimiter, postRouter);
-app.use("/api/v1/comments", apiLimiter, commentRouter);
-app.use("/api/v1/admin", apiLimiter, adminRouter);
-
-
-app.use('/api/v1/chat', chatRouter);
-app.use('/api/v1/appointments', appointmentRouter);
+// Docs
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Health check
-app.get("/health", (req, res) => {
-  res.status(200).json({
+app.get("/health", async (req, res) => {
+  const healthcheck = {
     status: "ok",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-  });
+    requestId: req.requestId,
+    services: { database: "unknown" },
+  };
+
+  try {
+    const dbState = mongoose.connection.readyState;
+    if (dbState === 1) {
+      await mongoose.connection.db.admin().ping();
+      healthcheck.services.database = "connected";
+    } else {
+      healthcheck.status = "degraded";
+      healthcheck.services.database = "disconnected";
+    }
+  } catch {
+    healthcheck.status = "degraded";
+    healthcheck.services.database = "error";
+  }
+
+  res.status(healthcheck.status === "ok" ? 200 : 503).json(healthcheck);
 });
 
-// Root endpoint
-app.get("/", (req, res) => {
+// Root
+app.get("/", (_req, res) => {
   res.status(200).json({
     status: "success",
-    message: "Welcome to AXON Medical API - Server is live and running",
-    version: "1.0.0",
+    message: "Welcome to AXON Medical API - Server is live",
+    version: "2.0.0",
   });
 });
 
-// --- 7. Error Handling ---
-
-// 404 handler
-app.use((req, res, next) => {
-  next(
-    new AppError(
-      msg(
-        `العنوان المطلوب ${req.originalUrl} غير موجود!`,
-        `The requested path ${req.originalUrl} was not found!`,
-      ),
-      404,
-    ),
-  );
+// ✅ OR even better (Express recommended)
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
 });
 
 // Global error handler
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || "error";
-
-  const lang = getLanguage(req);
-  let message;
-
-  // Resolve bilingual messages
-  const resolveMsg = (msgObj, language) => {
-    if (typeof msgObj === "string") return msgObj;
-    if (typeof msgObj === "object" && msgObj !== null) {
-      return msgObj[language] || msgObj["ar"] || msgObj["en"] || String(msgObj);
-    }
-    return String(msgObj);
-  };
-
-  if (err.messages && typeof err.messages === "object") {
-    message = resolveMsg(err.messages, lang);
-  } else {
-    message = resolveMsg(err.message, lang);
-  }
-
-  // Production logging for server errors
-  if (process.env.NODE_ENV === "production" && err.statusCode >= 500) {
-    console.error("Production Error:", {
-      statusCode: err.statusCode,
-      message: err.message,
-      url: req.originalUrl,
-      method: req.method,
-    });
-  }
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    message,
-    ...(process.env.NODE_ENV === "development" && {
-      stack: err.stack,
-      error: err,
-    }),
-  });
-});
+app.use(errorHandler);
 
 export default app;
