@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import helmet from "helmet";
-import mongoSanitize from "express-mongo-sanitize";
 import swaggerUi from "swagger-ui-express";
 import mongoose from "mongoose";
 
@@ -31,45 +30,89 @@ const app = express();
 
 // Trust proxy only in production
 if (process.env.NODE_ENV === "production") {
-  app.set("trust proxy", 1);
+    app.set("trust proxy", 1);
 }
 
 // Security middleware
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || ["http://localhost:3000"];
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
+    "http://localhost:3000",
+];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== "production") {
-      callback(null, true);
-    } else {
-      callback(new Error("Origin not allowed"));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-API-Version"],
-  maxAge: 3600,
-}));
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            if (
+                !origin ||
+                allowedOrigins.includes(origin) ||
+                process.env.NODE_ENV !== "production"
+            ) {
+                callback(null, true);
+            } else {
+                callback(new Error("Origin not allowed"));
+            }
+        },
+        credentials: true,
+        methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization", "X-API-Version"],
+        maxAge: 3600,
+    }),
+);
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'", "https://fonts.googleapis.com"],
-    },
-  },
-  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
-  frameguard: { action: "deny" },
-  referrerPolicy: { policy: "strict-origin-when-cross-origin" },
-}));
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'"],
+                styleSrc: ["'self'", "'unsafe-inline'"],
+                imgSrc: ["'self'", "data:", "https:"],
+                connectSrc: ["'self'"],
+                fontSrc: ["'self'", "https://fonts.googleapis.com"],
+            },
+        },
+        hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+        frameguard: { action: "deny" },
+        referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+    }),
+);
+
+// ✅ CUSTOM NoSQL sanitization middleware (replaces express-mongo-sanitize)
+const mongoSanitizeMiddleware = (options = {}) => {
+    const replaceWith = options.replaceWith || "_";
+
+    const sanitize = (obj) => {
+        if (typeof obj !== "object" || obj === null) return obj;
+
+        if (Array.isArray(obj)) {
+            return obj.map((item) => sanitize(item));
+        }
+
+        const clean = {};
+        for (const [key, value] of Object.entries(obj)) {
+            // Replace $ and . in keys to prevent NoSQL injection
+            const safeKey = key.replace(/^\$|\./g, replaceWith);
+            clean[safeKey] =
+                typeof value === "object" ? sanitize(value) : value;
+        }
+        return clean;
+    };
+
+    return (req, res, next) => {
+        if (req.body) req.body = sanitize(req.body);
+        if (req.query) {
+            const clean = sanitize(req.query);
+            Object.keys(clean).forEach((key) => {
+                req.query[key] = clean[key];
+            });
+        }
+        if (req.params) req.params = sanitize(req.params);
+        next();
+    };
+};
 
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ limit: "10kb", extended: true }));
-app.use(mongoSanitize({ replaceWith: "_" }));
+app.use(mongoSanitizeMiddleware({ replaceWith: "_" }));
 app.use(cookieParser());
 
 // Request ID + Language + Logging
@@ -96,43 +139,47 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Health check
 app.get("/health", async (req, res) => {
-  const healthcheck = {
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    requestId: req.requestId,
-    services: { database: "unknown" },
-  };
+    const healthcheck = {
+        status: "ok",
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        requestId: req.requestId,
+        services: { database: "unknown" },
+    };
 
-  try {
-    const dbState = mongoose.connection.readyState;
-    if (dbState === 1) {
-      await mongoose.connection.db.admin().ping();
-      healthcheck.services.database = "connected";
-    } else {
-      healthcheck.status = "degraded";
-      healthcheck.services.database = "disconnected";
+    try {
+        const dbState = mongoose.connection.readyState;
+        if (dbState === 1) {
+            await mongoose.connection.db.admin().ping();
+            healthcheck.services.database = "connected";
+        } else {
+            healthcheck.status = "degraded";
+            healthcheck.services.database = "disconnected";
+        }
+    } catch {
+        healthcheck.status = "degraded";
+        healthcheck.services.database = "error";
     }
-  } catch {
-    healthcheck.status = "degraded";
-    healthcheck.services.database = "error";
-  }
 
-  res.status(healthcheck.status === "ok" ? 200 : 503).json(healthcheck);
+    res.status(healthcheck.status === "ok" ? 200 : 503).json(healthcheck);
 });
 
 // Root
 app.get("/", (_req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "Welcome to AXON Medical API - Server is live",
-    version: "2.0.0",
-  });
+    res.status(200).json({
+        status: "success",
+        message: "Welcome to AXON Medical API - Server is live",
+        version: "2.0.0",
+    });
 });
 
-// ✅ OR even better (Express recommended)
+// 404 handler
+app.use(
+    "/favicon.ico",
+    express.static(path.join(__dirname, "public", "favicon.ico")),
+);
 app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+    res.status(404).json({ message: "Route not found" });
 });
 
 // Global error handler

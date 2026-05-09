@@ -33,6 +33,6 @@ export const validateQuery = (schema) => (req, res, next) => {
   if (!result.success) {
     return next(new AppError(parseError(result.error, req.lang), 400));
   }
-  req.query = result.data;
+  req.parsedQuery = result.data;  // ✅ FIXED: was req.query = result.data
   next();
 };
