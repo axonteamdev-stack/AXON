@@ -7,10 +7,9 @@ import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
 import mongoose from "mongoose";
 
-import AppError from "./src/utils/appError.js";
-import { setLanguage, getLanguage, msg } from "./src/utils/i18n.js";
+import { setLanguage } from "./src/utils/i18n.js";
 import { requestId } from "./src/middlewares/requestId.js";
-import { logger, requestLogger } from "./src/config/logger.js";
+import { requestLogger } from "./src/config/logger.js";
 import { swaggerSpec } from "./src/config/swagger.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 

@@ -43,6 +43,7 @@ Thumbs.db
 .claude/
 .cache/
 reports/
+logs/
 
 # Accidental/Temp Files
 Notes/
