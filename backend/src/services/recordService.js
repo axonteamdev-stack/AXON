@@ -2,6 +2,7 @@ import MedicalRecord from "../models/MedicalRecord.js";
 import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
 import crypto from "crypto";
+import QRCode from "qrcode";
 
 export const getOrCreate = async (patientId) => {
     let record = await MedicalRecord.findOne({ patientId });
@@ -65,7 +66,7 @@ export const addTest = async (patientId, type, testData) => {
 
 export const generateQR = async (patientId) => {
     const token = crypto.randomBytes(32).toString("hex");
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     await MedicalRecord.findOneAndUpdate(
         { patientId },
@@ -77,7 +78,12 @@ export const generateQR = async (patientId) => {
         },
     );
 
-    return { token, expiresAt };
+    const qrCode = await QRCode.toDataURL(token, {
+        width: 300,
+        errorCorrectionLevel: "M",
+    });
+
+    return { qrCode, expiresAt };
 };
 
 export const getByQR = async (token) => {
