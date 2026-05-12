@@ -1,22 +1,27 @@
 import { Router } from "express";
+import * as chatController from "../controllers/chatController.js";
 import { protect } from "../middlewares/auth.js";
-import { restrictChat } from "../middlewares/appointmentAuth.js";
-import {
-  startConversation,
-  sendMessage,
-  getMyConversations,
-  getMessages,
-} from "../controllers/chatController.js";
-import { validateBody } from "../middlewares/validate.js";
-import { sendMessageSchema } from "../validators/chatValidator.js";
 import { validateObjectId } from "../middlewares/ValidateObjectId.js";
 
 const router = Router();
 
 router.use(protect);
-router.post("/start/:appointmentId", validateObjectId("appointmentId"), restrictChat, startConversation);
-router.get("/", getMyConversations);
-router.get("/:conversationId/messages", getMessages);
-router.post("/:conversationId/messages", validateBody(sendMessageSchema), restrictChat, sendMessage);
+
+router.get("/conversations", chatController.getMyConversations);
+router.post(
+    "/conversations/:appointmentId",
+    validateObjectId("appointmentId"),
+    chatController.startConversation,
+);
+router.get(
+    "/conversations/:conversationId/messages",
+    validateObjectId("conversationId"),
+    chatController.getMessages,
+);
+router.post(
+    "/conversations/:conversationId/messages",
+    validateObjectId("conversationId"),
+    chatController.sendMessage,
+);
 
 export default router;

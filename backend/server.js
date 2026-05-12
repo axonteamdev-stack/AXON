@@ -1,83 +1,100 @@
-import dotenv from "dotenv";
 import { validateEnvironment } from "./src/config/env.js";
-import app from "./app.js";
-import connectDB from "./src/config/db.js";
-import initSocket from "./src/config/socket.js";
-import { logger } from "./src/config/logger.js";
+import express from "express";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import app from "./app.js";
+import connectDB from "./src/config/db.js";
+import { initSocket } from "./src/config/socket.js";
+import { logger, errorLogger } from "./src/config/logger.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Add at the top
+process.on("exit", (code) => {
+    console.log(`Process exited with code: ${code}`);
+});
 
-// Load env vars ONCE at the very top
-dotenv.config();
-
-// Validate immediately
+// Validate env vars
 try {
-  validateEnvironment();
-  logger.info("✅ Environment validation passed");
+    validateEnvironment();
+    logger.info("Environment validation passed");
 } catch (err) {
-  logger.error({ err: err.message }, "❌ Environment validation failed");
-  process.exit(1);
+    errorLogger.error({ err: err.message }, "Environment validation failed");
+    process.exit(1);
 }
-
 // Ensure upload directories exist
 const uploadDir = process.env.UPLOAD_DIR || "./uploads";
-const uploadDirs = ["certificates", "personalPhoto", "radiology", "labTests", "posts"].map(
-  (d) => path.join(uploadDir, d)
-);
-
-for (const dir of uploadDirs) {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true, mode: 0o750 });
-    logger.info(`Created directory: ${dir}`);
-  }
+const dirs = [
+    "certificates",
+    "personalPhoto",
+    "radiology",
+    "labTests",
+    "posts",
+    ".temp",
+];
+for (const d of dirs) {
+    const fullPath = path.join(uploadDir, d);
+    if (!fs.existsSync(fullPath)) {
+        fs.mkdirSync(fullPath, { recursive: true });
+        logger.info(`Created: ${fullPath}`);
+    } else {
+        logger.info(`Exists: ${fullPath}`);
+    }
 }
-
+// Also create .temp subfolders
+const tempSubs = [
+    "certificates",
+    "personalPhoto",
+    "radiology",
+    "labTests",
+    "posts",
+];
+for (const d of tempSubs) {
+    const fullPath = path.join(uploadDir, ".temp", d);
+    if (!fs.existsSync(fullPath)) {
+        fs.mkdirSync(fullPath, { recursive: true });
+        logger.info(`Created temp: ${fullPath}`);
+    }
+}
 // Connect to DB and start server
 connectDB()
-  .then(() => {
-    const PORT = process.env.PORT || 8000;
-    const server = app.listen(PORT, () => {
-      logger.info(`🚀 Server running on port ${PORT}`);
-      logger.info(`📡 API URL: ${process.env.APP_URL}`);
-      logger.info(`📡 Health Check: ${process.env.APP_URL}/health`);
-    });
+    .then(() => {
+        const PORT = process.env.PORT || 8000;
+        const server = app.listen(PORT, () => {
+            logger.info(`Server running on port ${PORT}`);
+            logger.info(`API URL: ${process.env.APP_URL}`);
+            logger.info(`Health Check: ${process.env.APP_URL}/health`);
+            initSocket(server);
+        });
 
-    server.timeout = Number(process.env.SERVER_TIMEOUT_MS) || 30000;
-    server.keepAliveTimeout = Number(process.env.KEEP_ALIVE_MS) || 65000;
+        server.timeout = 30000;
 
-    initSocket(server);
+        // Graceful shutdown
+        const shutdown = (signal) => {
+            logger.info(`${signal} received, shutting down gracefully`);
+            server.close(() => {
+                logger.info("HTTP server closed");
+                process.exit(0);
+            });
+            setTimeout(() => {
+                errorLogger.error("Force shutdown after timeout");
+                process.exit(1);
+            }, 10000);
+        };
 
-    // Graceful shutdown
-    const shutdown = (signal) => {
-      logger.info(`${signal} received, shutting down gracefully`);
-      server.close(() => {
-        logger.info("HTTP server closed");
-        process.exit(0);
-      });
-      setTimeout(() => {
-        logger.error("Force shutdown");
+        process.on("SIGTERM", () => shutdown("SIGTERM"));
+        process.on("SIGINT", () => shutdown("SIGINT"));
+    })
+    .catch((err) => {
+        errorLogger.error({ err: err.message }, "Database connection failed");
         process.exit(1);
-      }, Number(process.env.SHUTDOWN_TIMEOUT_MS) || 10000);
-    };
-
-    process.on("SIGTERM", () => shutdown("SIGTERM"));
-    process.on("SIGINT", () => shutdown("SIGINT"));
-  })
-  .catch((err) => {
-    logger.error({ err: err.message }, "Database connection failed");
-    process.exit(1);
-  });
+    });
 
 // Global error handlers
 process.on("unhandledRejection", (reason) => {
-  logger.error({ reason }, "Unhandled Rejection");
-  process.exit(1);
+    errorLogger.error({ reason }, "Unhandled Rejection");
+    process.exit(1);
 });
 
 process.on("uncaughtException", (err) => {
-  logger.error({ err }, "Uncaught Exception");
-  process.exit(1);
+    errorLogger.error({ err }, "Uncaught Exception");
+    process.exit(1);
 });

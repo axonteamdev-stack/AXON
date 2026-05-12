@@ -1,281 +1,201 @@
-import mongoose from "mongoose";
-import Post from "../models/postModel.js";
-import Comment from "../models/commentModel.js";
-import User from "../models/userModel.js";
-import { processPostImages, deleteFile } from "./fileService.js";
-import AppError from "../utils/appError.js";
+import Post from "../models/Post.js";
+import Like from "../models/Like.js";
+import Comment from "../models/Comment.js";
+import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
-import { buildAuthorLookup, buildCommentLookup } from "../utils/aggregation.js";
 
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;
-const MAX_POST_IMAGES = 10;
 
-const getSortOption = (sortBy) => {
-  if (sortBy === "trending") return { likeCount: -1, createdAt: -1 };
-  if (sortBy === "popular") return { "likes.count": -1 };
-  return { createdAt: -1 };
-};
+const buildPagination = (page, limit) => ({
+    skip: (page - 1) * limit,
+    limit: Math.min(limit, MAX_LIMIT),
+});
 
-const buildVisibilityFilter = async (userId) => {
-  const base = [{ visibility: "public" }];
-  if (!userId) return base;
+export const getAll = async (page = 1, limit = DEFAULT_LIMIT) => {
+    const { skip, limit: clampedLimit } = buildPagination(page, limit);
 
-  const user = await User.findById(userId).select("following").lean();
-  const following = user?.following || [];
+    const [posts, total] = await Promise.all([
+        Post.find({ status: "published" })
+            .populate("author", "fullName personalPhoto")
+            .sort("-createdAt")
+            .skip(skip)
+            .limit(clampedLimit)
+            .lean(),
+        Post.countDocuments({ status: "published" }),
+    ]);
 
-  return [
-    ...base,
-    { $and: [{ visibility: "followers" }, { author: { $in: following } }] },
-    { author: new mongoose.Types.ObjectId(userId), visibility: "private" },
-  ];
-};
+    // Add like counts
+    const postsWithCounts = await Promise.all(
+        posts.map(async (post) => {
+            const [likeCount, commentCount] = await Promise.all([
+                Like.countDocuments({ post: post._id }),
+                Comment.countDocuments({ post: post._id }),
+            ]);
+            return { ...post, likeCount, commentCount };
+        }),
+    );
 
-export const getExploreFeeds = async (page = 1, limit = DEFAULT_LIMIT, sortBy = "recent", userId = null) => {
-  const clampedLimit = Math.min(limit, MAX_LIMIT);
-  const visibilityFilter = await buildVisibilityFilter(userId);
-
-  const [posts, total] = await Promise.all([
-    Post.aggregate([
-      { $match: { $or: visibilityFilter } },
-      ...buildCommentLookup(),
-      ...buildAuthorLookup(),
-      { $project: { isDeleted: 0 } },
-      { $sort: getSortOption(sortBy) },
-      { $skip: (page - 1) * clampedLimit },
-      { $limit: clampedLimit },
-    ]),
-    Post.countDocuments({ $or: visibilityFilter }),
-  ]);
-
-  return {
-    data: posts,
-    pagination: {
-      current: page,
-      limit: clampedLimit,
-      total,
-      pages: Math.ceil(total / clampedLimit),
-    },
-  };
-};
-
-export const getFollowingFeeds = async (userId, page = 1, limit = DEFAULT_LIMIT) => {
-  const clampedLimit = Math.min(limit, MAX_LIMIT);
-  const user = await User.findById(userId).select("following").lean();
-  if (!user)
-    throw new AppError(msg("المستخدم غير موجود", "User not found"), 404);
-
-  const [posts, total] = await Promise.all([
-    Post.aggregate([
-      {
-        $match: {
-          author: { $in: user.following },
-          $or: [
-            { visibility: "public" },
-            { visibility: "followers" },
-            { author: new mongoose.Types.ObjectId(userId) },
-          ],
+    return {
+        data: postsWithCounts,
+        pagination: {
+            current: page,
+            limit: clampedLimit,
+            total,
+            pages: Math.ceil(total / clampedLimit),
         },
-      },
-      ...buildCommentLookup(),
-      ...buildAuthorLookup(),
-      { $project: { isDeleted: 0 } },
-      { $sort: { createdAt: -1 } },
-      { $skip: (page - 1) * clampedLimit },
-      { $limit: clampedLimit },
-    ]),
-    Post.countDocuments({ author: { $in: user.following } }),
-  ]);
-
-  return {
-    data: posts,
-    pagination: {
-      current: page,
-      limit: clampedLimit,
-      total,
-      pages: Math.ceil(total / clampedLimit),
-    },
-  };
+    };
 };
 
-export const getPostDetails = async (postId, userId = null) => {
-  if (!mongoose.Types.ObjectId.isValid(postId)) {
-    throw new AppError(msg("معرف المنشور غير صالح", "Invalid post ID"), 400);
-  }
+export const getByDoctor = async (
+    doctorId,
+    page = 1,
+    limit = DEFAULT_LIMIT,
+) => {
+    const { skip, limit: clampedLimit } = buildPagination(page, limit);
 
-  const post = await Post.findById(postId)
-    .populate("author", "fullName personalPhoto role")
-    .lean();
+    const [posts, total] = await Promise.all([
+        Post.find({ author: doctorId, status: "published" })
+            .sort("-createdAt")
+            .skip(skip)
+            .limit(clampedLimit)
+            .lean(),
+        Post.countDocuments({ author: doctorId, status: "published" }),
+    ]);
 
-  if (!post)
-    throw new AppError(msg("المنشور غير موجود", "Post not found"), 404);
-  if (!post.author) {
-    throw new AppError(msg("بيانات الكاتب تالفة", "Post author data is corrupted"), 500);
-  }
+    return {
+        data: posts,
+        pagination: {
+            current: page,
+            limit: clampedLimit,
+            total,
+            pages: Math.ceil(total / clampedLimit),
+        },
+    };
+};
 
-  if (post.visibility === "private") {
-    const isOwner = userId && post.author._id.toString() === userId;
-    if (!isOwner) {
-      throw new AppError(msg("لا يمكنك عرض هذا المنشور", "You cannot view this post"), 403);
+export const getById = async (postId, userId = null) => {
+    const post = await Post.findById(postId)
+        .populate("author", "fullName personalPhoto role")
+        .lean();
+
+    if (!post) {
+        throw new AppError(msg("المنشور غير موجود", "Post not found"), 404);
     }
-  }
 
-  const commentCount = await Comment.countDocuments({ post: postId, isDeleted: false });
-  return { ...post, commentCount };
+    const [likeCount, commentCount, isLiked] = await Promise.all([
+        Like.countDocuments({ post: postId }),
+        Comment.countDocuments({ post: postId }),
+        userId ? Like.exists({ post: postId, user: userId }) : false,
+    ]);
+
+    return { ...post, likeCount, commentCount, isLiked: !!isLiked };
 };
 
-export const createPost = async (userId, postData, files) => {
-  const savedFiles = [];
-  try {
-    const images = files?.length ? await processPostImages(files) : [];
-    savedFiles.push(...images);
-
+export const create = async (userId, postData) => {
     const post = await Post.create({
-      author: userId,
-      content: postData.content,
-      tags: postData.tags || [],
-      visibility: postData.visibility || "public",
-      images,
+        author: userId,
+        ...postData,
     });
 
     await post.populate("author", "fullName personalPhoto role");
     return post;
-  } catch (err) {
-    await Promise.all(savedFiles.map(deleteFile));
-    throw err;
-  }
 };
 
-export const deletePost = async (postId, userId) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    const post = await Post.findById(postId).session(session);
-    if (!post)
-      throw new AppError(msg("المنشور غير موجود", "Post not found"), 404);
-    if (post.author.toString() !== userId) {
-      throw new AppError(msg("ليس لديك صلاحية حذف هذا المنشور", "You do not have permission"), 403);
+export const update = async (postId, userId, updateData) => {
+    const post = await Post.findOne({ _id: postId, author: userId });
+    if (!post) {
+        throw new AppError(
+            msg(
+                "المنشور غير موجود أو ليس لديك صلاحية",
+                "Post not found or unauthorized",
+            ),
+            404,
+        );
     }
 
-    await Promise.all(post.images.map((img) => deleteFile(img)));
-    await Post.findByIdAndDelete(postId, { session });
-    await Comment.deleteMany({ post: postId }, { session });
-    await User.updateMany({ likes: postId }, { $pull: { likes: postId } }, { session });
-
-    await session.commitTransaction();
-    return true;
-  } catch (err) {
-    await session.abortTransaction();
-    throw err;
-  } finally {
-    session.endSession();
-  }
-};
-
-export const updatePost = async (postId, userId, updateData, files = []) => {
-  const savedFiles = [];
-  try {
-    const post = await Post.findById(postId);
-    if (!post)
-      throw new AppError(msg("المنشور غير موجود", "Post not found"), 404);
-    if (post.author.toString() !== userId) {
-      throw new AppError(msg("ليس لديك صلاحية تعديل هذا المنشور", "No permission"), 403);
-    }
-
-    if (updateData.content) post.content = updateData.content;
-    if (updateData.tags) post.tags = updateData.tags;
-    if (updateData.visibility) post.visibility = updateData.visibility;
-
-    if (files?.length) {
-      const newImages = await processPostImages(files);
-      post.images = [...(post.images || []), ...newImages].slice(0, MAX_POST_IMAGES);
-      savedFiles.push(...newImages);
-    }
+    const allowedFields = [
+        "title",
+        "content",
+        "image",
+        "category",
+        "tags",
+        "status",
+    ];
+    allowedFields.forEach((field) => {
+        if (updateData[field] !== undefined) post[field] = updateData[field];
+    });
 
     await post.save();
-    await post.populate("author", "fullName personalPhoto role");
     return post;
-  } catch (err) {
-    await Promise.all(savedFiles.map(deleteFile));
-    throw err;
-  }
+};
+
+export const remove = async (postId, userId) => {
+    const post = await Post.findOne({ _id: postId, author: userId });
+    if (!post) {
+        throw new AppError(
+            msg(
+                "المنشور غير موجود أو ليس لديك صلاحية",
+                "Post not found or unauthorized",
+            ),
+            404,
+        );
+    }
+
+    post.isDeleted = true;
+    await post.save();
+
+    return true;
 };
 
 export const toggleLike = async (postId, userId) => {
-  if (!mongoose.Types.ObjectId.isValid(postId)) {
-    throw new AppError(msg("معرف المنشور غير صالح", "Invalid post ID"), 400);
-  }
+    const existing = await Like.findOne({ post: postId, user: userId });
 
-  const addResult = await Post.updateOne({ _id: postId }, { $addToSet: { likes: userId } });
+    if (existing) {
+        await Like.deleteOne({ _id: existing._id });
+        return { liked: false };
+    }
 
-  if (addResult.modifiedCount === 0) {
-    await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
-    return { liked: false };
-  }
-
-  return { liked: true };
+    await Like.create({ post: postId, user: userId });
+    return { liked: true };
 };
 
-export const getMyPosts = async (userId, page = 1, limit = DEFAULT_LIMIT) => {
-  const clampedLimit = Math.min(limit, MAX_LIMIT);
+export const addComment = async (postId, userId, content) => {
+    const post = await Post.findById(postId);
+    if (!post) {
+        throw new AppError(msg("المنشور غير موجود", "Post not found"), 404);
+    }
 
-  const [posts, total] = await Promise.all([
-    Post.aggregate([
-      {
-        $match: {
-          author: new mongoose.Types.ObjectId(userId),
-          isDeleted: false,
-        },
-      },
-      ...buildCommentLookup(),
-      ...buildAuthorLookup(),
-      { $sort: { createdAt: -1 } },
-      { $skip: (page - 1) * clampedLimit },
-      { $limit: clampedLimit },
-    ]),
-    Post.countDocuments({ author: userId, isDeleted: false }),
-  ]);
+    const comment = await Comment.create({
+        post: postId,
+        author: userId,
+        content,
+    });
 
-  return {
-    data: posts,
-    pagination: {
-      current: page,
-      limit: clampedLimit,
-      total,
-      pages: Math.ceil(total / clampedLimit),
-    },
-  };
+    await comment.populate("author", "fullName personalPhoto");
+    return comment;
 };
 
-export const searchByTags = async (tag, page = 1, limit = DEFAULT_LIMIT) => {
-  const clampedLimit = Math.min(limit, MAX_LIMIT);
+export const getComments = async (postId, page = 1, limit = DEFAULT_LIMIT) => {
+    const { skip, limit: clampedLimit } = buildPagination(page, limit);
 
-  const [posts, total] = await Promise.all([
-    Post.aggregate([
-      {
-        $match: {
-          tags: tag,
-          visibility: "public",
-          isDeleted: false,
+    const [comments, total] = await Promise.all([
+        Comment.find({ post: postId })
+            .populate("author", "fullName personalPhoto")
+            .sort("-createdAt")
+            .skip(skip)
+            .limit(clampedLimit)
+            .lean(),
+        Comment.countDocuments({ post: postId }),
+    ]);
+
+    return {
+        data: comments,
+        pagination: {
+            current: page,
+            limit: clampedLimit,
+            total,
+            pages: Math.ceil(total / clampedLimit),
         },
-      },
-      ...buildCommentLookup(),
-      ...buildAuthorLookup(),
-      { $sort: { createdAt: -1 } },
-      { $skip: (page - 1) * clampedLimit },
-      { $limit: clampedLimit },
-    ]),
-    Post.countDocuments({ tags: tag, visibility: "public", isDeleted: false }),
-  ]);
-
-  return {
-    data: posts,
-    pagination: {
-      current: page,
-      limit: clampedLimit,
-      total,
-      pages: Math.ceil(total / clampedLimit),
-    },
-  };
+    };
 };

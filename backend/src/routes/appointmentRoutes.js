@@ -1,29 +1,56 @@
 import { Router } from "express";
-import { protect, restrictTo } from "../middlewares/auth.js";
-import {
-  createAppointment,
-  getDoctorAppointments,
-  getDoctorHistory,
-  updateAppointmentStatus,
-  getPatientAppointments,
-} from "../controllers/appointmentController.js";
+import * as appointmentController from "../controllers/appointmentController.js";
+import { protect } from "../middlewares/auth.js";
+import { restrictTo } from "../middlewares/auth.js";
 import { validateBody } from "../middlewares/validate.js";
-import {
-  createAppointmentSchema,
-  updateStatusSchema,
-} from "../validators/appointmentValidator.js";
+import { validateObjectId } from "../middlewares/ValidateObjectId.js";
+import { z } from "zod";
 
 const router = Router();
 
 router.use(protect);
 
 // Patient routes
-router.post("/", restrictTo("patient"), validateBody(createAppointmentSchema), createAppointment);
-router.get("/my-appointments", restrictTo("patient"), getPatientAppointments);
+router.post(
+    "/",
+    validateBody(
+        z.object({
+            doctorId: z.string().min(1),
+            scheduledAt: z.string().datetime(),
+            notes: z.string().optional(),
+        }),
+    ),
+    appointmentController.create,
+);
+
+router.get("/my", appointmentController.getMyAppointments);
+router.patch(
+    "/:id/cancel",
+    validateObjectId("id"),
+    appointmentController.cancel,
+);
 
 // Doctor routes
-router.get("/doctor-requests", restrictTo("doctor"), getDoctorAppointments);
-router.get("/doctor-history", restrictTo("doctor"), getDoctorHistory);
-router.patch("/:id/status", restrictTo("doctor"), validateBody(updateStatusSchema), updateAppointmentStatus);
+router.get(
+    "/pending",
+    restrictTo("doctor"),
+    appointmentController.getPendingRequests,
+);
+router.get(
+    "/history",
+    restrictTo("doctor"),
+    appointmentController.getDoctorHistory,
+);
+router.patch(
+    "/:id/status",
+    restrictTo("doctor"),
+    validateObjectId("id"),
+    validateBody(
+        z.object({
+            status: z.enum(["accepted", "rejected"]),
+        }),
+    ),
+    appointmentController.updateStatus,
+);
 
 export default router;

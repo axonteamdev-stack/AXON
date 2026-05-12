@@ -1,66 +1,94 @@
 import { catchAsync } from "../utils/catchAsync.js";
 import { sendResponse } from "../utils/response.js";
-import { validate } from "../middlewares/validate.js";
 import { msg } from "../utils/i18n.js";
-import { createPostSchema, updatePostSchema } from "../validators/postValidator.js";
-import { paginationSchema } from "../validators/sharedValidator.js";
+import { moveFromTemp, cleanupTemp } from "../middlewares/upload.js";
 import * as PostService from "../services/postService.js";
 
-export const createPost = catchAsync(async (req, res) => {
-  const { content, tags, visibility } = validate(createPostSchema, req.body);
-  const post = await PostService.createPost(req.user.id, { content, tags: tags || [], visibility }, req.files || []);
-  sendResponse(res, 201, msg("تم إنشاء المنشور بنجاح", "Post created successfully"), post);
+export const getAll = catchAsync(async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+    const result = await PostService.getAll(Number(page), Number(limit));
+    sendResponse(res, 200, msg("تم جلب المنشورات", "Posts fetched"), result);
 });
 
-export const getExploreFeeds = catchAsync(async (req, res) => {
-  const { page, limit } = validate(paginationSchema, req.query);
-  const sortBy = req.query.sortBy || "recent";
-  const result = await PostService.getExploreFeeds(page, limit, sortBy, req.user?.id || null);
-  sendResponse(res, 200, msg("تم جلب المنشورات بنجاح", "Posts fetched successfully"), result);
+export const getByDoctor = catchAsync(async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+    const result = await PostService.getByDoctor(
+        req.params.doctorId,
+        Number(page),
+        Number(limit),
+    );
+    sendResponse(
+        res,
+        200,
+        msg("تم جلب منشورات الطبيب", "Doctor posts fetched"),
+        result,
+    );
 });
 
-export const getFollowingFeeds = catchAsync(async (req, res) => {
-  const { page, limit } = validate(paginationSchema, req.query);
-  const result = await PostService.getFollowingFeeds(req.user.id, page, limit);
-  sendResponse(res, 200, msg("تم جلب تغذية المتابعين بنجاح", "Following feed fetched successfully"), result);
+export const getById = catchAsync(async (req, res) => {
+    const post = await PostService.getById(req.params.id, req.user?.id);
+    sendResponse(res, 200, msg("تم جلب المنشور", "Post fetched"), { post });
 });
 
-export const getPostDetails = catchAsync(async (req, res) => {
-  const post = await PostService.getPostDetails(req.params.id, req.user?.id);
-  sendResponse(res, 200, msg("تم جلب تفاصيل المنشور بنجاح", "Post details fetched successfully"), post);
+export const create = catchAsync(async (req, res) => {
+    const data = { ...req.body };
+    const imageFile = req.files?.postImage?.[0];
+
+    try {
+        if (imageFile) {
+            const { url } = moveFromTemp(imageFile.filename, "postImage");
+            data.image = url;
+        }
+
+        const post = await PostService.create(req.user.id, data);
+        sendResponse(res, 201, msg("تم إنشاء المنشور", "Post created"), {
+            post,
+        });
+    } catch (err) {
+        cleanupTemp(req.files);
+        throw err;
+    }
 });
 
-export const updatePost = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const { content, tags, visibility } = validate(updatePostSchema, req.body);
-  const post = await PostService.updatePost(id, req.user.id, { content, tags, visibility }, req.files || []);
-  sendResponse(res, 200, msg("تم تحديث المنشور بنجاح", "Post updated successfully"), post);
+export const update = catchAsync(async (req, res) => {
+    const post = await PostService.update(req.params.id, req.user.id, req.body);
+    sendResponse(res, 200, msg("تم تحديث المنشور", "Post updated"), { post });
 });
 
-export const deletePost = catchAsync(async (req, res) => {
-  await PostService.deletePost(req.params.id, req.user.id);
-  sendResponse(res, 200, msg("تم حذف المنشور بنجاح", "Post deleted successfully"));
+export const remove = catchAsync(async (req, res) => {
+    await PostService.remove(req.params.id, req.user.id);
+    sendResponse(res, 200, msg("تم حذف المنشور", "Post deleted"));
 });
 
 export const toggleLike = catchAsync(async (req, res) => {
-  const result = await PostService.toggleLike(req.params.id, req.user.id);
-  sendResponse(res, 200, msg(
-    result.liked ? "تم الإعجاب بالمنشور" : "تم إلغاء الإعجاب بالمنشور",
-    result.liked ? "Post liked successfully" : "Post unliked successfully"
-  ), { liked: result.liked });
+    const result = await PostService.toggleLike(req.params.id, req.user.id);
+    sendResponse(
+        res,
+        200,
+        result.liked
+            ? msg("تم الإعجاب", "Liked")
+            : msg("تم إلغاء الإعجاب", "Unliked"),
+        result,
+    );
 });
 
-export const getMyPosts = catchAsync(async (req, res) => {
-  const { page, limit } = validate(paginationSchema, req.query);
-  const result = await PostService.getMyPosts(req.user.id, page, limit);
-  sendResponse(res, 200, msg("تم جلب منشوراتك بنجاح", "My posts fetched successfully"), result);
+export const addComment = catchAsync(async (req, res) => {
+    const comment = await PostService.addComment(
+        req.params.id,
+        req.user.id,
+        req.body.content,
+    );
+    sendResponse(res, 201, msg("تم إضافة التعليق", "Comment added"), {
+        comment,
+    });
 });
 
-export const searchByTags = catchAsync(async (req, res) => {
-  const { tag } = req.query;
-  if (!tag?.trim()) throw new AppError(msg("الوسم مطلوب", "Tag is required"), 400);
-
-  const { page, limit } = validate(paginationSchema, req.query);
-  const result = await PostService.searchByTags(tag.trim(), page, limit);
-  sendResponse(res, 200, msg("تم جلب نتائج البحث بنجاح", "Search results fetched successfully"), result);
+export const getComments = catchAsync(async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+    const result = await PostService.getComments(
+        req.params.id,
+        Number(page),
+        Number(limit),
+    );
+    sendResponse(res, 200, msg("تم جلب التعليقات", "Comments fetched"), result);
 });

@@ -1,248 +1,100 @@
 import request from "supertest";
 import app from "../app.js";
 
-describe("Post API Endpoints", () => {
-  describe("GET /api/v2/posts - List Posts", () => {
-    it("should return posts without authentication", async () => {
-      const res = await request(app).get("/api/v2/posts");
+const extractToken = (res) => {
+    const body = res.body || {};
+    return (
+        body.token ||
+        body.accessToken ||
+        body.data?.token ||
+        body.data?.accessToken ||
+        null
+    );
+};
 
-      expect([200, 401, 403]).toContain(res.statusCode);
+describe("Post API", () => {
+    let doctorToken;
+    let postId;
+    const doctorEmail = `docpost${Date.now()}@test.com`;
+    const password = "Password123!";
+
+    beforeAll(async () => {
+        // Signup doctor
+        const signupRes = await request(app)
+            .post("/api/v1/auth/signup/doctor")
+            .field("fullName", "Dr. Post")
+            .field("email", doctorEmail)
+            .field("password", password)
+            .field("phone", "01234567890")
+            .field("specialization", "Neurology")
+            .field("medicalLicenseNumber", "LIC999");
+
+        // Login doctor
+        const loginRes = await request(app)
+            .post("/api/v1/auth/login")
+            .send({ email: doctorEmail, password });
+
+        doctorToken = extractToken(loginRes);
     });
 
-    it("should support pagination", async () => {
-      const res = await request(app)
-        .get("/api/v2/posts")
-        .query({ page: 1, limit: 10 });
-
-      expect([200, 400, 401, 403]).toContain(res.statusCode);
-    });
-
-    it("should filter by user", async () => {
-      const res = await request(app)
-        .get("/api/v2/posts")
-        .query({ userId: "60d5ec49c1234567890123ab" });
-
-      expect([200, 400, 401, 403]).toContain(res.statusCode);
-    });
-
-    it("should search posts", async () => {
-      const res = await request(app)
-        .get("/api/v2/posts")
-        .query({ search: "health" });
-
-      expect([200, 400, 401, 403]).toContain(res.statusCode);
-    });
-
-    it("should sort posts", async () => {
-      const res = await request(app)
-        .get("/api/v2/posts")
-        .query({ sort: "-createdAt" });
-
-      expect([200, 400, 401, 403]).toContain(res.statusCode);
-    });
-  });
-
-  describe("POST /api/v2/posts - Create Post", () => {
-    it("should require authentication", async () => {
-      const res = await request(app)
-        .post("/api/v2/posts")
-        .send({ content: "New post" });
-
-      expect([401, 403]).toContain(res.statusCode);
-    });
-
-    it("should require content", async () => {
-      const res = await request(app)
-        .post("/api/v2/posts")
-        .set("Authorization", "Bearer token")
-        .send({});
-
-      expect([400, 401, 403]).toContain(res.statusCode);
-    });
-
-    it("should reject empty content", async () => {
-      const res = await request(app)
-        .post("/api/v2/posts")
-        .set("Authorization", "Bearer token")
-        .send({ content: "" });
-
-      expect([400, 401, 403]).toContain(res.statusCode);
-    });
-
-    it("should accept valid post data", async () => {
-      const res = await request(app)
-        .post("/api/v2/posts")
-        .set("Authorization", "Bearer token")
-        .send({
-          content: "This is a community post",
-          images: [],
+    describe("POST /api/v1/posts", () => {
+        it("should create a new post", async () => {
+            const res = await request(app)
+                .post("/api/v1/posts")
+                .set(
+                    "Authorization",
+                    doctorToken ? `Bearer ${doctorToken}` : "",
+                )
+                .send({
+                    title: "Medical Article",
+                    content:
+                        "This is a detailed medical article content with enough length.",
+                    category: "health",
+                });
+            expect([201, 200, 400, 401]).toContain(res.statusCode);
+            if (
+                (res.statusCode === 201 || res.statusCode === 200) &&
+                res.body?.data
+            ) {
+                postId = res.body.data._id || res.body.data.id;
+            }
         });
 
-      expect([201, 400, 401, 403]).toContain(res.statusCode);
-    });
-
-    it("should accept post with images", async () => {
-      const res = await request(app)
-        .post("/api/v2/posts")
-        .set("Authorization", "Bearer token")
-        .send({
-          content: "Post with images",
-          images: ["image1.jpg", "image2.jpg"],
+        it("should reject post without title", async () => {
+            const res = await request(app)
+                .post("/api/v1/posts")
+                .set(
+                    "Authorization",
+                    doctorToken ? `Bearer ${doctorToken}` : "",
+                )
+                .send({ content: "No title" });
+            expect([400, 422, 401]).toContain(res.statusCode);
         });
 
-      expect([201, 400, 401, 403]).toContain(res.statusCode);
-    });
-  });
-
-  describe("GET /api/v2/posts/:id - Get Post By ID", () => {
-    it("should return post without authentication", async () => {
-      const res = await request(app).get(
-        "/api/v2/posts/60d5ec49c1234567890123ab",
-      );
-
-      expect([200, 400, 401, 403, 404]).toContain(res.statusCode);
-    });
-
-    it("should reject invalid ObjectId", async () => {
-      const res = await request(app).get("/api/v2/posts/invalid-id");
-
-      expect([400, 401, 403, 404]).toContain(res.statusCode);
+        it("should reject post with short content", async () => {
+            const res = await request(app)
+                .post("/api/v1/posts")
+                .set(
+                    "Authorization",
+                    doctorToken ? `Bearer ${doctorToken}` : "",
+                )
+                .send({ title: "Test Title", content: "Short" });
+            expect([400, 422, 401]).toContain(res.statusCode);
+        });
     });
 
-    it("should return 404 for non-existent post", async () => {
-      const res = await request(app).get(
-        "/api/v2/posts/60d5ec49c1234567890123ab",
-      );
-
-      expect([404, 400]).toContain(res.statusCode);
+    describe("GET /api/v1/posts", () => {
+        it("should get all posts", async () => {
+            const res = await request(app).get("/api/v1/posts");
+            expect([200, 401]).toContain(res.statusCode);
+        });
     });
 
-    it("should include author information", async () => {
-      const res = await request(app).get(
-        "/api/v2/posts/60d5ec49c1234567890123ab",
-      );
-
-      if (res.statusCode === 200) {
-        expect(res.body).toHaveProperty("author");
-      }
+    describe("GET /api/v1/posts/:id", () => {
+        it("should get post by id or return 404", async () => {
+            const testId = postId || "507f1f77bcf86cd799439011";
+            const res = await request(app).get(`/api/v1/posts/${testId}`);
+            expect([200, 404, 401]).toContain(res.statusCode);
+        });
     });
-  });
-
-  describe("PUT /api/v2/posts/:id - Update Post", () => {
-    it("should require authentication", async () => {
-      const res = await request(app)
-        .put("/api/v2/posts/60d5ec49c1234567890123ab")
-        .send({ content: "Updated content" });
-
-      expect([401, 403]).toContain(res.statusCode);
-    });
-
-    it("should reject invalid ObjectId", async () => {
-      const res = await request(app)
-        .put("/api/v2/posts/invalid-id")
-        .set("Authorization", "Bearer token")
-        .send({ content: "Updated content" });
-
-      expect([400, 401, 403]).toContain(res.statusCode);
-    });
-
-    it("should update post content", async () => {
-      const res = await request(app)
-        .put("/api/v2/posts/60d5ec49c1234567890123ab")
-        .set("Authorization", "Bearer token")
-        .send({ content: "Updated post content" });
-
-      expect([200, 400, 401, 403, 404]).toContain(res.statusCode);
-    });
-
-    it("should require post ownership", async () => {
-      const res = await request(app)
-        .put("/api/v2/posts/60d5ec49c1234567890123ab")
-        .set("Authorization", "Bearer other-user-token")
-        .send({ content: "Hacked content" });
-
-      expect([403, 404, 200, 400, 401]).toContain(res.statusCode);
-    });
-  });
-
-  describe("DELETE /api/v2/posts/:id - Delete Post", () => {
-    it("should require authentication", async () => {
-      const res = await request(app).delete(
-        "/api/v2/posts/60d5ec49c1234567890123ab",
-      );
-
-      expect([401, 403]).toContain(res.statusCode);
-    });
-
-    it("should reject invalid ObjectId", async () => {
-      const res = await request(app)
-        .delete("/api/v2/posts/invalid-id")
-        .set("Authorization", "Bearer token");
-
-      expect([400, 401, 403]).toContain(res.statusCode);
-    });
-
-    it("should delete post", async () => {
-      const res = await request(app)
-        .delete("/api/v2/posts/60d5ec49c1234567890123ab")
-        .set("Authorization", "Bearer token");
-
-      expect([200, 204, 400, 401, 403, 404]).toContain(res.statusCode);
-    });
-
-    it("should require post ownership", async () => {
-      const res = await request(app)
-        .delete("/api/v2/posts/60d5ec49c1234567890123ab")
-        .set("Authorization", "Bearer other-user-token");
-
-      expect([403, 404, 200, 204, 400, 401]).toContain(res.statusCode);
-    });
-  });
-
-  describe("POST /api/v2/posts/:id/like - Like Post", () => {
-    it("should require authentication", async () => {
-      const res = await request(app).post(
-        "/api/v2/posts/60d5ec49c1234567890123ab/like",
-      );
-
-      expect([401, 403]).toContain(res.statusCode);
-    });
-
-    it("should toggle like on post", async () => {
-      const res = await request(app)
-        .post("/api/v2/posts/60d5ec49c1234567890123ab/like")
-        .set("Authorization", "Bearer token");
-
-      expect([200, 400, 401, 403, 404]).toContain(res.statusCode);
-    });
-  });
-
-  describe("POST /api/v2/posts/:id/share - Share Post", () => {
-    it("should require authentication", async () => {
-      const res = await request(app)
-        .post("/api/v2/posts/60d5ec49c1234567890123ab/share")
-        .send({ message: "Check this out" });
-
-      expect([401, 403]).toContain(res.statusCode);
-    });
-
-    it("should share post", async () => {
-      const res = await request(app)
-        .post("/api/v2/posts/60d5ec49c1234567890123ab/share")
-        .set("Authorization", "Bearer token")
-        .send({ message: "Check this out" });
-
-      expect([201, 200, 400, 401, 403, 404]).toContain(res.statusCode);
-    });
-  });
-
-  describe("GET /api/v2/posts/:id/likes - Get Post Likes", () => {
-    it("should return post likes without authentication", async () => {
-      const res = await request(app).get(
-        "/api/v2/posts/60d5ec49c1234567890123ab/likes",
-      );
-
-      expect([200, 400, 401, 403, 404]).toContain(res.statusCode);
-    });
-  });
 });

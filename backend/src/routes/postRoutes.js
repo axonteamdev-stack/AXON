@@ -1,44 +1,65 @@
 import { Router } from "express";
-import { protect, restrictTo } from "../middlewares/auth.js";
-import { createOwnershipMiddleware } from "../middlewares/checkOwnership.js";
-import Post from "../models/postModel.js";
-import commentRouter from "./commentRoutes.js";
-import {
-  getExploreFeeds,
-  searchByTags,
-  getPostDetails,
-  createPost,
-  getFollowingFeeds,
-  getMyPosts,
-  updatePost,
-  deletePost,
-  toggleLike,
-} from "../controllers/postController.js";
-import uploadMiddleware from "../middlewares/upload.js";
-import { validateBody, validateQuery } from "../middlewares/validate.js";
-import { createPostSchema, updatePostSchema } from "../validators/postValidator.js";
-import { paginationSchema } from "../validators/sharedValidator.js";
+import * as postController from "../controllers/postController.js";
+import { protect } from "../middlewares/auth.js";
+import { restrictTo } from "../middlewares/auth.js";
+import { validateBody } from "../middlewares/validate.js";
 import { validateObjectId } from "../middlewares/ValidateObjectId.js";
+import uploadMiddleware from "../middlewares/upload.js";
+import { z } from "zod";
 
 const router = Router();
-const checkPostOwnership = createOwnershipMiddleware(Post, "author", "post");
 
 // Public routes
-router.get("/explore", validateQuery(paginationSchema), getExploreFeeds);
-router.get("/search/tags", validateQuery(paginationSchema), searchByTags);
-router.get("/:id", validateObjectId("id"), getPostDetails);
-
-// Nested comments
-router.use("/:postId/comments", commentRouter);
+router.get("/", postController.getAll);
+router.get(
+    "/doctor/:doctorId",
+    validateObjectId("doctorId"),
+    postController.getByDoctor,
+);
+router.get("/:id", validateObjectId("id"), postController.getById);
+router.get("/:id/comments", validateObjectId("id"), postController.getComments);
 
 // Protected routes
 router.use(protect);
-router.post("/", restrictTo("doctor"), uploadMiddleware.post, validateBody(createPostSchema), createPost);
-router.get("/following-feed", getFollowingFeeds);
-router.get("/me", getMyPosts);
-router.patch("/:id/like", toggleLike);
-router.use("/:id", checkPostOwnership);
-router.patch("/:id", validateObjectId("id"), uploadMiddleware.post, validateBody(updatePostSchema), updatePost);
-router.delete("/:id", validateObjectId("id"), deletePost);
+
+router.post(
+    "/",
+    restrictTo("doctor"),
+    uploadMiddleware.post,
+    validateBody(
+        z.object({
+            title: z.string().min(5).max(200),
+            content: z.string().min(10),
+            image: z.string().optional(),
+            category: z.string().optional(),
+            tags: z.array(z.string()).optional(),
+        }),
+    ),
+    postController.create,
+);
+
+router.patch(
+    "/:id",
+    restrictTo("doctor"),
+    validateObjectId("id"),
+    postController.update,
+);
+router.delete(
+    "/:id",
+    restrictTo("doctor"),
+    validateObjectId("id"),
+    postController.remove,
+);
+router.post("/:id/like", validateObjectId("id"), postController.toggleLike);
+router.post(
+    "/:id/comments",
+    validateObjectId("id"),
+    validateBody(
+        z.object({
+            content: z.string().min(1).max(2000),
+        }),
+    ),
+    postController.addComment,
+);
 
 export default router;

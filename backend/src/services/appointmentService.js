@@ -1,80 +1,115 @@
-import mongoose from "mongoose";
-import Appointment from "../models/appointmentModel.js";
-import AppError from "../utils/appError.js";
+import Appointment from "../models/Appointment.js";
+import Conversation from "../models/Conversation.js";
+import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
 import { getIO } from "../config/socket.js";
 
-export const create = async (patientId, { doctorId, amount, scheduledAt }) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    const appointment = await Appointment.create(
-      [{
+export const create = async (patientId, { doctorId, scheduledAt, notes }) => {
+    const appointment = await Appointment.create({
         patient: patientId,
         doctor: doctorId,
-        amount,
         scheduledAt: new Date(scheduledAt),
-        paymentStatus: "held",
-      }],
-      { session }
-    );
+        notes,
+    });
 
-    await session.commitTransaction();
+    // Create conversation for chat
+    await Conversation.create({
+        appointmentId: appointment._id,
+        participants: [patientId, doctorId],
+    });
 
+    // Notify doctor via socket
     try {
-      const io = getIO();
-      io.to(doctorId).emit("newAppointmentRequest", {
-        message: "لديك طلب كشف جديد في انتظار موافقتك",
-        appointmentId: appointment[0]._id,
-      });
+        const io = getIO();
+        io.to(doctorId.toString()).emit("newAppointment", {
+            appointmentId: appointment._id,
+            message: "لديك طلب كشف جديد",
+        });
     } catch {
-      console.warn("Socket not available");
+        console.warn("Socket not available");
     }
 
-    return appointment[0];
-  } catch (err) {
-    await session.abortTransaction();
-    throw err;
-  } finally {
-    session.endSession();
-  }
+    return appointment;
 };
 
 export const getPendingForDoctor = (doctorId) =>
-  Appointment.find({ doctor: doctorId, status: "pending" })
-    .populate("patient", "fullName personalPhoto")
-    .sort("-createdAt");
+    Appointment.find({ doctor: doctorId, status: "pending" })
+        .populate("patient", "fullName personalPhoto")
+        .sort("-createdAt");
 
 export const getHistoryForDoctor = (doctorId) =>
-  Appointment.find({
-    doctor: doctorId,
-    status: { $ne: "pending" },
-  })
-    .populate("patient", "fullName personalPhoto")
-    .sort("-updatedAt");
+    Appointment.find({
+        doctor: doctorId,
+        status: { $ne: "pending" },
+    })
+        .populate("patient", "fullName personalPhoto")
+        .sort("-updatedAt");
 
 export const getForPatient = (patientId) =>
-  Appointment.find({ patient: patientId })
-    .populate("doctor", "fullName personalPhoto")
-    .sort("-createdAt");
+    Appointment.find({ patient: patientId })
+        .populate("doctor", "fullName personalPhoto")
+        .sort("-createdAt");
 
 export const updateStatus = async (id, doctorId, status) => {
-  const appointment = await Appointment.findOne({ _id: id, doctor: doctorId });
-  if (!appointment)
-    throw new AppError(msg("الحجز غير موجود", "Appointment not found"), 404);
+    const appointment = await Appointment.findOne({
+        _id: id,
+        doctor: doctorId,
+    });
+    if (!appointment) {
+        throw new AppError(
+            msg("الحجز غير موجود", "Appointment not found"),
+            404,
+        );
+    }
 
-  if (appointment.status !== "pending") {
-    throw new AppError(msg("لا يمكن تعديل هذا الحجز", "Cannot modify this appointment"), 400);
-  }
+    if (appointment.status !== "pending") {
+        throw new AppError(
+            msg("لا يمكن تعديل هذا الحجز", "Cannot modify this appointment"),
+            400,
+        );
+    }
 
-  const updates = { status };
-  if (status === "accepted") updates.paymentStatus = "paid";
-  if (status === "rejected") {
-    updates.paymentStatus = "refunded";
-    updates.cancellationReason = "Rejected by doctor";
-    updates.cancelledBy = doctorId;
-  }
+    appointment.status = status;
+    await appointment.save();
 
-  return Appointment.findByIdAndUpdate(id, updates, { new: true });
+    // Notify patient
+    try {
+        const io = getIO();
+        io.to(appointment.patient.toString()).emit("appointmentUpdated", {
+            appointmentId: appointment._id,
+            status,
+        });
+    } catch {
+        console.warn("Socket not available");
+    }
+
+    return appointment;
+};
+
+export const cancel = async (id, patientId) => {
+    const appointment = await Appointment.findOne({
+        _id: id,
+        patient: patientId,
+    });
+    if (!appointment) {
+        throw new AppError(
+            msg("الحجز غير موجود", "Appointment not found"),
+            404,
+        );
+    }
+
+    if (appointment.status === "completed") {
+        throw new AppError(
+            msg(
+                "لا يمكن إلغاء حجز منتهي",
+                "Cannot cancel completed appointment",
+            ),
+            400,
+        );
+    }
+
+    appointment.status = "cancelled";
+    await appointment.save();
+
+    return appointment;
 };

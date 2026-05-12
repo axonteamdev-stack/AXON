@@ -1,91 +1,97 @@
-import mongoose from "mongoose";
-import Message from "../models/messageModel.js";
-import Conversation from "../models/conversationModel.js";
-import Appointment from "../models/appointmentModel.js";
-import AppError from "../utils/appError.js";
+import Message from "../models/Message.js";
+import Conversation from "../models/Conversation.js";
+import Appointment from "../models/Appointment.js";
+import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
 import { getIO } from "../config/socket.js";
 
 export const start = async (appointmentId) => {
-  let conversation = await Conversation.findOne({ appointmentId });
-  if (conversation) return conversation;
+    let conversation = await Conversation.findOne({ appointmentId });
+    if (conversation) return conversation;
 
-  const appointment = await Appointment.findById(appointmentId);
-  return Conversation.create({
-    appointmentId,
-    participants: [appointment.patient, appointment.doctor],
-  });
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+        throw new AppError(
+            msg("الحجز غير موجود", "Appointment not found"),
+            404,
+        );
+    }
+
+    return Conversation.create({
+        appointmentId,
+        participants: [appointment.patient, appointment.doctor],
+    });
 };
 
 export const send = async (conversationId, senderId, { text, image }) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+        throw new AppError(
+            msg("المحادثة غير موجودة", "Conversation not found"),
+            404,
+        );
+    }
 
-  try {
-    const message = await Message.create(
-      [{
+    if (!conversation.participants.includes(senderId)) {
+        throw new AppError(msg("غير مسموح", "Unauthorized"), 403);
+    }
+
+    const message = await Message.create({
         sender: senderId,
         conversation: conversationId,
         text: text?.trim(),
         image: image || null,
-        messageType: image ? "image" : "text",
-      }],
-      { session }
-    );
+    });
 
-    await Conversation.findByIdAndUpdate(
-      conversationId,
-      {
-        lastMessage: image ? "📷 صورة" : text,
-        lastMessageAt: new Date(),
-      },
-      { session }
-    );
+    // Update conversation last message
+    conversation.lastMessage = image ? "📷 صورة" : text;
+    conversation.lastMessageAt = new Date();
+    await conversation.save();
 
-    await session.commitTransaction();
-
+    // Emit via socket
     try {
-      const io = getIO();
-      io.to(conversationId).emit("receiveMessage", {
-        _id: message[0]._id,
-        sender: senderId,
-        text: message[0].text,
-        image: message[0].image,
-        messageType: message[0].messageType,
-        createdAt: message[0].createdAt,
-      });
+        const io = getIO();
+        io.to(conversationId).emit("newMessage", {
+            _id: message._id,
+            sender: senderId,
+            text: message.text,
+            image: message.image,
+            createdAt: message.createdAt,
+        });
     } catch {
-      console.warn("Socket emission failed");
+        console.warn("Socket emission failed");
     }
 
-    return message[0];
-  } catch (err) {
-    await session.abortTransaction();
-    throw err;
-  } finally {
-    session.endSession();
-  }
+    return message;
 };
 
 export const getMessages = async (conversationId, userId) => {
-  const conversation = await Conversation.findById(conversationId);
-  if (!conversation.participants.includes(userId)) {
-    throw new AppError(msg("غير مسموح", "Unauthorized"), 403);
-  }
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+        throw new AppError(
+            msg("المحادثة غير موجودة", "Conversation not found"),
+            404,
+        );
+    }
 
-  await Message.updateMany(
-    { conversation: conversationId, "readBy.user": { $ne: userId } },
-    { $push: { readBy: { user: userId, readAt: new Date() } } }
-  );
+    if (!conversation.participants.includes(userId)) {
+        throw new AppError(msg("غير مسموح", "Unauthorized"), 403);
+    }
 
-  return Message.find({ conversation: conversationId })
-    .populate("sender", "fullName personalPhoto")
-    .sort("createdAt")
-    .limit(100);
+    // Mark messages as read
+    await Message.updateMany(
+        { conversation: conversationId, sender: { $ne: userId }, read: false },
+        { read: true, readAt: new Date() },
+    );
+
+    return Message.find({ conversation: conversationId })
+        .populate("sender", "fullName personalPhoto")
+        .sort("createdAt")
+        .limit(100);
 };
 
 export const getConversations = (userId) =>
-  Conversation.find({ participants: userId })
-    .populate("participants", "fullName personalPhoto")
-    .populate({ path: "appointmentId", select: "status amount createdAt" })
-    .sort("-lastMessageAt");
+    Conversation.find({ participants: userId })
+        .populate("participants", "fullName personalPhoto")
+        .populate({ path: "appointmentId", select: "status scheduledAt" })
+        .sort("-lastMessageAt");

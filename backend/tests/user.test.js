@@ -1,239 +1,141 @@
 import request from "supertest";
 import app from "../app.js";
 
-describe("User API Endpoints", () => {
-  describe("GET /api/v2/users - Get All Users (Admin)", () => {
-    it("should require authentication", async () => {
-      const res = await request(app).get("/api/v2/users");
+describe("User API", () => {
+    let authToken;
+    let userId;
 
-      expect([401, 403]).toContain(res.statusCode);
+    beforeEach(async () => {
+        const email = `user${Date.now()}@test.com`;
+        const signupRes = await request(app)
+            .post("/api/v1/auth/signup/patient")
+            .send({
+                fullName: "Test User",
+                email,
+                phoneNumber: "+1234567890",
+                gender: "male",
+                password: "ValidPass123!",
+            });
+
+        if (signupRes.statusCode === 201 || signupRes.statusCode === 200) {
+            userId = signupRes.body.data?.user?._id;
+        }
+
+        const loginRes = await request(app)
+            .post("/api/v1/auth/login")
+            .send({ email, password: "ValidPass123!" });
+
+        if (loginRes.statusCode === 200) {
+            authToken = loginRes.body.data?.tokens?.accessToken || loginRes.body.data?.token;
+        }
     });
 
-    it("should support pagination", async () => {
-      const res = await request(app)
-        .get("/api/v2/users")
-        .query({ page: 1, limit: 10 });
-
-      expect([200, 401, 403, 400]).toContain(res.statusCode);
-    });
-
-    it("should filter by role", async () => {
-      const res = await request(app)
-        .get("/api/v2/users")
-        .query({ role: "patient" });
-
-      expect([200, 401, 403, 400]).toContain(res.statusCode);
-    });
-
-    it("should filter by status", async () => {
-      const res = await request(app)
-        .get("/api/v2/users")
-        .query({ status: "active" });
-
-      expect([200, 401, 403, 400]).toContain(res.statusCode);
-    });
-  });
-
-  describe("GET /api/v2/users/:id - Get User By ID", () => {
-    it("should require authentication", async () => {
-      const res = await request(app).get(
-        "/api/v2/users/60d5ec49c1234567890123ab",
-      );
-
-      expect([401, 403]).toContain(res.statusCode);
-    });
-
-    it("should reject invalid ObjectId", async () => {
-      const res = await request(app).get("/api/v2/users/invalid-id");
-
-      expect([400, 401, 403]).toContain(res.statusCode);
-    });
-
-    it("should return 404 for non-existent user", async () => {
-      const res = await request(app)
-        .get("/api/v2/users/60d5ec49c1234567890123ab")
-        .set("Authorization", "Bearer valid-token");
-
-      expect([404, 401, 403]).toContain(res.statusCode);
-    });
-  });
-
-  describe("GET /api/v2/users/profile - Get Current User Profile", () => {
-    it("should require authentication", async () => {
-      const res = await request(app).get("/api/v2/users/profile");
-
-      expect([401, 403]).toContain(res.statusCode);
-    });
-
-    it("should return user profile on success", async () => {
-      const res = await request(app)
-        .get("/api/v2/users/profile")
-        .set("Authorization", "Bearer valid-token");
-
-      if (res.statusCode === 200) {
-        expect(res.body).toHaveProperty("_id");
-        expect(res.body).toHaveProperty("email");
-        expect(res.body).toHaveProperty("fullName");
-      }
-    });
-  });
-
-  describe("PUT /api/v2/users/:id - Update User", () => {
-    it("should require authentication", async () => {
-      const res = await request(app)
-        .put("/api/v2/users/60d5ec49c1234567890123ab")
-        .send({ fullName: "Updated Name" });
-
-      expect([401, 403]).toContain(res.statusCode);
-    });
-
-    it("should reject invalid ObjectId", async () => {
-      const res = await request(app)
-        .put("/api/v2/users/invalid-id")
-        .set("Authorization", "Bearer token")
-        .send({ fullName: "Updated Name" });
-
-      expect([400, 401, 403]).toContain(res.statusCode);
-    });
-
-    it("should update user profile", async () => {
-      const res = await request(app)
-        .put("/api/v2/users/60d5ec49c1234567890123ab")
-        .set("Authorization", "Bearer token")
-        .send({ fullName: "New Name", phone: "+1234567890" });
-
-      expect([200, 400, 401, 403, 404]).toContain(res.statusCode);
-    });
-
-    it("should not allow changing email directly", async () => {
-      const res = await request(app)
-        .put("/api/v2/users/60d5ec49c1234567890123ab")
-        .set("Authorization", "Bearer token")
-        .send({ email: "newemail@example.com" });
-
-      expect([200, 400, 401, 403, 404]).toContain(res.statusCode);
-    });
-  });
-
-  describe("DELETE /api/v2/users/:id - Delete User", () => {
-    it("should require authentication", async () => {
-      const res = await request(app).delete(
-        "/api/v2/users/60d5ec49c1234567890123ab",
-      );
-
-      expect([401, 403]).toContain(res.statusCode);
-    });
-
-    it("should reject invalid ObjectId", async () => {
-      const res = await request(app)
-        .delete("/api/v2/users/invalid-id")
-        .set("Authorization", "Bearer token");
-
-      expect([400, 401, 403]).toContain(res.statusCode);
-    });
-
-    it("should delete user account", async () => {
-      const res = await request(app)
-        .delete("/api/v2/users/60d5ec49c1234567890123ab")
-        .set("Authorization", "Bearer token");
-
-      expect([200, 204, 400, 401, 403, 404]).toContain(res.statusCode);
-    });
-  });
-
-  describe("PUT /api/v2/users/:id/change-password - Change Password", () => {
-    it("should require authentication", async () => {
-      const res = await request(app)
-        .put("/api/v2/users/60d5ec49c1234567890123ab/change-password")
-        .send({
-          currentPassword: "OldPass123!",
-          newPassword: "NewPass123!",
+    describe("GET /api/v1/users/doctors", () => {
+        it("should return doctors list", async () => {
+            const res = await request(app).get("/api/v1/users/doctors");
+            expect([200, 401, 403]).toContain(res.statusCode);
         });
 
-      expect([401, 403]).toContain(res.statusCode);
+        it("should support pagination", async () => {
+            const res = await request(app)
+                .get("/api/v1/users/doctors")
+                .query({ page: 1, limit: 10 });
+            expect([200, 400, 401, 403]).toContain(res.statusCode);
+        });
     });
 
-    it("should reject weak new password", async () => {
-      const res = await request(app)
-        .put("/api/v2/users/60d5ec49c1234567890123ab/change-password")
-        .set("Authorization", "Bearer token")
-        .send({
-          currentPassword: "OldPass123!",
-          newPassword: "weak",
+    describe("GET /api/v1/users/doctors/search", () => {
+        it("should search doctors by keyword", async () => {
+            const res = await request(app)
+                .get("/api/v1/users/doctors/search")
+                .query({ keyword: "cardio", specialization: "Cardiology" });
+            expect([200, 400, 401, 403]).toContain(res.statusCode);
+        });
+    });
+
+    describe("GET /api/v1/users/doctors/:id", () => {
+        it("should return doctor details", async () => {
+            const res = await request(app).get("/api/v1/users/doctors/507f1f77bcf86cd799439011");
+            expect([200, 404, 401, 403]).toContain(res.statusCode);
         });
 
-      expect([400, 401, 403]).toContain(res.statusCode);
+        it("should reject invalid ObjectId", async () => {
+            const res = await request(app).get("/api/v1/users/doctors/invalid-id");
+            expect([400, 404]).toContain(res.statusCode);
+        });
     });
 
-    it("should reject incorrect current password", async () => {
-      const res = await request(app)
-        .put("/api/v2/users/60d5ec49c1234567890123ab/change-password")
-        .set("Authorization", "Bearer token")
-        .send({
-          currentPassword: "WrongPass123!",
-          newPassword: "NewPass123!",
+    describe("GET /api/v1/users/me", () => {
+        it("should require authentication", async () => {
+            const res = await request(app).get("/api/v1/users/me");
+            expect([401, 403]).toContain(res.statusCode);
         });
 
-      expect([400, 401, 403]).toContain(res.statusCode);
+        it("should return current user profile", async () => {
+            const res = await request(app)
+                .get("/api/v1/users/me")
+                .set("Authorization", `Bearer ${authToken}`);
+
+            expect([200, 401, 403]).toContain(res.statusCode);
+            if (res.statusCode === 200) {
+                expect(res.body).toHaveProperty("data");
+            }
+        });
     });
 
-    it("should change password on success", async () => {
-      const res = await request(app)
-        .put("/api/v2/users/60d5ec49c1234567890123ab/change-password")
-        .set("Authorization", "Bearer token")
-        .send({
-          currentPassword: "OldPass123!",
-          newPassword: "NewPass123!",
+    describe("PATCH /api/v1/users/me", () => {
+        it("should require authentication", async () => {
+            const res = await request(app)
+                .patch("/api/v1/users/me")
+                .send({ fullName: "Updated" });
+            expect([401, 403]).toContain(res.statusCode);
         });
 
-      expect([200, 400, 401, 403, 404]).toContain(res.statusCode);
-    });
-  });
+        it("should update profile fields", async () => {
+            const res = await request(app)
+                .patch("/api/v1/users/me")
+                .set("Authorization", `Bearer ${authToken}`)
+                .send({ fullName: "Updated Name" });
 
-  describe("GET /api/v2/users/:id/medical-history - Get Medical History", () => {
-    it("should require authentication", async () => {
-      const res = await request(app).get(
-        "/api/v2/users/60d5ec49c1234567890123ab/medical-history",
-      );
-
-      expect([401, 403]).toContain(res.statusCode);
+            expect([200, 400, 401, 403]).toContain(res.statusCode);
+        });
     });
 
-    it("should return medical history on success", async () => {
-      const res = await request(app)
-        .get("/api/v2/users/60d5ec49c1234567890123ab/medical-history")
-        .set("Authorization", "Bearer token");
+    describe("POST /api/v1/users/follow/:id", () => {
+        it("should require authentication", async () => {
+            const res = await request(app)
+                .post("/api/v1/users/follow/507f1f77bcf86cd799439011");
+            expect([401, 403]).toContain(res.statusCode);
+        });
 
-      if (res.statusCode === 200) {
-        expect(Array.isArray(res.body.data) || res.body).toBeDefined();
-      }
-    });
-  });
+        it("should follow a user", async () => {
+            const res = await request(app)
+                .post("/api/v1/users/follow/507f1f77bcf86cd799439011")
+                .set("Authorization", `Bearer ${authToken}`);
 
-  describe("POST /api/v2/users/:id/upload-avatar - Upload Avatar", () => {
-    it("should require authentication", async () => {
-      const res = await request(app)
-        .post("/api/v2/users/60d5ec49c1234567890123ab/upload-avatar")
-        .attach("avatar", Buffer.from("fake image"), "avatar.png");
-
-      expect([401, 403]).toContain(res.statusCode);
+            expect([200, 400, 401, 403, 404]).toContain(res.statusCode);
+        });
     });
 
-    it("should reject missing file", async () => {
-      const res = await request(app)
-        .post("/api/v2/users/60d5ec49c1234567890123ab/upload-avatar")
-        .set("Authorization", "Bearer token");
+    describe("GET /api/v1/users/following", () => {
+        it("should require authentication", async () => {
+            const res = await request(app).get("/api/v1/users/following");
+            expect([401, 403]).toContain(res.statusCode);
+        });
 
-      expect([400, 401, 403]).toContain(res.statusCode);
+        it("should return following list", async () => {
+            const res = await request(app)
+                .get("/api/v1/users/following")
+                .set("Authorization", `Bearer ${authToken}`);
+
+            expect([200, 401, 403]).toContain(res.statusCode);
+        });
     });
 
-    it("should upload avatar successfully", async () => {
-      const res = await request(app)
-        .post("/api/v2/users/60d5ec49c1234567890123ab/upload-avatar")
-        .set("Authorization", "Bearer token")
-        .attach("avatar", Buffer.from("fake image"), "avatar.jpg");
-
-      expect([200, 201, 400, 401, 403]).toContain(res.statusCode);
+    describe("GET /api/v1/users/followers", () => {
+        it("should require authentication", async () => {
+            const res = await request(app).get("/api/v1/users/followers");
+            expect([401, 403]).toContain(res.statusCode);
+        });
     });
-  });
 });

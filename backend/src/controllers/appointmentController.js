@@ -3,32 +3,59 @@ import { sendResponse } from "../utils/response.js";
 import { msg } from "../utils/i18n.js";
 import * as AppointmentService from "../services/appointmentService.js";
 
-export const createAppointment = catchAsync(async (req, res) => {
-  const appointment = await AppointmentService.create(req.user.id, req.body);
-  sendResponse(res, 201, msg("تم إرسال طلب الحجز", "Appointment request sent"), appointment);
+export const create = catchAsync(async (req, res) => {
+    const appointment = await AppointmentService.create(req.user.id, req.body);
+    sendResponse(res, 201, msg("تم حجز الموعد بنجاح", "Appointment booked"), {
+        appointment,
+    });
 });
 
-export const getDoctorAppointments = catchAsync(async (req, res) => {
-  const appointments = await AppointmentService.getPendingForDoctor(req.user.id);
-  sendResponse(res, 200, msg("تم جلب طلبات الحجز", "Appointments retrieved"), {
-    results: appointments.length,
-    appointments,
-  });
+export const getMyAppointments = catchAsync(async (req, res) => {
+    const appointments = await AppointmentService.getForPatient(req.user.id);
+    sendResponse(res, 200, msg("تم جلب المواعيد", "Appointments fetched"), {
+        appointments,
+    });
+});
+
+export const getPendingRequests = catchAsync(async (req, res) => {
+    const appointments = await AppointmentService.getPendingForDoctor(
+        req.user.id,
+    );
+    sendResponse(
+        res,
+        200,
+        msg("تم جلب الطلبات المعلقة", "Pending requests fetched"),
+        { appointments },
+    );
 });
 
 export const getDoctorHistory = catchAsync(async (req, res) => {
-  const appointments = await AppointmentService.getHistoryForDoctor(req.user.id);
-  sendResponse(res, 200, msg("تم جلب تاريخ الحجوزات", "History retrieved"), appointments);
+    const appointments = await AppointmentService.getHistoryForDoctor(
+        req.user.id,
+    );
+    sendResponse(res, 200, msg("تم جلب السجل", "History fetched"), {
+        appointments,
+    });
 });
 
-export const getPatientAppointments = catchAsync(async (req, res) => {
-  const appointments = await AppointmentService.getForPatient(req.user.id);
-  sendResponse(res, 200, msg("تم جلب حجوزاتك", "Your appointments retrieved"), appointments);
+export const updateStatus = catchAsync(async (req, res) => {
+    const { status } = req.body;
+    const appointment = await AppointmentService.updateStatus(
+        req.params.id,
+        req.user.id,
+        status,
+    );
+    sendResponse(res, 200, msg("تم تحديث الحالة", "Status updated"), {
+        appointment,
+    });
 });
 
-export const updateAppointmentStatus = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-  const appointment = await AppointmentService.updateStatus(id, req.user.id, status);
-  sendResponse(res, 200, msg("تم تحديث الحجز", "Appointment updated"), appointment);
+export const cancel = catchAsync(async (req, res) => {
+    const appointment = await AppointmentService.cancel(
+        req.params.id,
+        req.user.id,
+    );
+    sendResponse(res, 200, msg("تم إلغاء الموعد", "Appointment cancelled"), {
+        appointment,
+    });
 });
