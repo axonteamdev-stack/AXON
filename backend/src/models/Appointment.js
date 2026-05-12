@@ -42,4 +42,4 @@ appointmentSchema.index({ doctor: 1, status: 1 });
 appointmentSchema.index({ patient: 1, status: 1 });
 appointmentSchema.index({ scheduledAt: 1 });
 
-export default mongoose.model("Appointment", appointmentSchema);
+export default mongoose.models.Appointment || mongoose.model("Appointment", appointmentSchema);

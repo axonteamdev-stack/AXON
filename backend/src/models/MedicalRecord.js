@@ -70,6 +70,5 @@ const medicalRecordSchema = new Schema(
     },
 );
 
-medicalRecordSchema.index({ patientId: 1 });
 
-export default mongoose.model("MedicalRecord", medicalRecordSchema);
+export default mongoose.models.MedicalRecord || mongoose.model("MedicalRecord", medicalRecordSchema);

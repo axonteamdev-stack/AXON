@@ -55,17 +55,16 @@ app.use(express.json({ limit: "100kb" }));
 app.use(express.urlencoded({ limit: "100kb", extended: true }));
 app.use(cookieParser());
 
-// FIX: Only sanitize req.body, don't reassign read-only req.query/req.params
+app.use(setLanguage);
+
 app.use((req, res, next) => {
-    if (req.body) req.body = mongoSanitize(req.body);
+    req.body = mongoSanitize(req.body);
     next();
 });
 
-app.use(setLanguage);
+app.use(routes);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-app.use("/api/v1", routes);
 
 app.get("/health", async (req, res) => {
     const healthcheck = {

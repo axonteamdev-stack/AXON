@@ -109,10 +109,9 @@ userSchema.virtual("isPatient").get(function () {
     return this.role === ROLES.PATIENT;
 });
 
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) return
     this.password = await bcrypt.hash(this.password, 12);
-    next();
 });
 
 userSchema.pre(/^find/, function () {
@@ -127,4 +126,4 @@ userSchema.statics.findByEmail = function (email) {
     return this.findOne({ email: email.toLowerCase().trim() });
 };
 
-export default mongoose.model("User", userSchema);
+export default mongoose.models.User || mongoose.model("User", userSchema);

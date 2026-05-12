@@ -57,7 +57,7 @@ for (const d of tempSubs) {
 // Connect to DB and start server
 connectDB()
     .then(() => {
-        const PORT = process.env.PORT || 8000;
+        const PORT = process.env.PORT || 3000;
         const server = app.listen(PORT, () => {
             logger.info(`Server running on port ${PORT}`);
             logger.info(`API URL: ${process.env.APP_URL}`);

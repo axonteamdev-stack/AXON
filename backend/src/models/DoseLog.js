@@ -42,4 +42,4 @@ doseLogSchema.index({ patientId: 1, medicationId: 1, date: 1 });
 doseLogSchema.index({ patientId: 1, date: 1 });
 doseLogSchema.index({ status: 1, date: 1 });
 
-export default mongoose.model("DoseLog", doseLogSchema);
+export default mongoose.models.DoseLog || mongoose.model("DoseLog", doseLogSchema);

@@ -109,11 +109,10 @@ medicationSchema.virtual("isExpired").get(function () {
     return new Date() > this.endDate;
 });
 
-medicationSchema.pre("save", function (next) {
+medicationSchema.pre("save", function () {
     if (this.endDate <= this.startDate) {
-        return next(new Error("End date must be after start date"));
+        throw new Error("End date must be after start date");
     }
-    next();
 });
 
-export default mongoose.model("Medication", medicationSchema);
+export default mongoose.models.Medication || mongoose.model("Medication", medicationSchema);

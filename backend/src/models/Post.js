@@ -68,4 +68,4 @@ postSchema.pre(/^find/, function () {
     this.find({ isDeleted: { $ne: true } });
 });
 
-export default mongoose.model("Post", postSchema);
+export default mongoose.models.Post || mongoose.model("Post", postSchema);

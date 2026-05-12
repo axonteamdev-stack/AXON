@@ -42,4 +42,4 @@ commentSchema.pre(/^find/, function () {
     this.find({ isDeleted: { $ne: true } });
 });
 
-export default mongoose.model("Comment", commentSchema);
+export default mongoose.models.Comment || mongoose.model("Comment", commentSchema);
