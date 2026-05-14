@@ -16,10 +16,10 @@ export const signupDoctorSchema = z.object({
     gender: z.enum(["male", "female"]),
     password: z.string().min(6),
     specialization: z.string().min(2),
-    yearsExperience: z.number().min(0).optional(),
+    yearsExperience: z.coerce.number().min(0).optional(),
     medicalLicenseNumber: z.string().min(5),
     about: z.string().optional(),
-    price: z.number().min(0).optional(),
+    price: z.coerce.number().min(0).optional(),
 });
 
 export const loginSchema = z.object({
