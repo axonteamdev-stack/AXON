@@ -10,8 +10,8 @@ const ROLES = Object.freeze({
 });
 
 const GENDER = Object.freeze({
-    MALE: "male",
-    FEMALE: "female",
+    MALE: "Male",
+    FEMALE: "Female",
 });
 
 const userSchema = new Schema(

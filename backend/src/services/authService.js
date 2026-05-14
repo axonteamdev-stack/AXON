@@ -55,9 +55,9 @@ export const authenticate = async (email, password) => {
         throw new AppError(msg("بيانات غير صحيحة", "Invalid credentials"), 401);
     }
 
-    if (user.role === "doctor" && !user.isVerified) {
-        throw new AppError(msg("حسابك قيد المراجعة", "Pending approval"), 403);
-    }
+    // if (user.role === "doctor" && !user.isVerified) {
+    //     throw new AppError(msg("حسابك قيد المراجعة", "Pending approval"), 403);
+    // }
 
     user.lastLoginAt = new Date();
     await user.save({ validateBeforeSave: false });

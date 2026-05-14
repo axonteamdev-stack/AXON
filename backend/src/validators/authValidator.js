@@ -4,7 +4,7 @@ export const signupPatientSchema = z.object({
     fullName: z.string().min(3).max(50),
     email: z.string().email(),
     phoneNumber: z.string().min(10),
-    gender: z.enum(["male", "female"]),
+    gender: z.enum(["Male", "Female"]),
     password: z.string().min(6),
     preferredLanguage: z.enum(["en", "ar"]).optional(),
 });
@@ -13,7 +13,7 @@ export const signupDoctorSchema = z.object({
     fullName: z.string().min(3).max(50),
     email: z.string().email(),
     phoneNumber: z.string().min(10),
-    gender: z.enum(["male", "female"]),
+    gender: z.enum(["Male", "Female"]),
     password: z.string().min(6),
     specialization: z.string().min(2),
     yearsExperience: z.coerce.number().min(0).optional(),
