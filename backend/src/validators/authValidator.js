@@ -17,7 +17,7 @@ export const signupDoctorSchema = z.object({
     password: z.string().min(6),
     specialization: z.string().min(2),
     yearsExperience: z.coerce.number().min(0).optional(),
-    medicalLicenseNumber: z.string().min(5),
+    medicalLicenseNumber: z.string().min(5),  // ✅ REQUIRED — no .optional()
     about: z.string().optional(),
     price: z.coerce.number().min(0).optional(),
 });
