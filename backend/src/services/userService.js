@@ -5,6 +5,11 @@ import { msg } from "../utils/i18n.js";
 
 const MAX_SEARCH_LIMIT = 50;
 
+const escapeRegex = (string) => {
+    if (!string) return "";
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
 const buildPagination = (page, limit) => ({
     skip: (page - 1) * limit,
     limit: Math.min(limit, MAX_SEARCH_LIMIT),
@@ -56,11 +61,12 @@ export const searchDoctors = async (
     const query = { role: "doctor", isVerified: true };
 
     if (keyword) {
+        const safeKeyword = escapeRegex(keyword);
         query.$or = [
-            { fullName: { $regex: keyword, $options: "i" } },
+            { fullName: { $regex: safeKeyword, $options: "i" } },
             {
                 "doctorProfile.specialization": {
-                    $regex: keyword,
+                    $regex: safeKeyword,
                     $options: "i",
                 },
             },
@@ -68,8 +74,9 @@ export const searchDoctors = async (
     }
 
     if (specialization) {
+        const safeSpecialization = escapeRegex(specialization);
         query["doctorProfile.specialization"] = {
-            $regex: specialization,
+            $regex: safeSpecialization,
             $options: "i",
         };
     }

@@ -1,6 +1,6 @@
 export const transformUserResponse = (user) => {
   const base = {
-    _id: user._id,
+    id: user._id?.toString(),
     fullName: user.fullName,
     email: user.email,
     phoneNumber: user.phoneNumber,
@@ -9,13 +9,13 @@ export const transformUserResponse = (user) => {
     role: user.role,
     isVerified: user.isVerified,
     createdAt: user.createdAt,
+    updatedAt: user.updatedAt, // ✅ Added missing field
+    preferredLanguage: user.preferredLanguage,
   };
 
   if (user.role === "patient") {
     return {
       ...base,
-      preferredLanguage: user.preferredLanguage,
-      // No doctorProfile
     };
   }
 
@@ -23,9 +23,8 @@ export const transformUserResponse = (user) => {
     return {
       ...base,
       doctorProfile: user.doctorProfile,
-      // No preferredLanguage
     };
   }
 
-  return base; // admin or other roles
+  return base;
 };

@@ -113,7 +113,8 @@ export const sendResetCode = async (email) => {
   user.passwordResetExpires = Date.now() + RESET_TOKEN_EXPIRY;
   await user.save({ validateBeforeSave: false });
 
-  console.log(`Reset code for ${user.email}: ${resetToken}`);
+  // TODO: Send actual email instead of logging
+  // await sendEmail(user.email, 'Password Reset', `Your code: ${resetToken}`);
 
   return true;
 };

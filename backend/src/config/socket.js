@@ -1,56 +1,59 @@
 import { Server } from "socket.io";
 import { socketAuth } from "../middlewares/socketAuth.js";
+import { logger } from "./logger.js";
 
 let io;
 
 export const getIO = () => {
-    if (!io)
-        throw new Error("Socket.io not initialized. Call initSocket first.");
-    return io;
+  if (!io) throw new Error("Socket.io not initialized. Call initSocket first.");
+  return io;
 };
 
-export const initSocket = (server) => {  // <-- ADD export HERE
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
-        "http://localhost:3000",
-    ];
+export const initSocket = (server) => {
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+    : ["http://localhost:3000"];
 
-    io = new Server(server, {
-        cors: {
-            origin: (origin, callback) => {
-                if (!origin || allowedOrigins.includes(origin)) {
-                    callback(null, true);
-                } else {
-                    callback(new Error("Origin not allowed"));
-                }
-            },
-            methods: ["GET", "POST"],
-            credentials: true,
-        },
+  io = new Server(server, {
+    cors: {
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Origin not allowed"));
+        }
+      },
+      methods: ["GET", "POST"],
+      credentials: true,
+    },
+  });
+
+  io.use(socketAuth);
+
+  io.on("connection", (socket) => {
+    logger.info(
+      { socketId: socket.id, userId: socket.user?.id },
+      "User connected",
+    );
+
+    socket.on("joinConversation", (conversationId) => {
+      if (!conversationId || typeof conversationId !== "string") {
+        socket.emit("error", { message: "Invalid conversation ID" });
+        return;
+      }
+      socket.join(conversationId);
+      logger.info({ socketId: socket.id, conversationId }, "User joined room");
     });
 
-    io.use(socketAuth);
-
-    io.on("connection", (socket) => {
-        console.log("📡 User connected:", socket.id);
-
-        socket.on("joinConversation", (conversationId) => {
-            if (!conversationId || typeof conversationId !== "string") {
-                socket.emit("error", { message: "Invalid conversation ID" });
-                return;
-            }
-            socket.join(conversationId);
-            console.log(`User ${socket.id} joined room: ${conversationId}`);
-        });
-
-        socket.on("disconnect", (reason) => {
-            console.log("📡 User disconnected:", socket.id, reason);
-        });
+    socket.on("disconnect", (reason) => {
+      logger.info({ socketId: socket.id, reason }, "User disconnected");
     });
+  });
 
-    return io;
+  return io;
 };
 
 export const emitToRoom = (room, event, data) => {
-    const ioInstance = getIO();
-    ioInstance.to(room).emit(event, data);
+  const ioInstance = getIO();
+  ioInstance.to(room).emit(event, data);
 };
