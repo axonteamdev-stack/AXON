@@ -43,8 +43,34 @@ export const getById = catchAsync(async (req, res) => {
   );
 });
 
-export const create = catchAsync(async (req, res) => {
-  const data = { ...req.body };
+// ── Articles: Doctors only ─────────────────
+export const createArticle = catchAsync(async (req, res) => {
+  const data = { ...req.body, type: "article" };
+  const imageFile = req.files?.postImage?.[0];
+
+  try {
+    if (imageFile) {
+      const { url } = moveFromTemp(imageFile.filename, "postImage");
+      data.image = url;
+    }
+
+    const post = await PostService.create(req.user.id, data);
+    sendLocalizedResponse(
+      res,
+      201,
+      msg("تم إنشاء المقال", "Article created"),
+      { post },
+      req.lang,
+    );
+  } catch (err) {
+    cleanupTemp(req.files);
+    throw err;
+  }
+});
+
+// ── Community posts: Patients only ─────────
+export const createCommunityPost = catchAsync(async (req, res) => {
+  const data = { ...req.body, type: "community" };
   const imageFile = req.files?.postImage?.[0];
 
   try {
@@ -58,9 +84,7 @@ export const create = catchAsync(async (req, res) => {
       res,
       201,
       msg("تم إنشاء المنشور", "Post created"),
-      {
-        post,
-      },
+      { post },
       req.lang,
     );
   } catch (err) {
@@ -91,6 +115,7 @@ export const remove = catchAsync(async (req, res) => {
   );
 });
 
+// ── Like: Patients only ────────────────────
 export const toggleLike = catchAsync(async (req, res) => {
   const result = await PostService.toggleLike(req.params.id, req.user.id);
   sendLocalizedResponse(
@@ -104,6 +129,7 @@ export const toggleLike = catchAsync(async (req, res) => {
   );
 });
 
+// ── Comments: Patients only, community posts only ──
 export const addComment = catchAsync(async (req, res) => {
   const comment = await PostService.addComment(
     req.params.id,
@@ -114,9 +140,7 @@ export const addComment = catchAsync(async (req, res) => {
     res,
     201,
     msg("تم إضافة التعليق", "Comment added"),
-    {
-      comment,
-    },
+    { comment },
     req.lang,
   );
 });

@@ -10,7 +10,7 @@ import { z } from "zod";
 
 const router = Router();
 
-// Public routes
+// ── Public routes ──────────────────────────
 router.get("/", postController.getAll);
 router.get(
   "/doctor/:doctorId",
@@ -20,13 +20,15 @@ router.get(
 router.get("/:id", validateObjectId("id"), postController.getById);
 router.get("/:id/comments", validateObjectId("id"), postController.getComments);
 
-// Protected routes
+// ── Protected routes ───────────────────────
 router.use(protect);
 
+// Articles — Doctors only
 router.post(
-  "/",
+  "/articles",
   restrictTo("doctor"),
   uploadMiddleware.post,
+  parseForm,
   validateBody(
     z.object({
       title: z.string().min(5).max(200),
@@ -36,24 +38,42 @@ router.post(
       tags: z.array(z.string()).optional(),
     }),
   ),
-  postController.create,
+  postController.createArticle,
 );
 
-router.patch(
-  "/:id",
-  restrictTo("doctor"),
-  validateObjectId("id"),
-  postController.update,
+// Community posts — Patients only
+router.post(
+  "/community",
+  restrictTo("patient"),
+  uploadMiddleware.post,
+  parseForm,
+  validateBody(
+    z.object({
+      title: z.string().min(5).max(200),
+      content: z.string().min(10),
+      image: z.string().optional(),
+      tags: z.array(z.string()).optional(),
+    }),
+  ),
+  postController.createCommunityPost,
 );
-router.delete(
-  "/:id",
-  restrictTo("doctor"),
+
+// Update / Delete — owner only (enforced in service)
+router.patch("/:id", validateObjectId("id"), postController.update);
+router.delete("/:id", validateObjectId("id"), postController.remove);
+
+// Like / Reaction — Patients only (for both articles & community posts)
+router.post(
+  "/:id/like",
+  restrictTo("patient"),
   validateObjectId("id"),
-  postController.remove,
+  postController.toggleLike,
 );
-router.post("/:id/like", validateObjectId("id"), postController.toggleLike);
+
+// Comments — Patients only, and only on community posts (enforced in service)
 router.post(
   "/:id/comments",
+  restrictTo("patient"),
   validateObjectId("id"),
   parseForm,
   validateBody(

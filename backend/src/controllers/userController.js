@@ -51,9 +51,7 @@ export const getProfile = catchAsync(async (req, res) => {
     res,
     200,
     msg("تم جلب الملف الشخصي", "Profile fetched"),
-    {
-      user,
-    },
+    { user },
     req.lang,
   );
 });
@@ -73,9 +71,7 @@ export const updateProfile = catchAsync(async (req, res) => {
       res,
       200,
       msg("تم تحديث الملف الشخصي", "Profile updated"),
-      {
-        user: updatedUser,
-      },
+      { user: updatedUser },
       req.lang,
     );
   } catch (err) {
@@ -84,47 +80,5 @@ export const updateProfile = catchAsync(async (req, res) => {
   }
 });
 
-export const toggleFollow = catchAsync(async (req, res) => {
-  const result = await UserService.toggleFollow(req.user.id, req.params.id);
-  sendLocalizedResponse(
-    res,
-    200,
-    result.followed
-      ? msg("تم المتابعة", "Followed")
-      : msg("تم إلغاء المتابعة", "Unfollowed"),
-    result,
-    req.lang,
-  );
-});
-
-export const getFollowing = catchAsync(async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
-  const result = await UserService.getFollowing(
-    req.user.id,
-    Number(page),
-    Number(limit),
-  );
-  sendLocalizedResponse(
-    res,
-    200,
-    msg("تم جلب قائمة المتابعة", "Following list fetched"),
-    result,
-    req.lang,
-  );
-});
-
-export const getFollowers = catchAsync(async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
-  const result = await UserService.getFollowers(
-    req.user.id,
-    Number(page),
-    Number(limit),
-  );
-  sendLocalizedResponse(
-    res,
-    200,
-    msg("تم جلب قائمة المتابعين", "Followers list fetched"),
-    result,
-    req.lang,
-  );
-});
+// ❌ Follow controllers REMOVED — no follow system for any users
+    

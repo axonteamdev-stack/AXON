@@ -1,201 +1,210 @@
 import Post from "../models/Post.js";
 import Like from "../models/Like.js";
 import Comment from "../models/Comment.js";
+import User from "../models/User.js";
 import AppError from "../utils/AppError.js";
-import { msg } from "../utils/i18n.js";
 
-const DEFAULT_LIMIT = 10;
-const MAX_LIMIT = 50;
-
-const buildPagination = (page, limit) => ({
-    skip: (page - 1) * limit,
-    limit: Math.min(limit, MAX_LIMIT),
-});
-
-export const getAll = async (page = 1, limit = DEFAULT_LIMIT) => {
-    const { skip, limit: clampedLimit } = buildPagination(page, limit);
-
-    const [posts, total] = await Promise.all([
-        Post.find({ status: "published" })
-            .populate("author", "fullName personalPhoto")
-            .sort("-createdAt")
-            .skip(skip)
-            .limit(clampedLimit)
-            .lean(),
-        Post.countDocuments({ status: "published" }),
-    ]);
-
-    // Add like counts
-    const postsWithCounts = await Promise.all(
-        posts.map(async (post) => {
-            const [likeCount, commentCount] = await Promise.all([
-                Like.countDocuments({ post: post._id }),
-                Comment.countDocuments({ post: post._id }),
-            ]);
-            return { ...post, likeCount, commentCount };
-        }),
-    );
-
-    return {
-        data: postsWithCounts,
-        pagination: {
-            current: page,
-            limit: clampedLimit,
-            total,
-            pages: Math.ceil(total / clampedLimit),
-        },
-    };
+// ── Helpers ────────────────────────────────
+const checkPostExists = async (postId) => {
+  const post = await Post.findById(postId);
+  if (!post) throw new AppError("Post not found", 404);
+  return post;
 };
 
-export const getByDoctor = async (
-    doctorId,
-    page = 1,
-    limit = DEFAULT_LIMIT,
-) => {
-    const { skip, limit: clampedLimit } = buildPagination(page, limit);
+const checkOwnership = (post, userId) => {
+  if (post.author.toString() !== userId.toString()) {
+    throw new AppError("You can only manage your own posts", 403);
+  }
+};
 
-    const [posts, total] = await Promise.all([
-        Post.find({ author: doctorId, status: "published" })
-            .sort("-createdAt")
-            .skip(skip)
-            .limit(clampedLimit)
-            .lean(),
-        Post.countDocuments({ author: doctorId, status: "published" }),
-    ]);
+// ── Read operations ────────────────────────
+export const getAll = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
 
-    return {
-        data: posts,
-        pagination: {
-            current: page,
-            limit: clampedLimit,
-            total,
-            pages: Math.ceil(total / clampedLimit),
-        },
-    };
+  const [posts, total] = await Promise.all([
+    Post.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate(
+        "author",
+        "fullName personalPhoto role doctorProfile.specialization",
+      )
+      .lean(),
+    Post.countDocuments(),
+  ]);
+
+  return {
+    posts,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  };
+};
+
+export const getByDoctor = async (doctorId, page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [posts, total] = await Promise.all([
+    Post.find({ author: doctorId, type: "article" })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("author", "fullName personalPhoto doctorProfile.specialization")
+      .lean(),
+    Post.countDocuments({ author: doctorId, type: "article" }),
+  ]);
+
+  return {
+    posts,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  };
 };
 
 export const getById = async (postId, userId = null) => {
-    const post = await Post.findById(postId)
-        .populate("author", "fullName personalPhoto role")
-        .lean();
+  const post = await Post.findById(postId)
+    .populate(
+      "author",
+      "fullName personalPhoto role doctorProfile.specialization",
+    )
+    .lean();
 
-    if (!post) {
-        throw new AppError(msg("المنشور غير موجود", "Post not found"), 404);
-    }
+  if (!post) throw new AppError("Post not found", 404);
 
-    const [likeCount, commentCount, isLiked] = await Promise.all([
-        Like.countDocuments({ post: postId }),
-        Comment.countDocuments({ post: postId }),
-        userId ? Like.exists({ post: postId, user: userId }) : false,
-    ]);
+  // Increment views
+  await Post.findByIdAndUpdate(postId, { $inc: { views: 1 } });
+  post.views += 1;
 
-    return { ...post, likeCount, commentCount, isLiked: !!isLiked };
+  // Check if current user liked it
+  if (userId) {
+    const like = await Like.findOne({ user: userId, post: postId }).lean();
+    post.isLiked = !!like;
+  }
+
+  // Get like count
+  post.likesCount = await Like.countDocuments({ post: postId });
+
+  // Get comments count (only for community posts)
+  if (post.type === "community") {
+    post.commentsCount = await Comment.countDocuments({ post: postId });
+  } else {
+    post.commentsCount = 0;
+  }
+
+  return post;
 };
 
-export const create = async (userId, postData) => {
-    const post = await Post.create({
-        author: userId,
-        ...postData,
-    });
+// ── Create ─────────────────────────────────
+export const create = async (userId, data) => {
+  const post = await Post.create({
+    ...data,
+    author: userId,
+  });
 
-    await post.populate("author", "fullName personalPhoto role");
-    return post;
+  return post.populate(
+    "author",
+    "fullName personalPhoto role doctorProfile.specialization",
+  );
 };
 
-export const update = async (postId, userId, updateData) => {
-    const post = await Post.findOne({ _id: postId, author: userId });
-    if (!post) {
-        throw new AppError(
-            msg(
-                "المنشور غير موجود أو ليس لديك صلاحية",
-                "Post not found or unauthorized",
-            ),
-            404,
-        );
-    }
+// ── Update ─────────────────────────────────
+export const update = async (postId, userId, data) => {
+  const post = await checkPostExists(postId);
+  checkOwnership(post, userId);
 
-    const allowedFields = [
-        "title",
-        "content",
-        "image",
-        "category",
-        "tags",
-        "status",
-    ];
-    allowedFields.forEach((field) => {
-        if (updateData[field] !== undefined) post[field] = updateData[field];
-    });
+  const updated = await Post.findByIdAndUpdate(
+    postId,
+    { $set: data },
+    { new: true, runValidators: true },
+  ).populate(
+    "author",
+    "fullName personalPhoto role doctorProfile.specialization",
+  );
 
-    await post.save();
-    return post;
+  return updated;
 };
 
+// ── Delete ─────────────────────────────────
 export const remove = async (postId, userId) => {
-    const post = await Post.findOne({ _id: postId, author: userId });
-    if (!post) {
-        throw new AppError(
-            msg(
-                "المنشور غير موجود أو ليس لديك صلاحية",
-                "Post not found or unauthorized",
-            ),
-            404,
-        );
-    }
+  const post = await checkPostExists(postId);
+  checkOwnership(post, userId);
 
-    post.isDeleted = true;
-    await post.save();
+  // Soft delete
+  await Post.findByIdAndUpdate(postId, { isDeleted: true });
 
-    return true;
+  // Clean up likes and comments
+  await Like.deleteMany({ post: postId });
+  await Comment.updateMany({ post: postId }, { isDeleted: true });
 };
 
+// ── Like / Reaction ────────────────────────
 export const toggleLike = async (postId, userId) => {
-    const existing = await Like.findOne({ post: postId, user: userId });
+  await checkPostExists(postId);
 
-    if (existing) {
-        await Like.deleteOne({ _id: existing._id });
-        return { liked: false };
-    }
+  const existing = await Like.findOne({ user: userId, post: postId });
 
-    await Like.create({ post: postId, user: userId });
-    return { liked: true };
+  if (existing) {
+    await Like.deleteOne({ _id: existing._id });
+    return { liked: false };
+  }
+
+  await Like.create({ user: userId, post: postId });
+  return { liked: true };
 };
 
+// ── Comments ───────────────────────────────
 export const addComment = async (postId, userId, content) => {
-    const post = await Post.findById(postId);
-    if (!post) {
-        throw new AppError(msg("المنشور غير موجود", "Post not found"), 404);
-    }
+  const post = await checkPostExists(postId);
 
-    const comment = await Comment.create({
-        post: postId,
-        author: userId,
-        content,
-    });
+  // ❌ Articles cannot have comments — reactions only
+  if (post.type === "article") {
+    throw new AppError("Comments are not allowed on articles", 403);
+  }
 
-    await comment.populate("author", "fullName personalPhoto");
-    return comment;
+  const comment = await Comment.create({
+    post: postId,
+    author: userId,
+    content,
+  });
+
+  return comment.populate("author", "fullName personalPhoto");
 };
 
-export const getComments = async (postId, page = 1, limit = DEFAULT_LIMIT) => {
-    const { skip, limit: clampedLimit } = buildPagination(page, limit);
+export const getComments = async (postId, page = 1, limit = 10) => {
+  const post = await checkPostExists(postId);
 
-    const [comments, total] = await Promise.all([
-        Comment.find({ post: postId })
-            .populate("author", "fullName personalPhoto")
-            .sort("-createdAt")
-            .skip(skip)
-            .limit(clampedLimit)
-            .lean(),
-        Comment.countDocuments({ post: postId }),
-    ]);
+  // Articles have no comments
+  if (post.type === "article") {
+    return { comments: [], pagination: { page, limit, total: 0, pages: 0 } };
+  }
 
-    return {
-        data: comments,
-        pagination: {
-            current: page,
-            limit: clampedLimit,
-            total,
-            pages: Math.ceil(total / clampedLimit),
-        },
-    };
+  const skip = (page - 1) * limit;
+
+  const [comments, total] = await Promise.all([
+    Comment.find({ post: postId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("author", "fullName personalPhoto")
+      .lean(),
+    Comment.countDocuments({ post: postId }),
+  ]);
+
+  return {
+    comments,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  };
 };
