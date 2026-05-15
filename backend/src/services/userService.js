@@ -1,5 +1,12 @@
 import User from "../models/User.js";
+import MedicalRecord from "../models/MedicalRecord.js";
+import Medication from "../models/Medication.js";
+import Appointment from "../models/Appointment.js";
+import Post from "../models/Post.js";
+import Like from "../models/Like.js";
+import Comment from "../models/Comment.js";
 import AppError from "../utils/AppError.js";
+import { transformUserResponse } from "../utils/transformers.js";
 
 // ── Doctors ────────────────────────────────
 export const getAllDoctors = async (page = 1, limit = 10) => {
@@ -16,7 +23,7 @@ export const getAllDoctors = async (page = 1, limit = 10) => {
   ]);
 
   return {
-    doctors,
+    doctors: doctors.map(transformUserResponse),
     pagination: {
       page,
       limit,
@@ -37,7 +44,7 @@ export const getDoctorDetails = async (doctorId) => {
 
   if (!doctor) throw new AppError("Doctor not found", 404);
 
-  return doctor;
+  return transformUserResponse(doctor);
 };
 
 export const searchDoctors = async (
@@ -71,7 +78,7 @@ export const searchDoctors = async (
   ]);
 
   return {
-    doctors,
+    doctors: doctors.map(transformUserResponse),
     pagination: {
       page,
       limit,
@@ -89,7 +96,118 @@ export const getUserProfile = async (userId) => {
 
   if (!user) throw new AppError("User not found", 404);
 
-  return user;
+  return transformUserResponse(user);
+};
+
+// ── Full Profile with all related data ─────
+export const getFullUserProfile = async (userId) => {
+  const user = await User.findById(userId)
+    .select("-password -passwordResetToken -passwordResetExpires")
+    .lean();
+
+  if (!user) throw new AppError("User not found", 404);
+
+  const isPatient = user.role === "patient";
+  const isDoctor = user.role === "doctor";
+
+  // Common data for all users
+  const [postsCount, likesCount, commentsCount] = await Promise.all([
+    Post.countDocuments({ author: userId, isDeleted: { $ne: true } }),
+    Like.countDocuments({ user: userId }),
+    Comment.countDocuments({ author: userId, isDeleted: { $ne: true } }),
+  ]);
+
+  const result = {
+    ...transformUserResponse(user),
+    stats: {
+      postsCount,
+      likesCount,
+      commentsCount,
+    },
+  };
+
+  // Patient-specific data
+  if (isPatient) {
+    const [
+      medicalRecord,
+      medications,
+      appointments,
+      upcomingAppointments,
+      pendingAppointments,
+    ] = await Promise.all([
+      MedicalRecord.findOne({ patientId: userId }).lean(),
+      Medication.find({ patientId: userId, isActive: true })
+        .sort({ createdAt: -1 })
+        .lean(),
+      Appointment.find({ patient: userId })
+        .populate(
+          "doctor",
+          "fullName personalPhoto doctorProfile.specialization",
+        )
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .lean(),
+      Appointment.countDocuments({
+        patient: userId,
+        status: { $in: ["pending", "accepted"] },
+        scheduledAt: { $gte: new Date() },
+      }),
+      Appointment.countDocuments({
+        patient: userId,
+        status: "pending",
+      }),
+    ]);
+
+    result.medicalRecord = medicalRecord;
+    result.medications = medications;
+    result.appointments = appointments;
+    result.stats.upcomingAppointments = upcomingAppointments;
+    result.stats.pendingAppointments = pendingAppointments;
+  }
+
+  // Doctor-specific data
+  if (isDoctor) {
+    const [
+      articles,
+      articlesCount,
+      totalViews,
+      doctorAppointments,
+      pendingRequests,
+      completedAppointments,
+    ] = await Promise.all([
+      Post.find({ author: userId, type: "article", isDeleted: { $ne: true } })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .lean(),
+      Post.countDocuments({
+        author: userId,
+        type: "article",
+        isDeleted: { $ne: true },
+      }),
+      Post.aggregate([
+        {
+          $match: { author: userId, type: "article", isDeleted: { $ne: true } },
+        },
+        { $group: { _id: null, totalViews: { $sum: "$views" } } },
+      ]),
+      Appointment.find({ doctor: userId })
+        .populate("patient", "fullName personalPhoto")
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .lean(),
+      Appointment.countDocuments({ doctor: userId, status: "pending" }),
+      Appointment.countDocuments({ doctor: userId, status: "completed" }),
+    ]);
+
+    result.articles = articles;
+    result.stats.articlesCount = articlesCount;
+    result.stats.totalViews = totalViews[0]?.totalViews || 0;
+    result.appointments = doctorAppointments;
+    result.stats.pendingRequests = pendingRequests;
+    result.stats.completedAppointments = completedAppointments;
+  }
+
+  return result;
 };
 
 export const updateProfile = async (userId, data) => {
@@ -101,7 +219,7 @@ export const updateProfile = async (userId, data) => {
 
   if (!user) throw new AppError("User not found", 404);
 
-  return user;
+  return transformUserResponse(user);
 };
 
 // ❌ Follow services REMOVED — no follow system for any users

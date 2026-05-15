@@ -1,0 +1,1692 @@
+{
+  "info": {
+    "_postman_id": "axon-medical-api-v1",
+    "name": "AXON Medical API - Full Test Suite",
+    "description": "Complete test collection for AXON Medical Platform Backend API. Import with AXON-Local.postman_environment.json for variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Signup Patient - JSON",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signup/patient",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"patient@example.com\",\n  \"phoneNumber\": \"+1234567890\",\n  \"gender\": \"Male\",\n  \"password\": \"password123\",\n  \"preferredLanguage\": \"en\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Success true\", () => pm.expect(pm.response.json().success).to.be.true);",
+                  "pm.test(\"No password leak\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.data.user).to.not.have.property('password');",
+                  "});",
+                  "pm.test(\"Has tokens\", () => {",
+                  "  const tokens = pm.response.json().data.tokens;",
+                  "  pm.expect(tokens).to.have.property('accessToken');",
+                  "  pm.expect(tokens).to.have.property('refreshToken');",
+                  "});",
+                  "pm.environment.set(\"accessToken\", pm.response.json().data.tokens.accessToken);",
+                  "pm.environment.set(\"refreshToken\", pm.response.json().data.tokens.refreshToken);",
+                  "pm.environment.set(\"userId\", pm.response.json().data.user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Signup Patient - Form Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "ar"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signup/patient",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "fullName",
+                  "value": "Jane Doe",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "patient2@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "phoneNumber",
+                  "value": "+1234567891",
+                  "type": "text"
+                },
+                {
+                  "key": "gender",
+                  "value": "Female",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "password123",
+                  "type": "text"
+                },
+                {
+                  "key": "preferredLanguage",
+                  "value": "ar",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Arabic message\", () => {",
+                  "  pm.expect(pm.response.json().message).to.include('التسجيل');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Signup Doctor - With Files",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/signup/doctor",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "fullName",
+                  "value": "Dr. Smith",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "doctor@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "phoneNumber",
+                  "value": "+1234567892",
+                  "type": "text"
+                },
+                {
+                  "key": "gender",
+                  "value": "Male",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "password123",
+                  "type": "text"
+                },
+                {
+                  "key": "specialization",
+                  "value": "Cardiology",
+                  "type": "text"
+                },
+                {
+                  "key": "medicalLicenseNumber",
+                  "value": "LIC123456",
+                  "type": "text"
+                },
+                {
+                  "key": "yearsExperience",
+                  "value": "10",
+                  "type": "text"
+                },
+                {
+                  "key": "about",
+                  "value": "Experienced cardiologist",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "200",
+                  "type": "text"
+                },
+                {
+                  "key": "licenseImage",
+                  "type": "file",
+                  "src": "/path/to/license.jpg"
+                },
+                {
+                  "key": "personalPhoto",
+                  "type": "file",
+                  "src": "/path/to/photo.jpg"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Doctor role\", () => {",
+                  "  pm.expect(pm.response.json().data.user.role).to.eql('doctor');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - JSON",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"patient@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"English message\", () => {",
+                  "  pm.expect(pm.response.json().message).to.eql('Login successful');",
+                  "});",
+                  "pm.environment.set(\"accessToken\", pm.response.json().data.tokens.accessToken);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - Form Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "patient@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "password123",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Has tokens\", () => {",
+                  "  pm.expect(pm.response.json().data.tokens).to.have.property('accessToken');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - Invalid Credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"wrong@example.com\",\n  \"password\": \"wrongpassword\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Single message only\", () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('message');",
+                  "  pm.expect(json).to.not.have.property('messages');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rate Limit - After 5 Attempts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"wrong\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Rate limited or unauthorized\", () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 429]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/forgot-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"patient@example.com\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/reset-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"123456\",\n  \"password\": \"newpassword123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 or 400\", () => pm.expect(pm.response.code).to.be.oneOf([200, 400]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/refresh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 or 401\", () => pm.expect(pm.response.code).to.be.oneOf([200, 401]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/logout"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 Users",
+      "item": [
+        {
+          "name": "Get All Doctors",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/doctors?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "doctors"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Has pagination\", () => {",
+                  "  pm.expect(pm.response.json().data).to.have.property('pagination');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Doctors",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/doctors/search?keyword=cardio&specialization=Cardiology&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "doctors", "search"],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "cardio"
+                },
+                {
+                  "key": "specialization",
+                  "value": "Cardiology"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Has data array\", () => {",
+                  "  pm.expect(pm.response.json().data.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Doctor Details",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/doctors/{{doctorId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 or 404\", () => pm.expect(pm.response.code).to.be.oneOf([200, 404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/users/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Has user\", () => {",
+                  "  pm.expect(pm.response.json().data).to.have.property('user');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "url": "{{baseUrl}}/users/me",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "fullName",
+                  "value": "Updated Name",
+                  "type": "text"
+                },
+                {
+                  "key": "personalPhoto",
+                  "type": "file",
+                  "src": "/path/to/photo.jpg"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📅 Appointments",
+      "item": [
+        {
+          "name": "Create Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/appointments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctorId\": \"{{doctorId}}\",\n  \"scheduledAt\": \"2026-05-20T10:00:00Z\",\n  \"notes\": \"Regular checkup\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.environment.set(\"appointmentId\", pm.response.json().data.appointment._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Appointments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/appointments/my"
+          }
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/appointments/{{appointmentId}}/cancel"
+          }
+        },
+        {
+          "name": "Get Pending Requests (Doctor)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/appointments/pending"
+          }
+        },
+        {
+          "name": "Get Doctor History (Doctor)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/appointments/history"
+          }
+        },
+        {
+          "name": "Update Status (Doctor)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/appointments/{{appointmentId}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💊 Medications",
+      "item": [
+        {
+          "name": "Create Medication",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/medications",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medicineName\": \"Amoxicillin\",\n  \"dosage\": { \"value\": 500, \"unit\": \"mg\" },\n  \"frequency\": \"3 times daily\",\n  \"intakeTimes\": [\"08:00\", \"14:00\", \"20:00\"],\n  \"startDate\": \"2026-05-15T00:00:00Z\",\n  \"endDate\": \"2026-05-25T00:00:00Z\",\n  \"indication\": \"Infection\",\n  \"notes\": \"Take with food\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.environment.set(\"medicationId\", pm.response.json().data.medication._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Medications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/medications"
+          }
+        },
+        {
+          "name": "Get Pending Doses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/medications/pending-doses"
+          }
+        },
+        {
+          "name": "Get Medication By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/medications/{{medicationId}}"
+          }
+        },
+        {
+          "name": "Update Medication",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/medications/{{medicationId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Updated notes\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Medication",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/medications/{{medicationId}}"
+          }
+        },
+        {
+          "name": "Mark Dose",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/medications/{{medicationId}}/doses",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"time\": \"08:00\",\n  \"status\": \"taken\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💬 Chat",
+      "item": [
+        {
+          "name": "Get My Conversations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/chat/conversations"
+          }
+        },
+        {
+          "name": "Start Conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/chat/conversations/{{appointmentId}}"
+          }
+        },
+        {
+          "name": "Get Messages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/chat/conversations/{{conversationId}}/messages"
+          }
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/chat/conversations/{{conversationId}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Hello doctor, I have a question\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📝 Posts",
+      "item": [
+        {
+          "name": "Get All Posts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Doctor Articles",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts/doctor/{{doctorId}}?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "doctor", "{{doctorId}}"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Post By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/posts/{{postId}}"
+          }
+        },
+        {
+          "name": "Get Post Comments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{postId}}/comments?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "{{postId}}", "comments"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Article (Doctor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/articles",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Heart Health Tips",
+                  "type": "text"
+                },
+                {
+                  "key": "content",
+                  "value": "Here are 5 tips for a healthy heart...",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "Cardiology",
+                  "type": "text"
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"heart\", \"health\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "postImage",
+                  "type": "file",
+                  "src": "/path/to/image.jpg"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Type is article', () => {",
+                  "  pm.expect(pm.response.json().data.post.type).to.eql('article');",
+                  "});",
+                  "pm.environment.set('articleId', pm.response.json().data.post._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Article (Doctor)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/{{articleId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Article Title\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Article (Doctor)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/{{articleId}}"
+          }
+        },
+        {
+          "name": "Create Community Post (Patient)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/community",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "My Health Journey",
+                  "type": "text"
+                },
+                {
+                  "key": "content",
+                  "value": "Sharing my experience with...",
+                  "type": "text"
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"experience\", \"health\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "postImage",
+                  "type": "file",
+                  "src": "/path/to/image.jpg"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Type is community', () => {",
+                  "  pm.expect(pm.response.json().data.post.type).to.eql('community');",
+                  "});",
+                  "pm.environment.set('communityPostId', pm.response.json().data.post._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Community Post (Patient)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/{{communityPostId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Updated content...\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Community Post (Patient)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/{{communityPostId}}"
+          }
+        },
+        {
+          "name": "Like Article (Patient)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/{{articleId}}/like"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has liked status', () => {",
+                  "  pm.expect(pm.response.json().data).to.have.property('liked');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Like Community Post (Patient)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/{{communityPostId}}/like"
+          }
+        },
+        {
+          "name": "Comment on Community Post (Patient)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/{{communityPostId}}/comments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Great post! Thanks for sharing.\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.environment.set('commentId', pm.response.json().data.comment._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "❌ Patient Create Article — Should Fail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/articles",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Unauthorized Article",
+                  "type": "text"
+                },
+                {
+                  "key": "content",
+                  "value": "This should fail...",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "❌ Doctor Create Community Post — Should Fail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/community",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Unauthorized Post",
+                  "type": "text"
+                },
+                {
+                  "key": "content",
+                  "value": "This should fail...",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "❌ Doctor Like Post — Should Fail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/{{articleId}}/like"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "❌ Comment on Article — Should Fail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/posts/{{articleId}}/comments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"This should fail...\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📋 Records",
+      "item": [
+        {
+          "name": "Get My Record",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/records/me"
+          }
+        },
+        {
+          "name": "Update Record",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/records/me",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bloodType\": \"A+\",\n  \"height\": 175,\n  \"weight\": 70,\n  \"conditions\": [\"Hypertension\"],\n  \"allergies\": [\"Penicillin\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Radiology Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "url": "{{baseUrl}}/records/tests/radiology",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "description",
+                  "value": "Chest X-Ray",
+                  "type": "text"
+                },
+                {
+                  "key": "radiologyImage",
+                  "type": "file",
+                  "src": "/path/to/xray.jpg"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Lab Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
+            "url": "{{baseUrl}}/records/tests/lab",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "description",
+                  "value": "Blood Test",
+                  "type": "text"
+                },
+                {
+                  "key": "labImage",
+                  "type": "file",
+                  "src": "/path/to/lab.jpg"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Generate QR Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/records/qr"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.environment.set(\"qrToken\", pm.response.json().data.qr.token);",
+                  "pm.environment.set(\"qrPin\", pm.response.json().data.qr.pin);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Access Record By QR",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/records/qr/access",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{qrToken}}\",\n  \"pin\": \"{{qrPin}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚕️ DDI (Doctor Only)",
+      "item": [
+        {
+          "name": "Check Drug Interactions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/ddi/check",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newMedicationName\": \"Warfarin\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Check Contraindications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/ddi/contraindications",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medicineName\": \"Aspirin\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔔 Notifications",
+      "item": [
+        {
+          "name": "Get My Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/notifications/unread-count"
+          }
+        },
+        {
+          "name": "Mark All As Read",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/notifications/read-all"
+          }
+        },
+        {
+          "name": "Mark As Read",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/notifications/{{notificationId}}/read"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏥 Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Database connected\", () => {",
+                  "  pm.expect(pm.response.json().services.database).to.eql('connected');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API Info",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/"
+          }
+        }
+      ]
+    }
+  ]
+}

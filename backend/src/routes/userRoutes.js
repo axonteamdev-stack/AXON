@@ -7,12 +7,12 @@ import uploadMiddleware from "../middlewares/upload.js";
 const router = Router();
 
 // Public routes
-router.get("/doctors/search", userController.searchDoctors);
 router.get(
   "/doctors/:id",
   validateObjectId("id"),
   userController.getDoctorDetails,
 );
+router.get("/doctors/search", userController.searchDoctors);
 router.get("/doctors", userController.getAllDoctors);
 
 // Protected routes

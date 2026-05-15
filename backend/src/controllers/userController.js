@@ -46,7 +46,7 @@ export const searchDoctors = catchAsync(async (req, res) => {
 });
 
 export const getProfile = catchAsync(async (req, res) => {
-  const user = await UserService.getUserProfile(req.user.id);
+  const user = await UserService.getFullUserProfile(req.user.id);
   sendLocalizedResponse(
     res,
     200,
@@ -81,4 +81,3 @@ export const updateProfile = catchAsync(async (req, res) => {
 });
 
 // ❌ Follow controllers REMOVED — no follow system for any users
-    
