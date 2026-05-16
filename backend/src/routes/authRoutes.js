@@ -2,8 +2,7 @@ import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import * as authController from "../controllers/authController.js";
 import { validateBody } from "../middlewares/validate.js";
-import { parseForm } from "../middlewares/parseForm.js";
-import uploadMiddleware from "../middlewares/upload.js";
+import { parseUniversal } from "../middlewares/parseUniversal.js";
 import {
   signupPatientSchema,
   signupDoctorSchema,
@@ -14,7 +13,6 @@ import {
 
 const router = Router();
 
-// Stricter limit for login (5 attempts per 15 min)
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
@@ -28,7 +26,6 @@ const loginLimiter = rateLimit({
   },
 });
 
-// General auth limit for signup/password reset (10 attempts per 15 min)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -42,12 +39,10 @@ const authLimiter = rateLimit({
   },
 });
 
-// ── All routes accept both JSON and form-data ──────────────────
-
 router.post(
   "/signup/patient",
   authLimiter,
-  parseForm,
+  parseUniversal(["personalPhoto", "radiologyImage", "labImage"]),
   validateBody(signupPatientSchema),
   authController.signupPatient,
 );
@@ -55,7 +50,7 @@ router.post(
 router.post(
   "/signup/doctor",
   authLimiter,
-  uploadMiddleware.doctor,
+  parseUniversal(["licenseImage", "personalPhoto"]),
   validateBody(signupDoctorSchema),
   authController.signupDoctor,
 );
@@ -63,7 +58,7 @@ router.post(
 router.post(
   "/login",
   loginLimiter,
-  parseForm,
+  parseUniversal(),
   validateBody(loginSchema),
   authController.login,
 );
@@ -75,7 +70,7 @@ router.post("/refresh", authController.refreshAccessToken);
 router.post(
   "/forgot-password",
   authLimiter,
-  parseForm,
+  parseUniversal(),
   validateBody(forgotPasswordSchema),
   authController.forgotPassword,
 );
@@ -83,7 +78,7 @@ router.post(
 router.post(
   "/reset-password",
   authLimiter,
-  parseForm,
+  parseUniversal(),
   validateBody(resetPasswordSchema),
   authController.resetPassword,
 );

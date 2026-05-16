@@ -1,5 +1,5 @@
 import User from "../models/User.js";
-import MedicalRecord from "../models/MedicalRecord.js";
+import Patient from "../models/Patient.js";
 import Medication from "../models/Medication.js";
 import Appointment from "../models/Appointment.js";
 import Post from "../models/Post.js";
@@ -110,7 +110,6 @@ export const getFullUserProfile = async (userId) => {
   const isPatient = user.role === "patient";
   const isDoctor = user.role === "doctor";
 
-  // Common data for all users
   const [postsCount, likesCount, commentsCount] = await Promise.all([
     Post.countDocuments({ author: userId, isDeleted: { $ne: true } }),
     Like.countDocuments({ user: userId }),
@@ -126,16 +125,15 @@ export const getFullUserProfile = async (userId) => {
     },
   };
 
-  // Patient-specific data
   if (isPatient) {
     const [
-      medicalRecord,
+      patientRecord,
       medications,
       appointments,
       upcomingAppointments,
       pendingAppointments,
     ] = await Promise.all([
-      MedicalRecord.findOne({ patientId: userId }).lean(),
+      Patient.findOne({ userId }).lean(),
       Medication.find({ patientId: userId, isActive: true })
         .sort({ createdAt: -1 })
         .lean(),
@@ -158,14 +156,13 @@ export const getFullUserProfile = async (userId) => {
       }),
     ]);
 
-    result.medicalRecord = medicalRecord;
+    result.patientRecord = patientRecord;
     result.medications = medications;
     result.appointments = appointments;
     result.stats.upcomingAppointments = upcomingAppointments;
     result.stats.pendingAppointments = pendingAppointments;
   }
 
-  // Doctor-specific data
   if (isDoctor) {
     const [
       articles,
@@ -221,5 +218,3 @@ export const updateProfile = async (userId, data) => {
 
   return transformUserResponse(user);
 };
-
-// ❌ Follow services REMOVED — no follow system for any users

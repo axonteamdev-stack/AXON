@@ -11,10 +11,13 @@ import {
 import { moveFromTemp, cleanupTemp } from "../middlewares/upload.js";
 import * as AuthService from "../services/authService.js";
 
+// authController.js — temporary debug
 export const signupPatient = catchAsync(async (req, res) => {
-  const user = await AuthService.registerPatient(req.body);
+  const { user, patient } = await AuthService.registerPatient(
+    req.body,
+    req.files || {},
+  );
   const tokens = generateTokens(res, user._id);
-
   const responseLang = req.body.preferredLanguage || req.lang;
 
   sendLocalizedResponse(
@@ -22,7 +25,8 @@ export const signupPatient = catchAsync(async (req, res) => {
     201,
     msg("تم التسجيل بنجاح", "Registration successful"),
     {
-      user: transformUserResponse(user),
+      user: transformUserResponse(user, patient),
+      hasCompletedOnboarding: !!patient,
       tokens,
     },
     responseLang,
@@ -95,18 +99,11 @@ export const logout = (req, res) => {
   );
 };
 
-// ── FULL TOKEN ROTATION: Both access + refresh tokens renewed ──
 export const refreshAccessToken = catchAsync(async (req, res) => {
   const token = req.cookies.refreshToken || req.body.refreshToken;
-
-  // Verify the old refresh token
   const decoded = verifyRefreshToken(token);
-
-  // ── ROTATE BOTH TOKENS ──────────────────────────────────────
-  // Clears old cookies, generates fresh accessToken + refreshToken
   const tokens = rotateTokens(res, decoded.id);
 
-  // Return both new tokens (for mobile/Flutter that reads body)
   sendLocalizedResponse(
     res,
     200,

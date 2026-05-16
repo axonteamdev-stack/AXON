@@ -1,4 +1,4 @@
-export const transformUserResponse = (user) => {
+export const transformUserResponse = (user, subclassDoc = null) => {
   const base = {
     id: user._id?.toString(),
     fullName: user.fullName,
@@ -8,21 +8,33 @@ export const transformUserResponse = (user) => {
     personalPhoto: user.personalPhoto,
     role: user.role,
     isVerified: user.isVerified,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt, // ✅ Added missing field
     preferredLanguage: user.preferredLanguage,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
   };
 
   if (user.role === "patient") {
     return {
       ...base,
+      hasCompletedOnboarding: !!subclassDoc,
+      profile: subclassDoc
+        ? {
+            bloodType: subclassDoc.bloodType,
+            height: subclassDoc.height,
+            weight: subclassDoc.weight,
+            conditions: subclassDoc.conditions,
+            allergies: subclassDoc.allergies,
+            emergencyContact: subclassDoc.emergencyContact,
+          }
+        : null,
     };
   }
 
   if (user.role === "doctor") {
     return {
       ...base,
-      doctorProfile: user.doctorProfile,
+      isVerified: user.isVerified,
+      doctorProfile: user.doctorProfile || null,
     };
   }
 

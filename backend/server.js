@@ -36,23 +36,6 @@ for (const d of dirs) {
   }
 }
 
-// Also create .temp subfolders
-const tempSubs = [
-  "certificates",
-  "personalPhoto",
-  "radiology",
-  "labTests",
-  "posts",
-  "articles", // ← NEW
-];
-for (const d of tempSubs) {
-  const fullPath = path.join(uploadDir, ".temp", d);
-  if (!fs.existsSync(fullPath)) {
-    fs.mkdirSync(fullPath, { recursive: true });
-    logger.info(`Created temp: ${fullPath}`);
-  }
-}
-
 // Connect to DB and start server
 connectDB()
   .then(() => {

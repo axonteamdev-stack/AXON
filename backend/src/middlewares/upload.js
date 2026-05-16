@@ -4,110 +4,81 @@ import fs from "fs";
 import crypto from "crypto";
 import { msg } from "../utils/i18n.js";
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || "./uploads";
-const MAX_FILE_SIZE =
-  (Number(process.env.MAX_FILE_SIZE_MB) || 10) * 1024 * 1024;
-const MAX_FILES = 10;
-
+const UPLOAD_DIR = "uploads";
 const TEMP_DIR = path.join(UPLOAD_DIR, ".temp");
 
-// ── field → final folder mapping ────────────────────────────────
+// Field name → Final folder mapping
 const FIELD_TO_FOLDER = {
   personalPhoto: "personalPhoto",
   licenseImage: "certificates",
+  postImage: "posts",
+  articleImage: "articles",
   radiologyImage: "radiology",
   labImage: "labTests",
-  postImage: "posts",
-  articleImage: "articles", // ← NEW: dedicated folder for articles
 };
 
+// Ensure directory exists
 const ensureDir = (dir) => {
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true, mode: 0o750 });
+    fs.mkdirSync(dir, { recursive: true });
   }
 };
 
-// ── ensure .temp mirrors the upload structure ───────────────────
-const ensureTempStructure = () => {
-  ensureDir(TEMP_DIR);
-  Object.values(FIELD_TO_FOLDER).forEach((folder) => {
-    ensureDir(path.join(TEMP_DIR, folder));
-  });
-};
+// Initialize temp directory (flat — no subfolders)
+ensureDir(TEMP_DIR);
 
-// ── storage: save to .temp first ────────────────────────────────
+// Flat temp storage — all files go directly to uploads/.temp/
 const storage = multer.diskStorage({
-  destination: (_req, file, cb) => {
-    ensureTempStructure();
-    const folder = FIELD_TO_FOLDER[file.fieldname];
-    if (!folder) {
-      return cb(
-        new Error(
-          msg("حقل ملف غير معروف", `Unknown file field: ${file.fieldname}`),
-        ),
-        null,
-      );
-    }
-    cb(null, path.join(TEMP_DIR, folder));
+  destination: (req, file, cb) => {
+    cb(null, TEMP_DIR); // ← Flat: all files in uploads/.temp/
   },
-  filename: (_req, file, cb) => {
+  filename: (req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}`;
-    const ext = path.extname(file.originalname).toLowerCase();
+    const ext = path.extname(file.originalname);
     cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
   },
 });
 
-// ── file filter: images only ────────────────────────────────────
+// File filter (images + PDFs)
 const fileFilter = (_req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) {
+  const allowedMimes = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+    "application/pdf",
+  ];
+  if (allowedMimes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    const error = new Error(
-      msg(
-        "نوع الملف غير مدعوم. يرجى رفع صور فقط.",
-        "Unsupported file type. Please upload images only.",
+    cb(
+      new Error(
+        msg(
+          "نوع الملف غير مدعوم. يسمح فقط بـ: JPEG, PNG, GIF, WebP, PDF",
+          "Unsupported file type. Only: JPEG, PNG, GIF, WebP, PDF are allowed",
+        ),
       ),
+      false,
     );
-    error.code = "INVALID_FILE_TYPE";
-    cb(error, false);
   }
 };
 
+// Multer instance
 const upload = multer({
   storage,
-  limits: { fileSize: MAX_FILE_SIZE, files: MAX_FILES },
   fileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+    files: 10,
+  },
 });
 
-// ── middleware presets ──────────────────────────────────────────
-const uploadMiddleware = {
-  patient: upload.fields([
-    { name: "radiologyImage", maxCount: 5 },
-    { name: "labImage", maxCount: 5 },
-    { name: "personalPhoto", maxCount: 1 },
-  ]),
-  doctor: upload.fields([
-    { name: "licenseImage", maxCount: 1 },
-    { name: "personalPhoto", maxCount: 1 },
-  ]),
-  post: upload.fields([{ name: "postImage", maxCount: 10 }]),
-  article: upload.fields([{ name: "articleImage", maxCount: 5 }]), // ← NEW
-  general: upload.fields([
-    { name: "personalPhoto", maxCount: 1 },
-    { name: "radiologyImage", maxCount: 5 },
-    { name: "labImage", maxCount: 5 },
-    { name: "licenseImage", maxCount: 1 },
-    { name: "postImage", maxCount: 10 },
-    { name: "articleImage", maxCount: 5 }, // ← NEW
-  ]),
-};
-
-// ── move file from .temp to final destination ───────────────────
+// Move file from flat temp to final folder
 export const moveFromTemp = (filename, fieldname) => {
   const folder = FIELD_TO_FOLDER[fieldname];
   if (!folder || !filename) return null;
 
-  const tempPath = path.join(TEMP_DIR, folder, filename);
+  const tempPath = path.join(TEMP_DIR, filename); // ← Flat temp path
   const finalDir = path.join(UPLOAD_DIR, folder);
   const finalPath = path.join(finalDir, filename);
 
@@ -121,58 +92,54 @@ export const moveFromTemp = (filename, fieldname) => {
   return { finalPath, url: `/uploads/${folder}/${filename}` };
 };
 
-// ── clean up temp files for a request ───────────────────────────
-export const cleanupTemp = (filesMap) => {
-  if (!filesMap) return;
-  Object.values(filesMap)
-    .flat()
-    .forEach((file) => {
-      if (file?.path && fs.existsSync(file.path)) {
-        fs.unlinkSync(file.path);
-      }
-    });
+// Cleanup temp files (flat structure)
+export const cleanupTemp = (files) => {
+  if (!files) return;
+
+  const allFiles = Array.isArray(files) ? files : Object.values(files).flat();
+
+  allFiles.forEach((file) => {
+    if (file?.path && fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+    }
+  });
 };
 
-// ── error handler ───────────────────────────────────────────────
-export const handleMulterError = (err, _req, res, next) => {
-  if (
-    !(err instanceof multer.MulterError) &&
-    err.code !== "INVALID_FILE_TYPE"
-  ) {
-    return next(err);
-  }
+// Presets for different routes
+const uploadMiddleware = {
+  // Patient signup — personal photo + optional radiology/lab
+  signupPatient: upload.fields([
+    { name: "personalPhoto", maxCount: 1 },
+    { name: "radiologyImage", maxCount: 5 },
+    { name: "labImage", maxCount: 5 },
+  ]),
 
-  let message;
-  let statusCode = 400;
+  // Doctor signup — license + personal photo
+  doctor: upload.fields([
+    { name: "licenseImage", maxCount: 1 },
+    { name: "personalPhoto", maxCount: 1 },
+  ]),
 
-  switch (err.code) {
-    case "LIMIT_FILE_SIZE":
-      message = msg(
-        `حجم الملف يتجاوز ${MAX_FILE_SIZE / 1024 / 1024} ميجابايت`,
-        `File size exceeds ${MAX_FILE_SIZE / 1024 / 1024}MB limit`,
-      );
-      break;
-    case "LIMIT_UNEXPECTED_FILE":
-      message = msg(
-        "حقل الملف غير متوقع أو غير مسموح به",
-        "Unexpected or disallowed file field",
-      );
-      break;
-    case "LIMIT_FILE_COUNT":
-      message = msg(
-        "عدد الملفات يتجاوز الحد المسموح به",
-        "Too many files uploaded",
-      );
-      break;
-    case "INVALID_FILE_TYPE":
-      message = err.message;
-      break;
-    default:
-      message = msg("فشل في رفع الملف", "File upload failed");
-      statusCode = 500;
-  }
+  // Post image
+  post: upload.single("postImage"),
 
-  res.status(statusCode).json({ status: "fail", message });
+  // Article image
+  article: upload.single("articleImage"),
+
+  // Patient records — radiology/lab tests
+  patient: upload.fields([
+    { name: "radiologyImage", maxCount: 5 },
+    { name: "labImage", maxCount: 5 },
+  ]),
+
+  // User profile photo
+  userPhoto: upload.single("personalPhoto"),
+
+  // Chat message image
+  message: upload.single("image"),
+
+  // General single file
+  general: upload.single("file"),
 };
 
 export default uploadMiddleware;

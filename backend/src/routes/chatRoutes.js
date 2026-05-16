@@ -1,29 +1,60 @@
 import { Router } from "express";
-import * as chatController from "../controllers/chatController.js";
+import * as appointmentController from "../controllers/appointmentController.js";
 import { protect } from "../middlewares/auth.js";
+import { restrictTo } from "../middlewares/auth.js";
+import { validateBody } from "../middlewares/validate.js";
 import { validateObjectId } from "../middlewares/ValidateObjectId.js";
-import { parseForm } from "../middlewares/parseForm.js";
+import { parseUniversal } from "../middlewares/parseUniversal.js";
+import { z } from "zod";
 
 const router = Router();
 
 router.use(protect);
 
-router.get("/conversations", chatController.getMyConversations);
 router.post(
-    "/conversations/:appointmentId",
-    validateObjectId("appointmentId"),
-    chatController.startConversation,
+  "/",
+  parseUniversal(),
+  validateBody(
+    z.object({
+      doctorId: z.string().min(1),
+      scheduledAt: z.string().datetime(),
+      notes: z.string().optional(),
+    }),
+  ),
+  appointmentController.create,
 );
+
+router.get("/my", appointmentController.getMyAppointments);
+
+router.patch(
+  "/:id/cancel",
+  validateObjectId("id"),
+  appointmentController.cancel,
+);
+
 router.get(
-    "/conversations/:conversationId/messages",
-    validateObjectId("conversationId"),
-    chatController.getMessages,
+  "/pending",
+  restrictTo("doctor"),
+  appointmentController.getPendingRequests,
 );
-router.post(
-    "/conversations/:conversationId/messages",
-    validateObjectId("conversationId"),
-    parseForm,
-    chatController.sendMessage,
+
+router.get(
+  "/history",
+  restrictTo("doctor"),
+  appointmentController.getDoctorHistory,
+);
+
+router.patch(
+  "/:id/status",
+  restrictTo("doctor"),
+  validateObjectId("id"),
+  parseUniversal(),
+  validateBody(
+    z.object({
+      status: z.enum(["accepted", "rejected"]),
+    }),
+  ),
+  appointmentController.updateStatus,
 );
 
 export default router;

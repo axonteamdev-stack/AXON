@@ -1,5 +1,4 @@
-z# Dependencies
-# ALWAYS keep package-lock.json in Git for version consistency
+# Dependencies
 node_modules/
 /.pnp
 .pnp.js
@@ -20,7 +19,6 @@ pids
 *.pid.lock
 
 # Environment variables
-# CRITICAL: Keep these private!
 .env
 .env.local
 .env.development
@@ -51,12 +49,7 @@ Notes/
 *.zip
 routes.md
 
-# Uploaded Content
-# We ignore everything inside these folders so test images aren't pushed
-Uploads/Certificates/*
-Uploads/PersonalPhoto/*
-Uploads/Radiology/*
-Uploads/LabTests/*
-
-# Optional: Allow the folders themselves to exist in Git without content
-!Uploads/**/.gitkeep
+# Uploaded Content - ignore all files inside upload folders
+uploads/**/*
+!uploads/**/.gitkeep
+!uploads/**/.gitignore

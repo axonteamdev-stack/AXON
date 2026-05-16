@@ -10,17 +10,19 @@ export const createMedicationSchema = z.object({
   intakeTimes: z.array(z.string()).min(1),
   startDate: z.string().datetime(),
   endDate: z.string().datetime(),
-  prescribedBy: z.string().optional(),
+  patientId: z.string().min(1), // patient receiving the medication
   indication: z.string().optional(),
   notes: z.string().optional(),
 });
 
 export const updateMedicationSchema = z.object({
   medicineName: z.string().min(2).optional(),
-  dosage: z.object({
-    value: z.coerce.number().min(0.1),
-    unit: z.string().min(1),
-  }).optional(),
+  dosage: z
+    .object({
+      value: z.coerce.number().min(0.1),
+      unit: z.string().min(1),
+    })
+    .optional(),
   frequency: z.string().min(1).optional(),
   intakeTimes: z.array(z.string()).min(1).optional(),
   startDate: z.string().datetime().optional(),

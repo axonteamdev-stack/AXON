@@ -1,12 +1,30 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import Patient from "../models/Patient.js";
 import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
 
-const RESET_TOKEN_EXPIRY = 10 * 60 * 1000; // 10 minutes
+const RESET_TOKEN_EXPIRY = 10 * 60 * 1000;
 
-export const registerPatient = async (data) => {
+// Helper: parse conditions/allergies from string (form-data) or array (JSON)
+const safeParse = (input, fieldName) => {
+  if (!input) return [];
+  // Already an array (from JSON)
+  if (Array.isArray(input)) return input;
+  // JSON string (from form-data)
+  try {
+    const parsed = JSON.parse(input);
+    return Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    throw new AppError(
+      msg(`تنسيق غير صالح لـ ${fieldName}`, `Invalid format for ${fieldName}`),
+      400,
+    );
+  }
+};
+
+export const registerPatient = async (data, files = {}) => {
   const existing = await User.findByEmail(data.email);
   if (existing) {
     throw new AppError(
@@ -15,7 +33,7 @@ export const registerPatient = async (data) => {
     );
   }
 
-  return User.create({
+  const user = await User.create({
     fullName: data.fullName,
     email: data.email.toLowerCase(),
     phoneNumber: data.phoneNumber,
@@ -24,8 +42,74 @@ export const registerPatient = async (data) => {
     role: "patient",
     isVerified: true,
     preferredLanguage: data.preferredLanguage || "ar",
-    personalPhoto: data.personalPhoto || null,
+    personalPhoto: files.personalPhoto?.[0]?.filename
+      ? `/uploads/personalPhoto/${files.personalPhoto[0].filename}`
+      : null,
   });
+
+  const hasHealthData =
+    data.bloodType ||
+    data.height ||
+    data.weight ||
+    data.conditions ||
+    data.allergies ||
+    data.emergencyContactName ||
+    files.radiologyImage?.length ||
+    files.labImage?.length;
+
+  let patient = null;
+
+  if (hasHealthData) {
+    const conditions = safeParse(data.conditions, "conditions");
+    const allergies = safeParse(data.allergies, "allergies");
+
+    let radiologyTests = [];
+    if (files.radiologyImage?.length) {
+      const descriptions = safeParse(
+        data.radiologyDescriptions,
+        "radiologyDescriptions",
+      );
+      radiologyTests = files.radiologyImage.map((file, i) => ({
+        image: `/uploads/radiology/${file.filename}`,
+        description: descriptions[i] || "",
+        date: new Date(),
+      }));
+    }
+
+    let labTests = [];
+    if (files.labImage?.length) {
+      const descriptions = safeParse(data.labDescriptions, "labDescriptions");
+      labTests = files.labImage.map((file, i) => ({
+        image: `/uploads/labTests/${file.filename}`,
+        description: descriptions[i] || "",
+        date: new Date(),
+      }));
+    }
+
+    const emergencyContact =
+      data.emergencyContactName || data.emergencyContactPhone
+        ? {
+            name: data.emergencyContactName || null,
+            phone: data.emergencyContactPhone || null,
+            relationship: data.emergencyContactRelationship || null,
+          }
+        : null;
+
+    patient = await Patient.create({
+      userId: user._id,
+      bloodType: data.bloodType || null,
+      height: data.height ? Number(data.height) : null,
+      weight: data.weight ? Number(data.weight) : null,
+      conditions,
+      allergies,
+      emergencyContact,
+      radiologyTests,
+      labTests,
+      emergencyQR: { token: null, expiresAt: null },
+    });
+  }
+
+  return { user, patient };
 };
 
 export const registerDoctor = async (data) => {
@@ -112,9 +196,6 @@ export const sendResetCode = async (email) => {
     .digest("hex");
   user.passwordResetExpires = Date.now() + RESET_TOKEN_EXPIRY;
   await user.save({ validateBeforeSave: false });
-
-  // TODO: Send actual email instead of logging
-  // await sendEmail(user.email, 'Password Reset', `Your code: ${resetToken}`);
 
   return true;
 };

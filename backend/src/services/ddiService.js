@@ -1,5 +1,5 @@
 import Medication from "../models/Medication.js";
-import MedicalRecord from "../models/MedicalRecord.js";
+import Patient from "../models/Patient.js";
 
 const AI_TIMEOUT_MS = 5000;
 const DEFAULT_AI_URL = "http://localhost:5001/api/predict-ddi";
@@ -53,7 +53,9 @@ export const checkDrugInteractions = async (patientId, newMedicationName) => {
 };
 
 export const checkContraindications = async (patientId, medicineName) => {
-  const record = await MedicalRecord.findOne({ patientId }).select("allergies conditions");
+  const record = await Patient.findOne({ userId: patientId }).select(
+    "allergies conditions",
+  );
   if (!record) {
     return {
       allergies: [],

@@ -5,18 +5,24 @@ import { msg } from "../utils/i18n.js";
 import * as MedicationService from "../services/medicationService.js";
 
 export const create = catchAsync(async (req, res) => {
+  if (req.user.role !== "doctor") {
+    throw new AppError(
+      msg("فقط الأطباء يمكنهم إضافة أدوية", "Only doctors can prescribe"),
+      403,
+    );
+  }
+
   const medication = await MedicationService.create({
     ...req.body,
-    patientId: req.user.id,
-    prescribedBy: req.body.prescribedBy || req.user.id,
+    patientId: req.body.patientId,
+    prescribedBy: req.user.id,
   });
+
   sendLocalizedResponse(
     res,
     201,
     msg("تم إضافة الدواء بنجاح", "Medication added"),
-    {
-      medication,
-    },
+    { medication },
     req.lang,
   );
 });
@@ -27,9 +33,7 @@ export const getMyMedications = catchAsync(async (req, res) => {
     res,
     200,
     msg("تم جلب الأدوية", "Medications fetched"),
-    {
-      medications,
-    },
+    { medications },
     req.lang,
   );
 });
@@ -43,9 +47,7 @@ export const getById = catchAsync(async (req, res) => {
     res,
     200,
     msg("تم جلب الدواء", "Medication fetched"),
-    {
-      medication,
-    },
+    { medication },
     req.lang,
   );
 });
@@ -60,9 +62,7 @@ export const update = catchAsync(async (req, res) => {
     res,
     200,
     msg("تم تحديث الدواء", "Medication updated"),
-    {
-      medication,
-    },
+    { medication },
     req.lang,
   );
 });

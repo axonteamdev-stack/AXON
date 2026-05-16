@@ -3,7 +3,7 @@ import * as ddiController from "../controllers/ddiController.js";
 import { protect } from "../middlewares/auth.js";
 import { restrictTo } from "../middlewares/auth.js";
 import { validateBody } from "../middlewares/validate.js";
-import { parseForm } from "../middlewares/parseForm.js";
+import { parseUniversal } from "../middlewares/parseUniversal.js";
 import { z } from "zod";
 
 const router = Router();
@@ -21,13 +21,14 @@ const contraindicationSchema = z.object({
 
 router.post(
   "/check",
-  parseForm,
+  parseUniversal(),
   validateBody(checkSchema),
   ddiController.checkInteractions,
 );
+
 router.post(
   "/contraindications",
-  parseForm,
+  parseUniversal(),
   validateBody(contraindicationSchema),
   ddiController.checkContraindications,
 );
