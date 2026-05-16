@@ -1,28 +1,26 @@
 import 'package:Axon/features/auth/domain/entities/base_entity.dart';
+import 'package:Axon/features/auth/domain/entities/login_response_entity.dart';
 import 'package:Axon/features/auth/domain/entities/user_entity.dart';
 
 class RegisterPatientEntity
-    extends BaseResponseEntity<PatientDataEntity> {
+    extends BaseResponseEntity<RegisterPatientDataEntity> {
+
   const RegisterPatientEntity({
     super.success,
     super.message,
     super.data,
-    super.error, 
+    super.error,
   });
 }
 
-class PatientDataEntity extends UserEntity {
-  const PatientDataEntity({
-    super.fullName,
-    super.email,
-    super.phoneNumber,
-    super.gender,
-    super.personalPhoto,
-    super.role,
-    super.isVerified,
-    super.medicalProfile,
-    super.id,
-    super.createdAt,
-    super.updatedAt,
+class RegisterPatientDataEntity {
+
+  final UserEntity? user;
+
+  final TokensEntity? tokens;
+
+  const RegisterPatientDataEntity({
+    this.user,
+    this.tokens,
   });
 }

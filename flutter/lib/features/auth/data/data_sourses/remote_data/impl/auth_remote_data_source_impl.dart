@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:Axon/core/errors/error_handler.dart';
 import 'package:Axon/core/errors/exceptions.dart';
@@ -31,25 +32,45 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   // todo : reuse function
 
-  Future<void> addFile(FormData data, File? file, String key) async {
-    if (file != null) {
-      data.files.add(
-        MapEntry(
-          key,
-          await MultipartFile.fromFile(
-            file.path,
-            filename: file.path.split('/').last,
-          ),
-        ),
-      );
-    }
+ Future<void> addFile(
+  FormData data,
+  File? file,
+  String key,
+) async {
+
+  if (file == null) {
+    return;
   }
 
-  void addList(FormData data, List<String> list, String key) {
-    for (var item in list) {
-      data.fields.add(MapEntry(key, item));
-    }
+  /// avoid server uploaded path
+  if (file.path.startsWith("/uploads")) {
+
+    print("⚠️ Skip uploaded server file: ${file.path}");
+
+    return;
   }
+
+  final exists = await file.exists();
+
+  if (!exists) {
+
+    print("❌ File not found: ${file.path}");
+
+    return;
+  }
+
+  data.files.add(
+    MapEntry(
+      key,
+      await MultipartFile.fromFile(
+        file.path,
+        filename: file.path.split('/').last,
+      ),
+    ),
+  );
+
+  print("✅ File Added: ${file.path}");
+}
 
   Future<void> addFilesWithDesc({
     required FormData data,
@@ -431,8 +452,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         "weight": weight,
       });
 
-      addList(data, conditions, "conditions");
-      addList(data, allergies, "allergies");
+      // addList(data, conditions, "conditions");
+      // addList(data, allergies, "allergies");
+
+      /// conditions
+
+/// conditions
+data.fields.add(
+  MapEntry(
+    "conditions",
+    jsonEncode(conditions),
+  ),
+);
+
+/// allergies
+data.fields.add(
+  MapEntry(
+    "allergies",
+    jsonEncode(allergies),
+  ),
+);
 
       /// personal photo
       await addFile(data, personalPhoto, "personalPhoto");
