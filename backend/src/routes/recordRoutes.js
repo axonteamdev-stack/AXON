@@ -13,7 +13,7 @@ router.post("/qr/access", parseForm, recordController.getByQR);
 router.use(protect);
 
 router.get("/me", recordController.getMyRecord);
-router.patch("/me", recordController.updateRecord);
+router.patch("/me", parseForm, recordController.updateRecord);
 router.post("/tests/:type", uploadMiddleware.patient, recordController.addTest);
 router.post("/qr", recordController.generateQR);
 

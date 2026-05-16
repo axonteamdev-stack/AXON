@@ -11,7 +11,7 @@ const router = Router();
 
 router.use(protect);
 
-// Patient routes
+// Patient routes — accept JSON and form-data
 router.post(
   "/",
   parseForm,

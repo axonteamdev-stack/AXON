@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as chatController from "../controllers/chatController.js";
 import { protect } from "../middlewares/auth.js";
 import { validateObjectId } from "../middlewares/ValidateObjectId.js";
+import { parseForm } from "../middlewares/parseForm.js";
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.get(
 router.post(
     "/conversations/:conversationId/messages",
     validateObjectId("conversationId"),
+    parseForm,
     chatController.sendMessage,
 );
 

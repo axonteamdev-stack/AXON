@@ -62,16 +62,11 @@ app.use(compression({ threshold: 1024 }));
 app.use(cookieParser());
 app.use(setLanguage);
 
-app.use((req, res, next) => {
-  console.log("Content-Type:", req.headers["content-type"]);
-  next();
-});
-
 // ── CRITICAL FIX: Skip body parsers for multipart uploads ──────
-// Multer must handle multipart streams, not express.json/urlencoded
+// Handles undefined content-type safely
 app.use((req, res, next) => {
-  const contentType = req.headers["content-type"] || "";
-  if (contentType.startsWith("multipart/form-data")) {
+  const contentType = (req.headers["content-type"] || "").toLowerCase();
+  if (contentType.includes("multipart/form-data")) {
     return next();
   }
   next();
