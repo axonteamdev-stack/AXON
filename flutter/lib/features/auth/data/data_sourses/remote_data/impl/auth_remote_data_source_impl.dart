@@ -72,15 +72,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   //todo : save user data
 
  Future<void> saveUserData(Map<String, dynamic> json) async {
+
   final pref = SharedPref();
 
   final data = json["data"] ?? {};
 
+  final user = data["user"] ?? {};
+
+  final tokens = data["tokens"] ?? {};
+
   /// patient
-  final medicalProfile = data["medicalProfile"] ?? {};
+  final medicalProfile = user["medicalProfile"] ?? {};
 
   /// doctor
-  final doctorProfile = data["doctorProfile"] ?? {};
+  final doctorProfile = user["doctorProfile"] ?? {};
 
   /// ==============================
   /// General Response
@@ -88,7 +93,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   await pref.setString(
     PrefKeys.status,
-    json["status"]?.toString() ?? "",
+    json["success"]?.toString() ?? "",
   );
 
   await pref.setString(
@@ -97,67 +102,81 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   );
 
   /// ==============================
+  /// TOKENS
+  /// ==============================
+
+  await pref.setString(
+    PrefKeys.accessToken,
+    tokens["accessToken"]?.toString() ?? "",
+  );
+
+  await pref.setString(
+    PrefKeys.refreshToken,
+    tokens["refreshToken"]?.toString() ?? "",
+  );
+
+  /// ==============================
   /// User Basic Data
   /// ==============================
 
   await pref.setString(
     PrefKeys.userId,
-    data["_id"]?.toString() ?? "",
+    user["_id"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.userRole,
-    data["role"]?.toString() ?? "",
+    user["role"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.userEmail,
-    data["email"]?.toString() ?? "",
+    user["email"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.fullName,
-    data["fullName"]?.toString() ?? "",
+    user["fullName"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.email,
-    data["email"]?.toString() ?? "",
+    user["email"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.phoneNumber,
-    data["phoneNumber"]?.toString() ?? "",
+    user["phoneNumber"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.gender,
-    data["gender"]?.toString() ?? "",
+    user["gender"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.role,
-    data["role"]?.toString() ?? "",
+    user["role"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.personalPhoto,
-    data["personalPhoto"]?.toString() ?? "",
+    user["personalPhoto"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.isVerified,
-    data["isVerified"]?.toString() ?? "",
+    user["isVerified"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.createdAt,
-    data["createdAt"]?.toString() ?? "",
+    user["createdAt"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.updatedAt,
-    data["updatedAt"]?.toString() ?? "",
+    user["updatedAt"]?.toString() ?? "",
   );
 
   /// ==============================
@@ -199,7 +218,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     (medicalProfile["labTests"] ?? []).toString(),
   );
 
-
+  /// ==============================
+  /// DOCTOR DATA
+  /// ==============================
 
   await pref.setString(
     PrefKeys.specialization,
@@ -236,12 +257,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   /// ==============================
 
   print("============== SAVED USER DATA ==============");
-  print("Full Name => ${data["fullName"]}");
-  print("Email => ${data["email"]}");
-  print("Phone => ${data["phoneNumber"]}");
-  print("Role => ${data["role"]}");
+
+  print("Full Name => ${user["fullName"]}");
+  print("Email => ${user["email"]}");
+  print("Phone => ${user["phoneNumber"]}");
+  print("Role => ${user["role"]}");
 
   print("----------- PATIENT DATA -----------");
+
   print("Blood Type => ${medicalProfile["bloodType"]}");
   print("Height => ${medicalProfile["height"]}");
   print("Weight => ${medicalProfile["weight"]}");
@@ -249,6 +272,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   print("Allergies => ${medicalProfile["allergies"]}");
 
   print("----------- DOCTOR DATA -----------");
+
   print("Specialization => ${doctorProfile["specialization"]}");
   print("Years Experience => ${doctorProfile["yearsExperience"]}");
   print("Medical License => ${doctorProfile["medicalLicenseNumber"]}");

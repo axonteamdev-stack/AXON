@@ -10,13 +10,13 @@ class RegisterResponsePatientDm extends RegisterPatientEntity {
     super.data,
     super.error,
     super.message,
-    super.status,
+    super.success,
     this.stack,
   });
 
   factory RegisterResponsePatientDm.fromJson(Map<String, dynamic> json) {
     return RegisterResponsePatientDm(
-      status: json['status'],
+      success: json['status'],
       message: json['message'],
       stack: json['stack'],
       error: json['error'] != null

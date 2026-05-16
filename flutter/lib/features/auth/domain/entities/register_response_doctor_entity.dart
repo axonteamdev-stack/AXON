@@ -4,7 +4,7 @@ class RegisterResponseDoctorEntity extends BaseResponseEntity {
   final RegisterDataDoctorEntity? data;
 
   RegisterResponseDoctorEntity({
-    super.status,
+    super.success,
     super.message,
     this.data,
     super.error,

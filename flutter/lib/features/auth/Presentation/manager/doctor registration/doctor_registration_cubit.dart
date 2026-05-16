@@ -49,22 +49,21 @@ class DoctorRegistrationCubit extends Cubit<DoctorRegistrationState> {
     if (formKey.currentState!.validate()) {
       try {
         emit(DoctorRegistrationLoading());
-        var either = await registerDoctorUseCase.invoke(
-          fullName: pref.getString("fullName") ?? '',
-          email: pref.getString("email") ?? '',
-          password: pref.getString("password") ?? '',
-          phoneNumber: pref.getString("phone") ?? '',
-          gender: pref.getString("gender") ?? '',
-          specialization: selectedSpecialization ?? '',
-          yearsExperience: int.tryParse(experienceCtrl.text) ?? 0,
-          medicalLicenseNumber: licenseCtrl.text,
-          price: int.tryParse(priceCtrl.text) ?? 0,
-          about: aboutCtrl.text,
-          licenseImages: File(licenseImage!.path),
-          personalPhoto: pref.getString("personalPhoto") != null
-              ? File(pref.getString("personalPhoto") ?? '')
-              : null,
-        );
+       var either = await registerDoctorUseCase.invoke(
+  fullName: pref.getString("fullName") ?? '',
+  email: pref.getString("email") ?? '',
+  password: pref.getString("password") ?? '',
+  phoneNumber: pref.getString("phone") ?? '',
+  gender: pref.getString("gender") ?? '',
+  specialization: selectedSpecialization ?? '',
+  yearsExperience: int.tryParse(experienceCtrl.text) ?? 0,
+  medicalLicenseNumber: licenseCtrl.text,
+  price: int.tryParse(priceCtrl.text) ?? 0,
+  about: aboutCtrl.text,
+  licenseImages: File(licenseImage!.path),
+
+  personalPhoto: null,
+);
         either.fold((error) => emit(DoctorRegistrationError(failure: error)), (
           response,
         ) {

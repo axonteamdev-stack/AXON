@@ -13,11 +13,11 @@ class DoctorProfileDM extends DoctorProfileEntity {
   factory DoctorProfileDM.fromJson(Map<String, dynamic> json) {
     return DoctorProfileDM(
       specialization: json['specialization'],
-      yearsExperience: json['yearsExperience'],
+      yearsExperience: (json['yearsExperience'] as num?)?.toInt(),
       medicalLicenseNumber: json['medicalLicenseNumber'],
       licenseImage: json['licenseImage'],
       about: json['about'],
-      price: json['price'],
+      price: (json['price'] as num?)?.toInt(),
     );
   }
 }

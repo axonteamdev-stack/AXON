@@ -6,7 +6,7 @@ import 'package:Axon/features/auth/domain/entities/user_entity.dart';
 
 class LoginResponseDM extends LoginResponseEntity {
   const LoginResponseDM({
-    super.status,
+    super.success,
     super.message,
     super.data,
     super.error,
@@ -14,14 +14,45 @@ class LoginResponseDM extends LoginResponseEntity {
 
   factory LoginResponseDM.fromJson(Map<String, dynamic> json) {
     return LoginResponseDM(
-      status: json['status'],
+      success: json['success'],
       message: json['message'],
-      error: json['error'] != null
-          ? ErrorDM.fromJson(json['error'])
-          : null,
+      error:
+          json['error'] != null ? ErrorDM.fromJson(json['error']) : null,
       data: json['data'] != null
-          ? UserDM.fromJson(json['data'])
+          ? LoginDataDM.fromJson(json['data'])
           : null,
+    );
+  }
+}
+
+class LoginDataDM extends LoginDataEntity {
+  LoginDataDM({
+    super.user,
+    super.tokens,
+  });
+
+  factory LoginDataDM.fromJson(Map<String, dynamic> json) {
+    return LoginDataDM(
+      user: json['user'] != null
+          ? UserDM.fromJson(json['user'])
+          : null,
+      tokens: json['tokens'] != null
+          ? TokensDM.fromJson(json['tokens'])
+          : null,
+    );
+  }
+}
+
+class TokensDM extends TokensEntity {
+  TokensDM({
+    super.accessToken,
+    super.refreshToken,
+  });
+
+  factory TokensDM.fromJson(Map<String, dynamic> json) {
+    return TokensDM(
+      accessToken: json['accessToken'],
+      refreshToken: json['refreshToken'],
     );
   }
 }
@@ -54,9 +85,11 @@ class UserDM extends UserEntity {
       isVerified: json['isVerified'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
+
       doctorProfile: json['doctorProfile'] != null
           ? DoctorProfileDM.fromJson(json['doctorProfile'])
           : null,
+
       medicalProfile: json['medicalProfile'] != null
           ? MedicalProfileDM.fromJson(json['medicalProfile'])
           : null,

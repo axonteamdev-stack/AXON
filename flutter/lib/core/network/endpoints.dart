@@ -1,6 +1,9 @@
 class Endpoints {
   static const String baseUrl =
-      "https://tender-morna-axon-fp-b76b6646.koyeb.app/api/v1";
+
+  "https://tender-morna-axon-fp-b76b6646.koyeb.app/";
+      // "https://tender-morna-axon-fp-b76b6646.koyeb.app/api/v1";
+
 
   static const String baseUrlImage =
       "https://tender-morna-axon-fp-b76b6646.koyeb.app/";
@@ -10,10 +13,16 @@ class Endpoints {
       "/auth/login";
 
   static const String registerDoctor =
-      "/auth/signup-doctor";
+      "/auth/signup/doctor";
+
+      // static const String registerDoctor =
+      // "/auth/signup-doctor";
 
   static const String registerPatient =
-      "/auth/signup-patient";
+  "/auth/signup/patient";
+
+  // "/auth/signup-patient";
+      
 
   static const String forgotPassword =
       "/auth/forgot-password";

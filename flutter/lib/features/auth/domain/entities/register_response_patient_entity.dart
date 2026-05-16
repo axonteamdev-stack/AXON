@@ -4,7 +4,7 @@ import 'package:Axon/features/auth/domain/entities/user_entity.dart';
 class RegisterPatientEntity
     extends BaseResponseEntity<PatientDataEntity> {
   const RegisterPatientEntity({
-    super.status,
+    super.success,
     super.message,
     super.data,
     super.error, 

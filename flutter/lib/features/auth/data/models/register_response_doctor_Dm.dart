@@ -5,7 +5,7 @@ class RegisterResponseDoctorDm extends RegisterResponseDoctorEntity {
   final String? stack;
 
   RegisterResponseDoctorDm({
-    super.status,
+    super.success,
     super.message,
     super.data,
     super.error,
@@ -14,7 +14,7 @@ class RegisterResponseDoctorDm extends RegisterResponseDoctorEntity {
 
   factory RegisterResponseDoctorDm.fromJson(Map<String, dynamic> json) {
     return RegisterResponseDoctorDm(
-      status: json['status'],
+      success: json['status'],
       message: json['message'],
       stack: json['stack'],
       data: json['data'] != null
