@@ -23,6 +23,7 @@ const dirs = [
   "radiology",
   "labTests",
   "posts",
+  "articles", // ← NEW: dedicated folder for article images
   ".temp",
 ];
 for (const d of dirs) {
@@ -42,6 +43,7 @@ const tempSubs = [
   "radiology",
   "labTests",
   "posts",
+  "articles", // ← NEW
 ];
 for (const d of tempSubs) {
   const fullPath = path.join(uploadDir, ".temp", d);

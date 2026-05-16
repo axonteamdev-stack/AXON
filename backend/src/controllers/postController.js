@@ -46,11 +46,11 @@ export const getById = catchAsync(async (req, res) => {
 // ── Articles: Doctors only ─────────────────
 export const createArticle = catchAsync(async (req, res) => {
   const data = { ...req.body, type: "article" };
-  const imageFile = req.files?.postImage?.[0];
+  const imageFile = req.files?.articleImage?.[0]; // ← CHANGED: articleImage
 
   try {
     if (imageFile) {
-      const { url } = moveFromTemp(imageFile.filename, "postImage");
+      const { url } = moveFromTemp(imageFile.filename, "articleImage"); // ← CHANGED
       data.image = url;
     }
 
@@ -71,7 +71,7 @@ export const createArticle = catchAsync(async (req, res) => {
 // ── Community posts: Patients only ─────────
 export const createCommunityPost = catchAsync(async (req, res) => {
   const data = { ...req.body, type: "community" };
-  const imageFile = req.files?.postImage?.[0];
+  const imageFile = req.files?.postImage?.[0]; // ← stays postImage
 
   try {
     if (imageFile) {

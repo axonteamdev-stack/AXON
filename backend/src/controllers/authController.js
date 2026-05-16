@@ -2,7 +2,12 @@ import { catchAsync } from "../utils/catchAsync.js";
 import { sendLocalizedResponse } from "../utils/response.js";
 import { msg } from "../utils/i18n.js";
 import { transformUserResponse } from "../utils/transformers.js";
-import { generateTokens, clearTokens } from "../services/tokenService.js";
+import {
+  generateTokens,
+  rotateTokens,
+  clearTokens,
+  verifyRefreshToken,
+} from "../services/tokenService.js";
 import { moveFromTemp, cleanupTemp } from "../middlewares/upload.js";
 import * as AuthService from "../services/authService.js";
 
@@ -10,7 +15,6 @@ export const signupPatient = catchAsync(async (req, res) => {
   const user = await AuthService.registerPatient(req.body);
   const tokens = generateTokens(res, user._id);
 
-  // Use user's preferred language for response if available
   const responseLang = req.body.preferredLanguage || req.lang;
 
   sendLocalizedResponse(
@@ -18,7 +22,7 @@ export const signupPatient = catchAsync(async (req, res) => {
     201,
     msg("تم التسجيل بنجاح", "Registration successful"),
     {
-      user: transformUserResponse(user), // ✅ Transformed — no password leak
+      user: transformUserResponse(user),
       tokens,
     },
     responseLang,
@@ -42,17 +46,16 @@ export const signupDoctor = catchAsync(async (req, res) => {
     }
 
     const user = await AuthService.registerDoctor(data);
-
-    // Use user's preferred language for response if available
     const responseLang = req.body.preferredLanguage || req.lang;
+    const tokens = generateTokens(res, user._id);
 
     sendLocalizedResponse(
       res,
       201,
       msg("تم التسجيل بنجاح", "Registration successful"),
       {
-        user: transformUserResponse(user), // ✅ Consistent with signupPatient
-        tokens: generateTokens(res, user._id),
+        user: transformUserResponse(user),
+        tokens,
       },
       responseLang,
     );
@@ -67,7 +70,6 @@ export const login = catchAsync(async (req, res) => {
   const user = await AuthService.authenticate(email, password);
   const tokens = generateTokens(res, user._id);
 
-  // Use user's preferred language from their profile
   const responseLang = user.preferredLanguage || req.lang;
 
   sendLocalizedResponse(
@@ -93,15 +95,25 @@ export const logout = (req, res) => {
   );
 };
 
+// ── FULL TOKEN ROTATION: Both access + refresh tokens renewed ──
 export const refreshAccessToken = catchAsync(async (req, res) => {
   const token = req.cookies.refreshToken || req.body.refreshToken;
-  const accessToken = await AuthService.refreshAccessToken(token);
+
+  // Verify the old refresh token
+  const decoded = verifyRefreshToken(token);
+
+  // ── ROTATE BOTH TOKENS ──────────────────────────────────────
+  // Clears old cookies, generates fresh accessToken + refreshToken
+  const tokens = rotateTokens(res, decoded.id);
+
+  // Return both new tokens (for mobile/Flutter that reads body)
   sendLocalizedResponse(
     res,
     200,
     msg("تم تجديد التوكن", "Token refreshed"),
     {
-      accessToken,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
     },
     req.lang,
   );

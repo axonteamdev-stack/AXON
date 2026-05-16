@@ -59,11 +59,27 @@ app.use(hpp());
 // Compress responses larger than 1KB
 app.use(compression({ threshold: 1024 }));
 
+app.use(cookieParser());
+app.use(setLanguage);
+
+app.use((req, res, next) => {
+  console.log("Content-Type:", req.headers["content-type"]);
+  next();
+});
+
+// ── CRITICAL FIX: Skip body parsers for multipart uploads ──────
+// Multer must handle multipart streams, not express.json/urlencoded
+app.use((req, res, next) => {
+  const contentType = req.headers["content-type"] || "";
+  if (contentType.startsWith("multipart/form-data")) {
+    return next();
+  }
+  next();
+});
+
+// These now safely skip multipart requests
 app.use(express.json({ limit: "100kb" }));
 app.use(express.urlencoded({ limit: "100kb", extended: true }));
-app.use(cookieParser());
-
-app.use(setLanguage);
 
 // Express 5: req.query and req.params are read-only
 // Only sanitize req.body. Sanitize query/params at point of use if needed.
