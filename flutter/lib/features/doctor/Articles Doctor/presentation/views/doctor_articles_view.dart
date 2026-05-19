@@ -11,19 +11,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class DoctorArticlesView extends StatelessWidget {
-  const DoctorArticlesView({super.key});
+class DoctorArticlesView
+    extends StatelessWidget {
+
+  const DoctorArticlesView({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+
     return BlocProvider(
-      create: (_) => getIt<DoctorArticlesCubit>(),
+
+      create: (_) =>
+          getIt<DoctorArticlesCubit>()
+            ..getDoctorPosts(),
+
       child: Scaffold(
-        backgroundColor: AppColors.white,
+
+        backgroundColor:
+            AppColors.white,
+
         body: SafeArea(
+
           child: Padding(
-            padding: EdgeInsets.all(16.w),
+
+            padding:
+                EdgeInsets.all(16.w),
+
             child: Column(
+
               children: [
 
                 const ArticleHeader(),
@@ -35,47 +52,79 @@ class DoctorArticlesView extends StatelessWidget {
                 SizedBox(height: 20.h),
 
                 Expanded(
+
                   child: BlocBuilder<
                       DoctorArticlesCubit,
                       DoctorArticlesState>(
-                    builder: (context, state) {
 
-                      // Loading
-                      if (state is DoctorArticlesLoading) {
+                    builder:
+                        (context, state) {
+
+                      if (state
+                          is DoctorArticlesLoading) {
+
                         return const Center(
-                          child: CircularProgressIndicator(),
+                          child:
+                              CircularProgressIndicator(),
                         );
                       }
 
-                      // Error
-                      if (state is DoctorArticlesError) {
+                      if (state
+                          is DoctorArticlesError) {
+
                         return Center(
+
                           child: Text(
-                            state.failure.toString(),
+                            state.failure
+                                .toString(),
                           ),
                         );
                       }
 
-                      // Success
-                      if (state is DoctorArticlesSuccess) {
+                      if (state
+                          is DoctorArticlesSuccess) {
 
-                        final article = state.articleEntity?.article;
+                        final posts =
+                            state.postsEntity
+                                    ?.posts ??
+                                [];
 
-                        if (article == null) {
+                        if (posts.isEmpty) {
+
                           return Center(
+
                             child: TextApp(
-                              text: context.l10n.no_articles,
-                              color: AppColors.grey,
+
+                              text: context
+                                  .l10n
+                                  .no_articles,
+
+                              color:
+                                  AppColors.grey,
                             ),
                           );
                         }
 
-                        return ListView(
-                          children: [
-                            ArticleItemCard(
-                              article: article,
-                            ),
-                          ],
+                        return ListView
+                            .separated(
+
+                          itemCount:
+                              posts.length,
+
+                          separatorBuilder:
+                              (_, __) =>
+                                  SizedBox(
+                            height: 16.h,
+                          ),
+
+                          itemBuilder:
+                              (context, index) {
+
+                            return ArticleItemCard(
+                              article:
+                                  posts[index],
+                            );
+                          },
                         );
                       }
 

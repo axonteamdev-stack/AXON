@@ -92,7 +92,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   //todo : save user data
 
- Future<void> saveUserData(Map<String, dynamic> json) async {
+ 
+ Future<void> saveUserData(
+  Map<String, dynamic> json,
+) async {
 
   final pref = SharedPref();
 
@@ -102,29 +105,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   final tokens = data["tokens"] ?? {};
 
-  /// patient
-  final medicalProfile = user["medicalProfile"] ?? {};
+  final medicalProfile =
+      user["medicalProfile"] ?? {};
 
-  /// doctor
-  final doctorProfile = user["doctorProfile"] ?? {};
+  final doctorProfile =
+      user["doctorProfile"] ?? {};
 
-  /// ==============================
-  /// General Response
-  /// ==============================
-
-  await pref.setString(
-    PrefKeys.status,
-    json["success"]?.toString() ?? "",
-  );
-
-  await pref.setString(
-    PrefKeys.message,
-    json["message"]?.toString() ?? "",
-  );
-
-  /// ==============================
   /// TOKENS
-  /// ==============================
 
   await pref.setString(
     PrefKeys.accessToken,
@@ -136,23 +123,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     tokens["refreshToken"]?.toString() ?? "",
   );
 
+  /// USER DATA
+
   /// ==============================
-  /// User Basic Data
+  /// FIX HERE
   /// ==============================
 
   await pref.setString(
     PrefKeys.userId,
-    user["_id"]?.toString() ?? "",
+    user["id"]?.toString() ?? "",
   );
 
   await pref.setString(
     PrefKeys.userRole,
     user["role"]?.toString() ?? "",
-  );
-
-  await pref.setString(
-    PrefKeys.userEmail,
-    user["email"]?.toString() ?? "",
   );
 
   await pref.setString(
@@ -175,73 +159,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     user["gender"]?.toString() ?? "",
   );
 
-  await pref.setString(
-    PrefKeys.role,
-    user["role"]?.toString() ?? "",
-  );
-
-  await pref.setString(
-    PrefKeys.personalPhoto,
-    user["personalPhoto"]?.toString() ?? "",
-  );
-
-  await pref.setString(
-    PrefKeys.isVerified,
-    user["isVerified"]?.toString() ?? "",
-  );
-
-  await pref.setString(
-    PrefKeys.createdAt,
-    user["createdAt"]?.toString() ?? "",
-  );
-
-  await pref.setString(
-    PrefKeys.updatedAt,
-    user["updatedAt"]?.toString() ?? "",
-  );
-
-  /// ==============================
-  /// PATIENT DATA
-  /// ==============================
-
-  await pref.setString(
-    PrefKeys.bloodType,
-    medicalProfile["bloodType"]?.toString() ?? "",
-  );
-
-  await pref.setString(
-    PrefKeys.height,
-    medicalProfile["height"]?.toString() ?? "",
-  );
-
-  await pref.setString(
-    PrefKeys.weight,
-    medicalProfile["weight"]?.toString() ?? "",
-  );
-
-  await pref.setString(
-    PrefKeys.conditions,
-    (medicalProfile["conditions"] ?? []).join(","),
-  );
-
-  await pref.setString(
-    PrefKeys.allergies,
-    (medicalProfile["allergies"] ?? []).join(","),
-  );
-
-  await pref.setString(
-    PrefKeys.radiologyTests,
-    (medicalProfile["radiologyTests"] ?? []).toString(),
-  );
-
-  await pref.setString(
-    PrefKeys.labTests,
-    (medicalProfile["labTests"] ?? []).toString(),
-  );
-
-  /// ==============================
   /// DOCTOR DATA
-  /// ==============================
 
   await pref.setString(
     PrefKeys.specialization,
@@ -268,41 +186,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     doctorProfile["about"]?.toString() ?? "",
   );
 
-  await pref.setString(
-    PrefKeys.licenseImage,
-    doctorProfile["licenseImage"]?.toString() ?? "",
+  print(
+    "============== SAVED USER DATA ==============",
   );
 
-  /// ==============================
-  /// DEBUG PRINTS
-  /// ==============================
+  print(
+    "USER ID => ${user["id"]}",
+  );
 
-  print("============== SAVED USER DATA ==============");
+  print(
+    "Full Name => ${user["fullName"]}",
+  );
 
-  print("Full Name => ${user["fullName"]}");
-  print("Email => ${user["email"]}");
-  print("Phone => ${user["phoneNumber"]}");
-  print("Role => ${user["role"]}");
+  print(
+    "Role => ${user["role"]}",
+  );
 
-  print("----------- PATIENT DATA -----------");
-
-  print("Blood Type => ${medicalProfile["bloodType"]}");
-  print("Height => ${medicalProfile["height"]}");
-  print("Weight => ${medicalProfile["weight"]}");
-  print("Conditions => ${medicalProfile["conditions"]}");
-  print("Allergies => ${medicalProfile["allergies"]}");
-
-  print("----------- DOCTOR DATA -----------");
-
-  print("Specialization => ${doctorProfile["specialization"]}");
-  print("Years Experience => ${doctorProfile["yearsExperience"]}");
-  print("Medical License => ${doctorProfile["medicalLicenseNumber"]}");
-  print("Price => ${doctorProfile["price"]}");
-  print("About => ${doctorProfile["about"]}");
-
-  print("====================================");
+  print(
+    "====================================",
+  );
 }
-
   // todo : login
 
   @override

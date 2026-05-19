@@ -53,6 +53,8 @@ import '../../features/doctor/Articles%20Doctor/domain/repo/doctor_articles_repo
     as _i536;
 import '../../features/doctor/Articles%20Doctor/domain/usecases/create_article_usecase.dart'
     as _i194;
+import '../../features/doctor/Articles%20Doctor/domain/usecases/get_doctor_posts_usecase.dart'
+    as _i409;
 import '../../features/doctor/Articles%20Doctor/presentation/manager/doctor_articles_cubit.dart'
     as _i197;
 import '../../features/patient/book_doctor/data/data_sourses/remote_data/doctors_remote_data_source.dart'
@@ -212,6 +214,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i194.CreateArticleUseCase>(
       () => _i194.CreateArticleUseCase(gh<_i536.DoctorArticlesRepo>()),
     );
+    gh.factory<_i409.GetDoctorPostsUseCase>(
+      () => _i409.GetDoctorPostsUseCase(gh<_i536.DoctorArticlesRepo>()),
+    );
     gh.factory<_i913.UpdateMedicineCubit>(
       () => _i913.UpdateMedicineCubit(
         updateMedicineUseCase: gh<_i403.UpdateMedicineUseCase>(),
@@ -253,9 +258,6 @@ extension GetItInjectableX on _i174.GetIt {
         searchDoctorsUseCase: gh<_i182.SearchDoctorsUseCase>(),
       ),
     );
-    gh.factory<_i197.DoctorArticlesCubit>(
-      () => _i197.DoctorArticlesCubit(gh<_i194.CreateArticleUseCase>()),
-    );
     gh.factory<_i786.UpdateProfilePatientUseCase>(
       () => _i786.UpdateProfilePatientUseCase(gh<_i556.ProfilePatientRepo>()),
     );
@@ -280,6 +282,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i719.HomeCubit>(
       () => _i719.HomeCubit(
         fetchArticlesUseCase: gh<_i634.GetAllArticlesUseCase>(),
+      ),
+    );
+    gh.factory<_i197.DoctorArticlesCubit>(
+      () => _i197.DoctorArticlesCubit(
+        gh<_i194.CreateArticleUseCase>(),
+        gh<_i409.GetDoctorPostsUseCase>(),
       ),
     );
     gh.factory<_i65.LoginCubit>(

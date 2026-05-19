@@ -5,11 +5,11 @@ import 'package:Axon/core/errors/mappers/exception_to_failure_mapper.dart';
 import 'package:Axon/core/network/api_manager.dart';
 import 'package:Axon/core/network/endpoints.dart';
 import 'package:Axon/features/doctor/Articles%20Doctor/data/datasources/doctor_articles_remote_datasource.dart';
+import 'package:Axon/features/doctor/Articles%20Doctor/data/models/doctor_posts_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:Axon/features/doctor/Articles%20Doctor/data/models/create_article_model.dart';
-
 
 @Injectable(as: DoctorArticlesRemoteDataSource)
 class DoctorArticlesRemoteDataSourceImpl
@@ -17,7 +17,9 @@ class DoctorArticlesRemoteDataSourceImpl
 
   final ApiManager apiManager;
 
-  DoctorArticlesRemoteDataSourceImpl({required this.apiManager});
+  DoctorArticlesRemoteDataSourceImpl({
+    required this.apiManager,
+  });
 
   @override
   Future<Either<Failure, CreateArticleModel>> createArticle({
@@ -35,18 +37,24 @@ class DoctorArticlesRemoteDataSourceImpl
       print("Image Path: $imagePath");
 
       FormData formData = FormData.fromMap({
+
         "title": title,
+
         "content": content,
-        "postImage": await MultipartFile.fromFile(imagePath),
+
+        /// IMPORTANT
+        /// API EXPECTS articleImage
+        "articleImage": await MultipartFile.fromFile(
+          imagePath,
+          filename: imagePath.split('/').last,
+        ),
       });
 
-      /// print form data fields
       print("Fields:");
       for (var field in formData.fields) {
         print("${field.key}: ${field.value}");
       }
 
-      /// print files
       print("Files:");
       for (var file in formData.files) {
         print("${file.key}: ${file.value.filename}");
@@ -66,7 +74,7 @@ class DoctorArticlesRemoteDataSourceImpl
       final article = CreateArticleModel.fromJson(response);
 
       print("=========== ARTICLE PARSED SUCCESSFULLY ==========");
-      print("Status: ${article.status}");
+      print("Success: ${article.success}");
       print("Message: ${article.message}");
       print("Article ID: ${article.article.id}");
       print("==================================================");
@@ -80,7 +88,11 @@ class DoctorArticlesRemoteDataSourceImpl
       print("Response: ${e.response?.data}");
       print("=================================================");
 
-      return Left(mapExceptionToFailure(ErrorHandler.handle(e)));
+      return Left(
+        mapExceptionToFailure(
+          ErrorHandler.handle(e),
+        ),
+      );
 
     } on AppException catch (e) {
 
@@ -88,7 +100,9 @@ class DoctorArticlesRemoteDataSourceImpl
       print(e);
       print("=================================================");
 
-      return Left(mapExceptionToFailure(e));
+      return Left(
+        mapExceptionToFailure(e),
+      );
 
     } catch (e) {
 
@@ -99,4 +113,64 @@ class DoctorArticlesRemoteDataSourceImpl
       return Left(ServerFailure());
     }
   }
+
+
+
+
+
+
+
+
+
+ @override
+Future<Either<Failure, DoctorPostsModel>>
+getDoctorPosts({
+  required String doctorId,
+}) async {
+
+  try {
+
+    final response = await apiManager.get(
+
+      "${Endpoints.getDoctorPosts}/$doctorId?page=1&limit=10",
+    );
+
+    print(
+      "=========== GET DOCTOR POSTS RESPONSE ==========",
+    );
+
+    print(response);
+
+    print(
+      "================================================",
+    );
+
+    final posts =
+        DoctorPostsModel.fromJson(response);
+
+    return Right(posts);
+
+  } on DioException catch (e) {
+
+    print(
+      "=========== GET POSTS ERROR ==========",
+    );
+
+    print(e.response?.data);
+
+    print(
+      "======================================",
+    );
+
+    return Left(
+      mapExceptionToFailure(
+        ErrorHandler.handle(e),
+      ),
+    );
+
+  } catch (e) {
+
+    return Left(ServerFailure());
+  }
+}
 }
