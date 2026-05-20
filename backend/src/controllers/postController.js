@@ -3,14 +3,52 @@ import { sendLocalizedResponse } from "../utils/response.js";
 import { msg } from "../utils/i18n.js";
 import { moveFromTemp, cleanupTemp } from "../middlewares/upload.js";
 import * as PostService from "../services/postService.js";
+import fs from "fs";
+import path from "path";
 
-export const getAll = catchAsync(async (req, res) => {
+// Helper: rollback moved files
+const rollbackMovedFiles = (data) => {
+  const filesToDelete = [data.image].filter(Boolean);
+  for (const filePath of filesToDelete) {
+    try {
+      const fullPath = path.join(process.cwd(), filePath.replace(/^\//, ""));
+      if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+    } catch {
+      /* ignore */
+    }
+  }
+};
+
+export const getAllArticles = catchAsync(async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
-  const result = await PostService.getAll(Number(page), Number(limit));
+    const result = await PostService.getAll(
+      Number(page),
+      Number(limit),
+      "article",
+      "doctor",
+    );
+
   sendLocalizedResponse(
     res,
     200,
-    msg("تم جلب المنشورات", "Posts fetched"),
+    msg("جلب المقالات", "Articles fetched"),
+    result,
+    req.lang,
+  );
+});
+
+export const getAllCommunityPosts = catchAsync(async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const result = await PostService.getAll(
+    Number(page),
+    Number(limit),
+    "community",
+    "patient",
+  );
+  sendLocalizedResponse(
+    res,
+    200,
+    msg("تم جلب منشورات المرضى", "Community posts fetched"),
     result,
     req.lang,
   );
@@ -43,14 +81,13 @@ export const getById = catchAsync(async (req, res) => {
   );
 });
 
-// ── Articles: Doctors only ─────────────────
 export const createArticle = catchAsync(async (req, res) => {
   const data = { ...req.body, type: "article" };
-  const imageFile = req.files?.articleImage?.[0]; // ← CHANGED: articleImage
+  const imageFile = req.files?.articleImage?.[0];
 
   try {
     if (imageFile) {
-      const { url } = moveFromTemp(imageFile.filename, "articleImage"); // ← CHANGED
+      const { url } = moveFromTemp(imageFile.filename, "articleImage");
       data.image = url;
     }
 
@@ -63,15 +100,15 @@ export const createArticle = catchAsync(async (req, res) => {
       req.lang,
     );
   } catch (err) {
+    rollbackMovedFiles(data);
     cleanupTemp(req.files);
     throw err;
   }
 });
 
-// ── Community posts: Patients only ─────────
 export const createCommunityPost = catchAsync(async (req, res) => {
   const data = { ...req.body, type: "community" };
-  const imageFile = req.files?.postImage?.[0]; // ← stays postImage
+  const imageFile = req.files?.postImage?.[0];
 
   try {
     if (imageFile) {
@@ -88,6 +125,7 @@ export const createCommunityPost = catchAsync(async (req, res) => {
       req.lang,
     );
   } catch (err) {
+    rollbackMovedFiles(data);
     cleanupTemp(req.files);
     throw err;
   }
@@ -115,7 +153,6 @@ export const remove = catchAsync(async (req, res) => {
   );
 });
 
-// ── Like: Patients only ────────────────────
 export const toggleLike = catchAsync(async (req, res) => {
   const result = await PostService.toggleLike(req.params.id, req.user.id);
   sendLocalizedResponse(
@@ -129,7 +166,6 @@ export const toggleLike = catchAsync(async (req, res) => {
   );
 });
 
-// ── Comments: Patients only, community posts only ──
 export const addComment = catchAsync(async (req, res) => {
   const comment = await PostService.addComment(
     req.params.id,

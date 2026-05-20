@@ -1,8 +1,24 @@
 import { catchAsync } from "../utils/catchAsync.js";
 import { sendLocalizedResponse } from "../utils/response.js";
 import { msg } from "../utils/i18n.js";
+import AppError from "../utils/AppError.js";
 import { moveFromTemp, cleanupTemp } from "../middlewares/upload.js";
 import * as recordService from "../services/recordService.js";
+import fs from "fs";
+import path from "path";
+
+// Helper: rollback moved files
+const rollbackMovedFiles = (testData) => {
+  const filesToDelete = [testData.image].filter(Boolean);
+  for (const filePath of filesToDelete) {
+    try {
+      const fullPath = path.join(process.cwd(), filePath.replace(/^\//, ""));
+      if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+    } catch {
+      /* ignore */
+    }
+  }
+};
 
 export const getMyRecord = catchAsync(async (req, res) => {
   const record = await recordService.getByPatient(req.user.id);
@@ -50,12 +66,11 @@ export const addTest = catchAsync(async (req, res) => {
       res,
       200,
       msg("تم إضافة التحليل", "Test added"),
-      {
-        record,
-      },
+      { record },
       req.lang,
     );
   } catch (err) {
+    rollbackMovedFiles(testData);
     cleanupTemp(req.files);
     throw err;
   }
@@ -69,11 +84,7 @@ export const generateQR = catchAsync(async (req, res) => {
     res,
     200,
     msg("تم إنشاء رمز QR", "QR code generated"),
-    {
-      qrCode,
-      pin, // User must share this verbally with emergency responder
-      expiresAt,
-    },
+    { qrCode, pin, expiresAt },
     req.lang,
   );
 });

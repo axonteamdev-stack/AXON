@@ -7,12 +7,9 @@ import { msg } from "../utils/i18n.js";
 
 const RESET_TOKEN_EXPIRY = 10 * 60 * 1000;
 
-// Helper: parse conditions/allergies from string (form-data) or array (JSON)
 const safeParse = (input, fieldName) => {
   if (!input) return [];
-  // Already an array (from JSON)
   if (Array.isArray(input)) return input;
-  // JSON string (from form-data)
   try {
     const parsed = JSON.parse(input);
     return Array.isArray(parsed) ? parsed : [parsed];
@@ -24,7 +21,7 @@ const safeParse = (input, fieldName) => {
   }
 };
 
-export const registerPatient = async (data, files = {}) => {
+export const registerPatient = async (data) => {
   const existing = await User.findByEmail(data.email);
   if (existing) {
     throw new AppError(
@@ -42,9 +39,7 @@ export const registerPatient = async (data, files = {}) => {
     role: "patient",
     isVerified: true,
     preferredLanguage: data.preferredLanguage || "ar",
-    personalPhoto: files.personalPhoto?.[0]?.filename
-      ? `/uploads/personalPhoto/${files.personalPhoto[0].filename}`
-      : null,
+    personalPhoto: data.personalPhoto || null,
   });
 
   const hasHealthData =
@@ -54,8 +49,8 @@ export const registerPatient = async (data, files = {}) => {
     data.conditions ||
     data.allergies ||
     data.emergencyContactName ||
-    files.radiologyImage?.length ||
-    files.labImage?.length;
+    data.radiologyTests?.length ||
+    data.labTests?.length;
 
   let patient = null;
 
@@ -63,26 +58,24 @@ export const registerPatient = async (data, files = {}) => {
     const conditions = safeParse(data.conditions, "conditions");
     const allergies = safeParse(data.allergies, "allergies");
 
-    let radiologyTests = [];
-    if (files.radiologyImage?.length) {
+    let radiologyTests = data.radiologyTests || [];
+    if (data.radiologyDescriptions && radiologyTests.length) {
       const descriptions = safeParse(
         data.radiologyDescriptions,
         "radiologyDescriptions",
       );
-      radiologyTests = files.radiologyImage.map((file, i) => ({
-        image: `/uploads/radiology/${file.filename}`,
-        description: descriptions[i] || "",
-        date: new Date(),
+      radiologyTests = radiologyTests.map((test, i) => ({
+        ...test,
+        description: descriptions[i] || test.description || "",
       }));
     }
 
-    let labTests = [];
-    if (files.labImage?.length) {
+    let labTests = data.labTests || [];
+    if (data.labDescriptions && labTests.length) {
       const descriptions = safeParse(data.labDescriptions, "labDescriptions");
-      labTests = files.labImage.map((file, i) => ({
-        image: `/uploads/labTests/${file.filename}`,
-        description: descriptions[i] || "",
-        date: new Date(),
+      labTests = labTests.map((test, i) => ({
+        ...test,
+        description: descriptions[i] || test.description || "",
       }));
     }
 

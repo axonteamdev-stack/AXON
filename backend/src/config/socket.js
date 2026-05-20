@@ -36,6 +36,10 @@ export const initSocket = (server) => {
       "User connected",
     );
 
+    if (socket.user?.id) {
+      socket.join(socket.user.id.toString());
+    }
+
     socket.on("joinConversation", (conversationId) => {
       if (!conversationId || typeof conversationId !== "string") {
         socket.emit("error", { message: "Invalid conversation ID" });

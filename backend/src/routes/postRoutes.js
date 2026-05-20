@@ -60,7 +60,9 @@ const ALLOWED_TAGS = [
 
 const articleTagsSchema = z.array(z.enum(ALLOWED_TAGS)).max(5).optional();
 
-router.get("/", postController.getAll);
+router.get("/articles", postController.getAllArticles);
+
+router.get("/community", postController.getAllCommunityPosts);
 
 router.get(
   "/doctor/:doctorId",

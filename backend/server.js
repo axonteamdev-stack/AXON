@@ -2,11 +2,10 @@ import { validateEnvironment } from "./src/config/env.js";
 import app from "./app.js";
 import connectDB from "./src/config/db.js";
 import { initSocket } from "./src/config/socket.js";
-import { logger, errorLogger } from "./src/config/logger.js";
+import { logger, errorLogger, closeLogger } from "./src/config/logger.js";
 import fs from "fs";
 import path from "path";
 
-// Validate env vars
 try {
   validateEnvironment();
   logger.info("Environment validation passed");
@@ -15,7 +14,6 @@ try {
   process.exit(1);
 }
 
-// Ensure upload directories exist
 const uploadDir = process.env.UPLOAD_DIR || "./uploads";
 const dirs = [
   "certificates",
@@ -23,7 +21,7 @@ const dirs = [
   "radiology",
   "labTests",
   "posts",
-  "articles", // ← NEW: dedicated folder for article images
+  "articles",
   ".temp",
 ];
 for (const d of dirs) {
@@ -36,7 +34,6 @@ for (const d of dirs) {
   }
 }
 
-// Connect to DB and start server
 connectDB()
   .then(() => {
     const PORT = process.env.PORT || 3000;
@@ -49,7 +46,6 @@ connectDB()
 
     server.timeout = 30000;
 
-    // Graceful shutdown
     let isShuttingDown = false;
 
     const shutdown = (signal) => {
@@ -60,10 +56,10 @@ connectDB()
 
       server.close(() => {
         logger.info("HTTP server closed");
+        closeLogger();
         process.exit(0);
       });
 
-      // Force shutdown after 10 seconds
       setTimeout(() => {
         errorLogger.error("Force shutdown after timeout");
         process.exit(1);
@@ -78,15 +74,12 @@ connectDB()
     process.exit(1);
   });
 
-// Global error handlers — log but don't crash immediately
 process.on("unhandledRejection", (reason, promise) => {
   errorLogger.error({ reason, promise }, "Unhandled Rejection");
-  // Don't exit — let existing requests finish, monitor and alert instead
 });
 
 process.on("uncaughtException", (err) => {
   errorLogger.error({ err }, "Uncaught Exception");
-  // Give logger time to flush, then exit
   setTimeout(() => process.exit(1), 1000);
 });
 

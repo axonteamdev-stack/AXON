@@ -85,7 +85,7 @@ export const generateQR = async (patientId) => {
     },
   );
 
-  const qrCode = await QRCode.toDataURL(`${token}:${pin}`, {
+  const qrCode = await QRCode.toDataURL(token, {
     width: 300,
     errorCorrectionLevel: "M",
   });

@@ -12,13 +12,6 @@ export const create = async (patientId, { doctorId, scheduledAt, notes }) => {
         notes,
     });
 
-    // Create conversation for chat
-    await Conversation.create({
-        appointmentId: appointment._id,
-        participants: [patientId, doctorId],
-    });
-
-    // Notify doctor via socket
     try {
         const io = getIO();
         io.to(doctorId.toString()).emit("newAppointment", {
@@ -72,7 +65,18 @@ export const updateStatus = async (id, doctorId, status) => {
     appointment.status = status;
     await appointment.save();
 
-    // Notify patient
+    if (status === "accepted") {
+        const existingConversation = await Conversation.findOne({
+            appointmentId: appointment._id,
+        });
+        if (!existingConversation) {
+            await Conversation.create({
+                appointmentId: appointment._id,
+                participants: [appointment.patient, appointment.doctor],
+            });
+        }
+    }
+
     try {
         const io = getIO();
         io.to(appointment.patient.toString()).emit("appointmentUpdated", {

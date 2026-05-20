@@ -1,11 +1,26 @@
 import multer from "multer";
 import express from "express";
 import fs from "fs";
+import path from "path";
+import crypto from "crypto";
 import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
 
 const urlencoded = express.urlencoded({ extended: true });
-const upload = multer({ dest: "uploads/.temp" }).any();
+
+// ← FIXED: Use diskStorage with proper filenames & original extension
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/.temp");
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}`;
+    const ext = path.extname(file.originalname) || "";
+    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+  },
+});
+
+const upload = multer({ storage }).any();
 
 export const parseUniversal =
   (fileFields = []) =>

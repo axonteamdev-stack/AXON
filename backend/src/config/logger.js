@@ -12,13 +12,11 @@ if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir, { recursive: true });
 }
 
-// ── Configuration ─────────────────────────────────────────────
 const LOG_RETENTION_DAYS = Number(process.env.LOG_RETENTION_DAYS) || 30;
 const LOG_MAX_SIZE_MB = Number(process.env.LOG_MAX_SIZE_MB) || 100;
 const LOG_ROTATION_SIZE_MB = Number(process.env.LOG_ROTATION_SIZE_MB) || 50;
 const LOG_ROTATION_COUNT = Number(process.env.LOG_ROTATION_COUNT) || 5;
 
-// ── Log rotation ─────────────────────────────────────────────
 const rotateLogFile = (basePath) => {
   try {
     if (!fs.existsSync(basePath)) return;
@@ -41,7 +39,6 @@ const rotateLogFile = (basePath) => {
   }
 };
 
-// ── Log retention ────────────────────────────────────────────
 const cleanupOldLogs = () => {
   try {
     const files = fs.readdirSync(logDir);
@@ -78,7 +75,6 @@ const errorLogsStream = fs.createWriteStream(path.join(logDir, "error.log"), {
   flags: "a",
 });
 
-// ── Base Logger Configuration ───────────────────────────────
 console.log("NODE_ENV value:", process.env.NODE_ENV);
 console.log("dotenv loaded?", !!process.env.NODE_ENV);
 const baseConfig = {
@@ -87,7 +83,6 @@ const baseConfig = {
     pid: process.pid,
     env: process.env.NODE_ENV || "unknown",
   },
-  // Pino timestamp function must return a string with leading comma
   timestamp: pino.stdTimeFunctions.isoTime,
   ...(isDev && {
     transport: {
@@ -109,7 +104,6 @@ const streams = [
 
 export const logger = pino(baseConfig, pino.multistream(streams));
 
-// ── Error-only logger ────────────────────────────────────────
 export const errorLogger = pino(
   {
     level: "error",
@@ -128,7 +122,6 @@ export const errorLogger = pino(
   pino.multistream([{ stream: errorLogsStream, level: "error" }]),
 );
 
-// ── Request Logger ───────────────────────────────────────────
 export const createRequestLogger = (req) => {
   const requestId = req.headers["x-request-id"] || generateRequestId();
   return logger.child({
@@ -146,7 +139,6 @@ function generateRequestId() {
     .slice(0, 16);
 }
 
-// ── Performance Logger ─────────────────────────────────────
 export const createPerformanceLogger = (label) => {
   const start = performance.now();
   return {
@@ -161,27 +153,9 @@ export const createPerformanceLogger = (label) => {
   };
 };
 
-// ── Graceful shutdown ──────────────────────────────────────
-const shutdown = () => {
-  logger.info("Logger shutting down gracefully");
+export const closeLogger = () => {
   allLogsStream.end();
   errorLogsStream.end();
-  process.exit(0);
 };
-
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
-
-process.on("uncaughtException", (err) => {
-  errorLogger.fatal({ err, type: "uncaughtException" }, "Uncaught exception");
-  shutdown();
-});
-
-process.on("unhandledRejection", (reason) => {
-  errorLogger.error(
-    { reason, type: "unhandledRejection" },
-    "Unhandled promise rejection",
-  );
-});
 
 export default logger;

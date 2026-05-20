@@ -18,11 +18,12 @@ const checkOwnership = (post, userId) => {
 };
 
 // ── Read operations ────────────────────────
-export const getAll = async (page = 1, limit = 10) => {
+export const getAll = async (page = 1, limit = 10, type = null) => {
   const skip = (page - 1) * limit;
+  const filter = type ? { type } : {};
 
   const [posts, total] = await Promise.all([
-    Post.find()
+    Post.find(filter)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
@@ -31,7 +32,7 @@ export const getAll = async (page = 1, limit = 10) => {
         "fullName personalPhoto role doctorProfile.specialization",
       )
       .lean(),
-    Post.countDocuments(),
+    Post.countDocuments(filter),
   ]);
 
   return {

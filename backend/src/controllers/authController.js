@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+import AppError from "../utils/AppError.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import { sendLocalizedResponse } from "../utils/response.js";
 import { msg } from "../utils/i18n.js";
@@ -10,30 +13,98 @@ import {
 } from "../services/tokenService.js";
 import { moveFromTemp, cleanupTemp } from "../middlewares/upload.js";
 import * as AuthService from "../services/authService.js";
+import User from "../models/User.js";
 
-// authController.js — temporary debug
+// Helper: delete files that were already moved from .temp to final folder
+const rollbackMovedFiles = (data) => {
+  const filesToDelete = [
+    data.personalPhoto,
+    data.licenseImage,
+    ...(data.radiologyTests?.map((t) => t.image) || []),
+    ...(data.labTests?.map((t) => t.image) || []),
+  ].filter(Boolean);
+
+  for (const filePath of filesToDelete) {
+    try {
+      const fullPath = path.join(process.cwd(), filePath.replace(/^\//, ""));
+      if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath);
+      }
+    } catch {
+      // Ignore cleanup errors — best effort
+    }
+  }
+};
+
 export const signupPatient = catchAsync(async (req, res) => {
-  const { user, patient } = await AuthService.registerPatient(
-    req.body,
-    req.files || {},
-  );
-  const tokens = generateTokens(res, user._id);
-  const responseLang = req.body.preferredLanguage || req.lang;
+  // ← FIXED: Validate email uniqueness BEFORE moving files
+  const existing = await User.findByEmail(req.body.email);
+  if (existing) {
+    cleanupTemp(req.files);
+    throw new AppError(
+      msg("البريد الإلكتروني مسجل بالفعل", "Email already registered"),
+      400,
+    );
+  }
 
-  sendLocalizedResponse(
-    res,
-    201,
-    msg("تم التسجيل بنجاح", "Registration successful"),
-    {
-      user: transformUserResponse(user, patient),
-      hasCompletedOnboarding: !!patient,
-      tokens,
-    },
-    responseLang,
-  );
+  const data = { ...req.body };
+
+  try {
+    const photoFile = req.files?.personalPhoto?.[0];
+    if (photoFile) {
+      const { url } = moveFromTemp(photoFile.filename, "personalPhoto");
+      data.personalPhoto = url;
+    }
+
+    if (req.files?.radiologyImage?.length) {
+      data.radiologyTests = req.files.radiologyImage.map((file) => ({
+        image: moveFromTemp(file.filename, "radiologyImage").url,
+        description: "",
+        date: new Date(),
+      }));
+    }
+
+    if (req.files?.labImage?.length) {
+      data.labTests = req.files.labImage.map((file) => ({
+        image: moveFromTemp(file.filename, "labImage").url,
+        description: "",
+        date: new Date(),
+      }));
+    }
+
+    const { user, patient } = await AuthService.registerPatient(data);
+    const tokens = generateTokens(res, user._id);
+    const responseLang = req.body.preferredLanguage || req.lang;
+
+    sendLocalizedResponse(
+      res,
+      201,
+      msg("تم التسجيل بنجاح", "Registration successful"),
+      {
+        user: transformUserResponse(user, patient),
+        hasCompletedOnboarding: !!patient,
+        tokens,
+      },
+      responseLang,
+    );
+  } catch (err) {
+    rollbackMovedFiles(data); // ← FIXED: Clean up moved files on any error
+    cleanupTemp(req.files);
+    throw err;
+  }
 });
 
 export const signupDoctor = catchAsync(async (req, res) => {
+  // ← FIXED: Same pattern
+  const existing = await User.findByEmail(req.body.email);
+  if (existing) {
+    cleanupTemp(req.files);
+    throw new AppError(
+      msg("البريد الإلكتروني مسجل بالفعل", "Email already registered"),
+      400,
+    );
+  }
+
   const data = { ...req.body };
 
   const licenseFile = req.files?.licenseImage?.[0];
@@ -64,6 +135,7 @@ export const signupDoctor = catchAsync(async (req, res) => {
       responseLang,
     );
   } catch (err) {
+    rollbackMovedFiles(data);
     cleanupTemp(req.files);
     throw err;
   }

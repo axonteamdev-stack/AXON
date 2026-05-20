@@ -19,7 +19,6 @@ if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 
-// Trim spaces from allowed origins
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
   : ["http://localhost:3000"];
@@ -53,40 +52,28 @@ app.use(
   }),
 );
 
-// Prevent HTTP Parameter Pollution
 app.use(hpp());
-
-// Compress responses larger than 1KB
 app.use(compression({ threshold: 1024 }));
-
 app.use(cookieParser());
 app.use(setLanguage);
 
-// ── CRITICAL FIX: Skip body parsers for multipart uploads ──────
-// Handles undefined content-type safely
-app.use((req, res, next) => {
-  const contentType = (req.headers["content-type"] || "").toLowerCase();
-  if (contentType.includes("multipart/form-data")) {
-    return next();
-  }
-  next();
-});
+app.use(express.json({ limit: "100kb", type: "application/json" }));
+app.use(
+  express.urlencoded({
+    limit: "100kb",
+    extended: true,
+    type: "application/x-www-form-urlencoded",
+  }),
+);
 
-// These now safely skip multipart requests
-app.use(express.json({ limit: "100kb" }));
-app.use(express.urlencoded({ limit: "100kb", extended: true }));
-
-// Express 5: req.query and req.params are read-only
-// Only sanitize req.body. Sanitize query/params at point of use if needed.
 app.use((req, res, next) => {
   if (req.body && typeof req.body === "object") {
-    // Manual sanitization for req.body only
     const sanitize = (obj) => {
       if (typeof obj !== "object" || obj === null) return obj;
       if (Array.isArray(obj)) return obj.map(sanitize);
       const clean = {};
       for (const [key, value] of Object.entries(obj)) {
-        if (key.startsWith("$")) continue; // Remove MongoDB operators
+        if (key.startsWith("$")) continue;
         clean[key] = typeof value === "object" ? sanitize(value) : value;
       }
       return clean;

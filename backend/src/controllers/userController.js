@@ -1,9 +1,12 @@
+import fs from "fs";
+import path from "path";
 import { catchAsync } from "../utils/catchAsync.js";
 import { sendLocalizedResponse } from "../utils/response.js";
 import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
 import { moveFromTemp, cleanupTemp } from "../middlewares/upload.js";
 import * as UserService from "../services/userService.js";
+import User from "../models/User.js";
 
 export const getAllDoctors = catchAsync(async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
@@ -62,6 +65,19 @@ export const updateProfile = catchAsync(async (req, res) => {
 
   try {
     if (photoFile) {
+      const currentUser = await User.findById(req.user.id)
+        .select("personalPhoto")
+        .lean();
+      if (currentUser?.personalPhoto) {
+        const oldPath = path.join(
+          process.cwd(),
+          currentUser.personalPhoto.replace(/^\//, ""),
+        );
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+
       const { url } = moveFromTemp(photoFile.filename, "personalPhoto");
       data.personalPhoto = url;
     }
@@ -79,5 +95,3 @@ export const updateProfile = catchAsync(async (req, res) => {
     throw err;
   }
 });
-
-// ❌ Follow controllers REMOVED — no follow system for any users

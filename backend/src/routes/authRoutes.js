@@ -65,7 +65,7 @@ router.post(
 
 router.post("/logout", authController.logout);
 
-router.post("/refresh", authController.refreshAccessToken);
+router.post("/refresh", authLimiter, authController.refreshAccessToken);
 
 router.post(
   "/forgot-password",
