@@ -1,5 +1,6 @@
 import 'package:Axon/core/errors/failures.dart';
 import 'package:Axon/features/patient/home_patient/data/data_sources/home_remote_datasource.dart';
+import 'package:Axon/features/patient/home_patient/domain/entities/article_details_entity.dart';
 import 'package:Axon/features/patient/home_patient/domain/entities/get_all_articales__entity.dart';
 import 'package:Axon/features/patient/home_patient/domain/repo/home_repo.dart';
 import 'package:dartz/dartz.dart';
@@ -27,6 +28,28 @@ class HomeRepoImpl
     final result =
         await remoteDataSource
             .getAllArticles();
+
+    return result.fold(
+
+      (failure) =>
+          Left(failure),
+
+      (model) =>
+          Right(model),
+    );
+  }
+
+  @override
+  Future<Either<
+      Failure,
+      ArticleDetailsEntity>>
+  getArticleById(
+    String id,
+  ) async {
+
+    final result =
+        await remoteDataSource
+            .getArticleById(id);
 
     return result.fold(
 

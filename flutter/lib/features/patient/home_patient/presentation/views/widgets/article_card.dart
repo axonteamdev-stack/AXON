@@ -39,29 +39,39 @@ class ArticleCard extends StatelessWidget {
           children: [
 
             /// image
-            ClipRRect(
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(14.r),
+           ClipRRect(
+  borderRadius: BorderRadius.vertical(
+    top: Radius.circular(14.r),
+  ),
+  child: item.image.isNotEmpty
+      ? Image.network(
+          "${Endpoints.baseUrlImage}${item.image}",
+          height: 120.h,
+          width: double.infinity,
+          fit: BoxFit.cover,
+
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              width: double.infinity,
+              height: 120.h,
+              color: Colors.grey[200],
+              child: const Icon(
+                Icons.image_not_supported,
+                color: Colors.grey,
               ),
-              
-              child: Image.network(
-                // "${Endpoints.baseUrlImage}${item.image}"
-                Endpoints.baseUrlImage + item.image,
-                height: 120.h,
-                width: double.infinity,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  print("Image Error: $error");
-      print("Image URL: ${Endpoints.baseUrlImage}${item.image}");
-                  return Container(
-                    width: double.infinity,
-                    height: 120.h,
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.image_not_supported),
-                  );
-                },
-              ),
-            ),
+            );
+          },
+        )
+      : Container(
+          width: double.infinity,
+          height: 120.h,
+          color: Colors.grey[200],
+          child: const Icon(
+            Icons.image_not_supported,
+            color: Colors.grey,
+          ),
+        ),
+),
             SizedBox(height: 10.h,),
 
             /// title

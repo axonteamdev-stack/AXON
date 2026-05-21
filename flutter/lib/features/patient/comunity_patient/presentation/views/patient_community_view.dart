@@ -1,117 +1,213 @@
-import 'package:Axon/core/extensions/localization_ext.dart';
+import 'package:Axon/core/style/colors.dart';
+import 'package:Axon/core/widgets/text_app.dart';
+import 'package:Axon/features/patient/comunity_patient/presentation/manager/community_patient/patient_community_cubit.dart';
+import 'package:Axon/features/patient/comunity_patient/presentation/views/widgets/create_patient_post_bottom_sheet.dart';
+import 'package:Axon/features/patient/comunity_patient/presentation/views/widgets/patient_post_item_card.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:Axon/core/extensions/context_extension.dart';
-import 'package:Axon/core/style/colors.dart';
-import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/patient/comunity_patient/presentation/manager/community_patient/patient_community_cubit.dart';
+class PatientCommunityView
+    extends StatefulWidget {
 
-import 'widgets/patient_post_item_card.dart';
-import 'widgets/create_patient_post_bottom_sheet.dart';
+  const PatientCommunityView({
+    super.key,
+  });
 
-class PatientCommunityView extends StatelessWidget {
-  const PatientCommunityView({super.key});
+  @override
+  State<PatientCommunityView>
+      createState() =>
+          _PatientCommunityScreenState();
+}
+
+class _PatientCommunityScreenState
+    extends State<
+        PatientCommunityView> {
+
+  @override
+  void initState() {
+
+    super.initState();
+
+    context
+        .read<
+            PatientCommunityCubit>()
+        .getPosts();
+  }
+
+  Future<void> _onRefresh() async {
+
+    await context
+        .read<
+            PatientCommunityCubit>()
+        .getPosts();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => PatientCommunityCubit(),
-      child: Builder(
-        builder: (context) {
-          return Scaffold(
-            backgroundColor: AppColors.white,
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: AppColors.primaryColor,
-              child: const Icon(Icons.add, color: AppColors.white),
-              onPressed: () {
-                final cubit =
-                    context.read<PatientCommunityCubit>();
 
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (_) => BlocProvider.value(
-                    value: cubit,
-                    child: const CreatePatientPostBottomSheet(),
-                  ),
-                );
-              },
-            ),
-            body: SafeArea(
-              child: Padding(
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  children: [
-                    TextApp(
-                      text: context.l10n.community,
-                      weight: AppTextWeight.bold,
-                      fontSize: 18,
-                      color: AppColors.primaryColor,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 24.h),
-                    Expanded(
-                      child: BlocBuilder<
-                          PatientCommunityCubit,
-                          PatientCommunityState>(
-                        builder: (context, state) {
-                          if (state.posts.isEmpty) {
-                            return const _EmptyCommunityState();
-                          }
+    return Scaffold(
 
-                          return ListView.separated(
-                            itemCount: state.posts.length,
-                            separatorBuilder: (_, __) =>
-                                SizedBox(height: 16.h),
-                            itemBuilder: (_, index) =>
-                                PatientPostItemCard(
-                              post: state.posts[index],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+      backgroundColor:
+          const Color(0xffF5F7FB),
+
+      floatingActionButton:
+          FloatingActionButton(
+
+        backgroundColor:
+            AppColors.primaryColor,
+
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+
+        onPressed: () {
+
+          showModalBottomSheet(
+
+            context: context,
+
+            isScrollControlled:
+                true,
+
+            backgroundColor:
+                Colors.transparent,
+
+            builder:
+                (_) =>
+                    BlocProvider.value(
+
+              value: context.read<
+                  PatientCommunityCubit>(),
+
+              child:
+                  const CreatePatientPostBottomSheet(),
             ),
           );
         },
       ),
-    );
-  }
-}
 
-class _EmptyCommunityState extends StatelessWidget {
-  const _EmptyCommunityState();
+      body: SafeArea(
 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.forum_outlined,
-            size: 72,
-            color: AppColors.grey.withOpacity(0.7),
+        child: RefreshIndicator(
+
+          color:
+              AppColors.primaryColor,
+
+          onRefresh:
+              _onRefresh,
+
+          child: BlocBuilder<
+              PatientCommunityCubit,
+              PatientCommunityState>(
+
+            builder:
+                (context, state) {
+
+              // LOADING
+
+              if (state
+                  is PatientCommunityLoading) {
+
+                return const Center(
+                  child:
+                      CircularProgressIndicator(),
+                );
+              }
+
+              // ERROR
+
+              if (state
+                  is PatientCommunityError) {
+
+                return ListView(
+                  children: [
+                    SizedBox(
+                      height:
+                          MediaQuery.of(context)
+                              .size
+                              .height *
+                          0.7,
+                      child: Center(
+                        child: TextApp(
+                          text:
+                              state.failure.toString(),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              // SUCCESS
+
+              if (state
+                  is PatientCommunitySuccess) {
+
+                final posts =
+                    state
+                        .posts
+                        .posts;
+
+                if (posts.isEmpty) {
+
+                  return ListView(
+                    children: const [
+                      SizedBox(
+                        height: 500,
+                        child: Center(
+                          child: TextApp(
+                            text:
+                                "No Posts Yet",
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                return ListView.separated(
+
+                  physics:
+                      const AlwaysScrollableScrollPhysics(),
+
+                  padding:
+                      EdgeInsets.all(
+                    16.w,
+                  ),
+
+                  itemCount:
+                      posts.length,
+
+                  separatorBuilder:
+                      (_, __) =>
+                          SizedBox(
+                    height: 16.h,
+                  ),
+
+                  itemBuilder:
+                      (_, index) {
+
+                    return PatientPostItemCard(
+                      post:
+                          posts[index],
+                    );
+                  },
+                );
+              }
+
+              return ListView(
+                children: const [
+                  SizedBox(
+                    height: 500,
+                  ),
+                ],
+              );
+            },
           ),
-          SizedBox(height: 14.h),
-          TextApp(
-            text: context.l10n.no_posts,
-            weight: AppTextWeight.semiBold,
-            color: AppColors.grey,
-          ),
-          SizedBox(height: 6.h),
-          TextApp(
-            text: context.l10n.be_first_post,
-            fontSize: 12,
-            color: AppColors.grey,
-          ),
-        ],
+        ),
       ),
     );
   }

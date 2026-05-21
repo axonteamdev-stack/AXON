@@ -1,145 +1,194 @@
-import 'package:Axon/features/patient/comunity_patient/data/models/patient_post_model.dart';
+import 'package:Axon/core/errors/failures.dart';
+import 'package:Axon/features/patient/comunity_patient/domain/entities/comment_entity.dart';
+import 'package:Axon/features/patient/comunity_patient/domain/entities/comments_entity.dart';
+import 'package:Axon/features/patient/comunity_patient/domain/entities/community_post_entity.dart';
+import 'package:Axon/features/patient/comunity_patient/domain/entities/community_posts_entity.dart';
+
+import 'package:Axon/features/patient/comunity_patient/domain/usecases/add_comment_usecase.dart';
+import 'package:Axon/features/patient/comunity_patient/domain/usecases/create_community_post_usecase.dart';
+import 'package:Axon/features/patient/comunity_patient/domain/usecases/get_comments_usecase.dart';
+import 'package:Axon/features/patient/comunity_patient/domain/usecases/get_community_posts_usecase.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 part 'patient_community_state.dart';
 
-class PatientCommunityCubit extends Cubit<PatientCommunityState> {
-  PatientCommunityCubit() : super(PatientCommunityState.initial());
+@injectable
+class PatientCommunityCubit
+    extends Cubit<PatientCommunityState> {
 
-  void addPost({
+  final GetCommunityPostsUseCase
+      getCommunityPostsUseCase;
+
+  final CreateCommunityPostUseCase
+      createCommunityPostUseCase;
+
+  final AddCommentUseCase
+      addCommentUseCase;
+
+  final GetCommentsUseCase
+      getCommentsUseCase;
+
+  PatientCommunityCubit(
+
+    this.getCommunityPostsUseCase,
+
+    this.createCommunityPostUseCase,
+
+    this.addCommentUseCase,
+
+    this.getCommentsUseCase,
+
+  ) : super(
+          PatientCommunityInitial(),
+        );
+
+  // ================= GET POSTS =================
+
+  Future<void> getPosts() async {
+
+    emit(
+      PatientCommunityLoading(),
+    );
+
+    final either =
+        await getCommunityPostsUseCase();
+
+    either.fold(
+
+      (failure) {
+
+        emit(
+          PatientCommunityError(
+            failure,
+          ),
+        );
+      },
+
+      (posts) {
+
+        emit(
+  PatientCommunitySuccess(
+    posts,
+    refreshTime: DateTime.now(),
+  ),
+);
+      },
+    );
+  }
+
+  // ================= CREATE POST =================
+
+  Future<void> createPost({
+
     required String title,
+
     required String content,
+
     String? imagePath,
-  }) {
-    final post = PatientPostModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+  }) async {
+
+    emit(
+      PatientCommunityLoading(),
+    );
+
+    final either =
+        await createCommunityPostUseCase(
+
       title: title,
+
       content: content,
+
       imagePath: imagePath,
     );
 
-    emit(state.copyWith(posts: [post, ...state.posts]));
+    either.fold(
+
+      (failure) {
+
+        emit(
+          PatientCommunityError(
+            failure,
+          ),
+        );
+      },
+
+      (_) async {
+
+        await getPosts();
+      },
+    );
   }
 
-  void toggleLikePost(String postId) {
-    final updated = state.posts.map((post) {
-      if (post.id == postId) {
-        return PatientPostModel(
-          id: post.id,
-          title: post.title,
-          content: post.content,
-          imagePath: post.imagePath,
-          isLiked: !post.isLiked,
-          likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-          shares: post.shares,
-          comments: post.comments,
-        );
-      }
-      return post;
-    }).toList();
+  // ================= ADD COMMENT =================
 
-    emit(state.copyWith(posts: updated));
+  Future<void> addComment({
+
+    required String postId,
+
+    required String content,
+  }) async {
+
+    final either =
+        await addCommentUseCase(
+
+      postId: postId,
+
+      content: content,
+    );
+
+    either.fold(
+
+      (failure) {
+
+        emit(
+          PatientCommunityError(
+            failure,
+          ),
+        );
+      },
+
+      (_) async {
+
+        await getComments(
+          postId: postId,
+        );
+      },
+    );
   }
 
-  void addComment(String postId, String text) {
-    final updated = state.posts.map((post) {
-      if (post.id == postId) {
-        final newComments = List<PostComment>.from(post.comments)
-          ..add(
-            PostComment(
-              id: DateTime.now().millisecondsSinceEpoch.toString(),
-              text: text,
-            ),
-          );
+  // ================= GET COMMENTS =================
 
-        return PatientPostModel(
-          id: post.id,
-          title: post.title,
-          content: post.content,
-          imagePath: post.imagePath,
-          isLiked: post.isLiked,
-          likes: post.likes,
-          shares: post.shares,
-          comments: newComments,
+  Future<void> getComments({
+
+    required String postId,
+  }) async {
+
+    final either =
+        await getCommentsUseCase(
+      postId: postId,
+    );
+
+    either.fold(
+
+      (failure) {
+
+        emit(
+          PatientCommunityError(
+            failure,
+          ),
         );
-      }
-      return post;
-    }).toList();
+      },
 
-    emit(state.copyWith(posts: updated));
-  }
+      (comments) {
 
-  void toggleLikeComment(String postId, String commentId) {
-    final updated = state.posts.map((post) {
-      if (post.id == postId) {
-        final comments = post.comments.map((c) {
-          if (c.id == commentId) {
-            return PostComment(
-              id: c.id,
-              text: c.text,
-              isLiked: !c.isLiked,
-              likes: c.isLiked ? c.likes - 1 : c.likes + 1,
-              replies: c.replies,
-            );
-          }
-          return c;
-        }).toList();
-
-        return PatientPostModel(
-          id: post.id,
-          title: post.title,
-          content: post.content,
-          imagePath: post.imagePath,
-          isLiked: post.isLiked,
-          likes: post.likes,
-          shares: post.shares,
-          comments: comments,
+        emit(
+          PatientCommentsLoaded(
+            comments,
+          ),
         );
-      }
-      return post;
-    }).toList();
-
-    emit(state.copyWith(posts: updated));
-  }
-
-  void addReply(String postId, String commentId, String text) {
-    final updated = state.posts.map((post) {
-      if (post.id == postId) {
-        final comments = post.comments.map((c) {
-          if (c.id == commentId) {
-            final replies = List<PostReply>.from(c.replies)
-              ..add(
-                PostReply(
-                  id: DateTime.now().millisecondsSinceEpoch.toString(),
-                  text: text,
-                ),
-              );
-
-            return PostComment(
-              id: c.id,
-              text: c.text,
-              isLiked: c.isLiked,
-              likes: c.likes,
-              replies: replies,
-            );
-          }
-          return c;
-        }).toList();
-
-        return PatientPostModel(
-          id: post.id,
-          title: post.title,
-          content: post.content,
-          imagePath: post.imagePath,
-          isLiked: post.isLiked,
-          likes: post.likes,
-          shares: post.shares,
-          comments: comments,
-        );
-      }
-      return post;
-    }).toList();
-
-    emit(state.copyWith(posts: updated));
+      },
+    );
   }
 }

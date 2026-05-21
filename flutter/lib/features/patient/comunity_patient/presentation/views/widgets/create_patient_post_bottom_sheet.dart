@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:Axon/core/extensions/context_extension.dart';
+
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_text_field.dart';
 import 'package:Axon/core/widgets/text_app.dart';
@@ -114,7 +114,7 @@ class _CreatePatientPostBottomSheetState
 
                     context
                         .read<PatientCommunityCubit>()
-                        .addPost(
+                        .createCommunityPostUseCase(
                           title: titleController.text,
                           content: contentController.text,
                           imagePath: imagePath,

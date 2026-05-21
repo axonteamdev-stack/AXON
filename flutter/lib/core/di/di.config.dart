@@ -99,6 +99,24 @@ import '../../features/patient/book_doctor/domain/useCases/search_doctors_usecas
     as _i182;
 import '../../features/patient/book_doctor/prsentation/manager/doctors_cubit.dart'
     as _i649;
+import '../../features/patient/comunity_patient/data/datasources/community_remote_datasource.dart'
+    as _i543;
+import '../../features/patient/comunity_patient/data/datasources/impl/community_remote_datasource_impl.dart'
+    as _i771;
+import '../../features/patient/comunity_patient/data/repo/patient_community_repo_impl.dart'
+    as _i443;
+import '../../features/patient/comunity_patient/domain/repo/patient_community_repo.dart'
+    as _i981;
+import '../../features/patient/comunity_patient/domain/usecases/add_comment_usecase.dart'
+    as _i1023;
+import '../../features/patient/comunity_patient/domain/usecases/create_community_post_usecase.dart'
+    as _i157;
+import '../../features/patient/comunity_patient/domain/usecases/get_comments_usecase.dart'
+    as _i341;
+import '../../features/patient/comunity_patient/domain/usecases/get_community_posts_usecase.dart'
+    as _i353;
+import '../../features/patient/comunity_patient/presentation/manager/community_patient/patient_community_cubit.dart'
+    as _i713;
 import '../../features/patient/home_patient/data/data_sources/home_remote_datasource.dart'
     as _i379;
 import '../../features/patient/home_patient/data/data_sources/impl/home_remote_datasource_impl.dart'
@@ -109,6 +127,10 @@ import '../../features/patient/home_patient/domain/repo/home_repo.dart'
     as _i629;
 import '../../features/patient/home_patient/domain/useCases/get_all_articales_usecase.dart'
     as _i634;
+import '../../features/patient/home_patient/domain/useCases/get_article_details_usecase.dart'
+    as _i1011;
+import '../../features/patient/home_patient/presentation/manager/article_patient/article_details_cubit.dart'
+    as _i829;
 import '../../features/patient/home_patient/presentation/manager/home/home_cubit.dart'
     as _i719;
 import '../../features/patient/medicine/data/data_sources/medicine_remote_data_source.dart'
@@ -187,6 +209,15 @@ extension GetItInjectableX on _i174.GetIt {
         apiManager: gh<_i119.ApiManager>(),
       ),
     );
+    gh.factory<_i543.CommunityRemoteDataSource>(
+      () => _i771.CommunityRemoteDataSourceImpl(
+        apiManager: gh<_i119.ApiManager>(),
+      ),
+    );
+    gh.factory<_i443.PatientCommunityRepo>(
+      () =>
+          _i981.PatientCommunityRepoImpl(gh<_i543.CommunityRemoteDataSource>()),
+    );
     gh.factory<_i379.HomeRemoteDataSource>(
       () => _i961.HomeRemoteDataSourceImpl(apiManager: gh<_i119.ApiManager>()),
     );
@@ -225,6 +256,18 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i514.DoctorsRepoImpl(
         doctorsRemoteDataSource: gh<_i846.DoctorsRemoteDataSource>(),
       ),
+    );
+    gh.factory<_i1023.AddCommentUseCase>(
+      () => _i1023.AddCommentUseCase(gh<_i443.PatientCommunityRepo>()),
+    );
+    gh.factory<_i157.CreateCommunityPostUseCase>(
+      () => _i157.CreateCommunityPostUseCase(gh<_i443.PatientCommunityRepo>()),
+    );
+    gh.factory<_i341.GetCommentsUseCase>(
+      () => _i341.GetCommentsUseCase(gh<_i443.PatientCommunityRepo>()),
+    );
+    gh.factory<_i353.GetCommunityPostsUseCase>(
+      () => _i353.GetCommunityPostsUseCase(gh<_i443.PatientCommunityRepo>()),
     );
     gh.factory<_i223.AuthRemoteDataSource>(
       () => _i810.AuthRemoteDataSourceImpl(
@@ -286,6 +329,14 @@ extension GetItInjectableX on _i174.GetIt {
             gh<_i627.ProfilePatientRemoteDataSource>(),
       ),
     );
+    gh.factory<_i713.PatientCommunityCubit>(
+      () => _i713.PatientCommunityCubit(
+        gh<_i353.GetCommunityPostsUseCase>(),
+        gh<_i157.CreateCommunityPostUseCase>(),
+        gh<_i1023.AddCommentUseCase>(),
+        gh<_i341.GetCommentsUseCase>(),
+      ),
+    );
     gh.factory<_i170.AuthRepo>(
       () => _i279.AuthRepoImpl(
         authRemoteDataSource: gh<_i223.AuthRemoteDataSource>(),
@@ -312,6 +363,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i621.MedicineCubit>(
       () => _i621.MedicineCubit(gh<_i330.AddMedicineUseCase>()),
+    );
+    gh.factory<_i1011.GetArticleDetailsUseCase>(
+      () => _i1011.GetArticleDetailsUseCase(gh<_i629.HomeRepo>()),
     );
     gh.factory<_i364.GetDoctorHistoryUseCase>(
       () => _i364.GetDoctorHistoryUseCase(gh<_i183.DoctorHomeRepo>()),
@@ -367,6 +421,9 @@ extension GetItInjectableX on _i174.GetIt {
         prefKey: gh<String>(),
         isAllergies: gh<bool>(),
       ),
+    );
+    gh.factory<_i829.ArticleDetailsCubit>(
+      () => _i829.ArticleDetailsCubit(gh<_i1011.GetArticleDetailsUseCase>()),
     );
     gh.factory<_i961.PatientEditDocumentsCubit>(
       () => _i961.PatientEditDocumentsCubit(

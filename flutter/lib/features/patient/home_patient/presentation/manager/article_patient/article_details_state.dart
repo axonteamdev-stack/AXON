@@ -2,12 +2,30 @@ part of 'article_details_cubit.dart';
 
 abstract class ArticleDetailsState {}
 
-class ArticleDetailsLoading extends ArticleDetailsState {}
+class ArticleDetailsInitial
+    extends ArticleDetailsState {}
 
-class ArticleDetailsSuccess extends ArticleDetailsState {
-  final ArticleDetailsModel article;
+class ArticleDetailsLoading
+    extends ArticleDetailsState {}
 
-  ArticleDetailsSuccess({required this.article});
+class ArticleDetailsSuccess
+    extends ArticleDetailsState {
+
+  final ArticleDetailsEntity article;
+
+  ArticleDetailsSuccess({
+
+    required this.article,
+  });
 }
 
-class ArticleDetailsError extends ArticleDetailsState {}
+class ArticleDetailsError
+    extends ArticleDetailsState {
+
+  final Failure failure;
+
+  ArticleDetailsError({
+
+    required this.failure,
+  });
+}

@@ -1,19 +1,44 @@
 part of 'patient_community_cubit.dart';
 
-class PatientCommunityState {
-  final List<PatientPostModel> posts;
+abstract class PatientCommunityState {}
 
-  const PatientCommunityState({required this.posts});
+class PatientCommunityInitial
+    extends PatientCommunityState {}
 
-  factory PatientCommunityState.initial() {
-    return const PatientCommunityState(posts: []);
-  }
+class PatientCommunityLoading
+    extends PatientCommunityState {}
 
-  PatientCommunityState copyWith({
-    List<PatientPostModel>? posts,
-  }) {
-    return PatientCommunityState(
-      posts: posts ?? this.posts,
-    );
-  }
+class PatientCommunitySuccess
+    extends PatientCommunityState {
+
+  final CommunityPostsEntity posts;
+
+  final DateTime refreshTime;
+
+  PatientCommunitySuccess(
+    this.posts, {
+    DateTime? refreshTime,
+  }) : refreshTime =
+            refreshTime ??
+            DateTime.now();
+}
+
+class PatientCommunityError
+    extends PatientCommunityState {
+
+  final Failure failure;
+
+  PatientCommunityError(
+    this.failure,
+  );
+}
+
+class PatientCommentsLoaded
+    extends PatientCommunityState {
+
+  final CommentsEntity comments;
+
+  PatientCommentsLoaded(
+    this.comments,
+  );
 }
