@@ -18,6 +18,8 @@ export const validateBody = (schema) => (req, res, next) => {
     next();
 };
 
+// DEAD CODE FLAG
+/*
 export const validateQuery = (schema) => (req, res, next) => {
     const result = schema.safeParse(req.query);
     if (!result.success) {
@@ -26,3 +28,4 @@ export const validateQuery = (schema) => (req, res, next) => {
     req.parsedQuery = result.data;
     next();
 };
+*/

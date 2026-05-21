@@ -57,7 +57,10 @@ export const initSocket = (server) => {
   return io;
 };
 
+// DEAD CODE FLAG
+/*
 export const emitToRoom = (room, event, data) => {
   const ioInstance = getIO();
   ioInstance.to(room).emit(event, data);
 };
+*/

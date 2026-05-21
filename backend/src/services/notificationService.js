@@ -3,6 +3,8 @@ import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
 import { getIO } from "../config/socket.js";
 
+// DEAD CODE FLAG
+/*
 export const create = async (userId, type, title, message, data = {}) => {
   const notification = await Notification.create({
     user: userId,
@@ -28,6 +30,7 @@ export const create = async (userId, type, title, message, data = {}) => {
 
   return notification;
 };
+*/
 
 export const getForUser = async (userId, page = 1, limit = 20) => {
   const skip = (page - 1) * limit;

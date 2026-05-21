@@ -171,6 +171,8 @@ export const getPendingDoses = async (patientId) => {
     });
 };
 
+// DEAD CODE FLAG
+/*
 export const resetDailyDoses = async () => {
     const today = getTodayString();
     const medications = await Medication.find({
@@ -200,3 +202,4 @@ export const resetDailyDoses = async () => {
 
     return { createdCount };
 };
+*/

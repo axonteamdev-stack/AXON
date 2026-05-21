@@ -95,3 +95,14 @@ export const updateProfile = catchAsync(async (req, res) => {
     throw err;
   }
 });
+
+export const getPatientDetails = catchAsync(async (req, res) => {
+  const patient = await UserService.getPatientDetails(req.params.id);
+  sendLocalizedResponse(
+    res,
+    200,
+    msg("تم جلب بيانات المريض", "Patient details fetched"),
+    { patient },
+    req.lang,
+  );
+});

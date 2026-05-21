@@ -5,7 +5,8 @@ import User from "../src/models/User.js";
 import Medication from "../src/models/Medication.js";
 import Post from "../src/models/Post.js";
 import Appointment from "../src/models/Appointment.js";
-import MedicalRecord from "../src/models/MedicalRecord.js";
+// DEAD CODE FLAG
+// import MedicalRecord from "../src/models/MedicalRecord.js";
 
 // Services
 import * as appointmentService from "../src/services/appointmentService.js";

@@ -30,7 +30,8 @@ const scanFile = async (filePath) => {
 };
 
 // ─── Path Resolution ───────────────────────────────────────────────
-export const resolveUploadPath = (subFolder, fileName) => {
+// DEAD CODE FLAG (export was unused)
+const resolveUploadPath = (subFolder, fileName) => {
   const targetDir = path.join(UPLOADS_ROOT, subFolder);
   const filePath = path.join(targetDir, fileName);
   const resolved = path.resolve(filePath);
@@ -84,6 +85,8 @@ export const deleteFile = async (filePath) => {
   }
 };
 
+// DEAD CODE FLAG
+/*
 export const cleanupFiles = async (filePaths) => {
   const paths = Array.isArray(filePaths) ? filePaths : [filePaths];
   const results = [];
@@ -97,8 +100,11 @@ export const cleanupFiles = async (filePaths) => {
   }
   return results;
 };
+*/
 
 // ─── Process Uploaded Files with Security ─────────────────────────
+// DEAD CODE FLAG
+/*
 export const processFiles = async (files, options = {}) => {
   const {
     subFolder = "general",
@@ -235,3 +241,4 @@ export const processDoctorFiles = async (files) => {
     maxFiles: 5,
   });
 };
+*/

@@ -7,6 +7,8 @@ import { logger } from "../config/logger.js";
 
 const QR_EXPIRY_MS = 24 * 60 * 60 * 1000;
 
+// DEAD CODE FLAG
+/*
 export const getOrCreate = async (patientId) => {
   let record = await Patient.findOne({ userId: patientId });
   if (!record) {
@@ -14,6 +16,7 @@ export const getOrCreate = async (patientId) => {
   }
   return record;
 };
+*/
 
 export const getByPatient = async (patientId) => {
   const record = await Patient.findOne({ userId: patientId }).lean();

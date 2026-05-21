@@ -46,6 +46,8 @@ export const clearTokens = (res) => {
 };
 
 // ── Verify access token ─────────────────────────────────────────
+// DEAD CODE FLAG
+/*
 export const verifyAccessToken = (token) => {
   try {
     return jwt.verify(token, process.env.JWT_SECRET);
@@ -57,6 +59,7 @@ export const verifyAccessToken = (token) => {
     throw new AppError(message, 401);
   }
 };
+*/
 
 // ── Verify refresh token ────────────────────────────────────────
 export const verifyRefreshToken = (token) => {

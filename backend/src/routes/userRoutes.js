@@ -12,6 +12,12 @@ router.get(
   userController.getDoctorDetails,
 );
 
+router.get(
+  "/patients/:id",
+  validateObjectId("id"),
+  userController.getPatientDetails,
+);
+
 router.get("/doctors/search", userController.searchDoctors);
 
 router.get("/doctors", userController.getAllDoctors);

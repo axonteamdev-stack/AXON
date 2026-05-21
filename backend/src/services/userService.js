@@ -89,6 +89,8 @@ export const searchDoctors = async (
 };
 
 // ── Profile ────────────────────────────────
+// DEAD CODE FLAG
+/*
 export const getUserProfile = async (userId) => {
   const user = await User.findById(userId)
     .select("-password -passwordResetToken -passwordResetExpires")
@@ -98,6 +100,7 @@ export const getUserProfile = async (userId) => {
 
   return transformUserResponse(user);
 };
+*/
 
 // ── Full Profile with all related data ─────
 export const getFullUserProfile = async (userId) => {
@@ -217,4 +220,15 @@ export const updateProfile = async (userId, data) => {
   if (!user) throw new AppError("User not found", 404);
 
   return transformUserResponse(user);
+};
+// ── Patient ────────────────────────────────
+export const getPatientDetails = async (patientId) => {
+  const patient = await User.findById(patientId).select("-password");
+  if (!patient) throw new AppError("Patient not found", 404);
+  if (patient.role !== "patient") throw new AppError("User is not a patient", 400);
+
+  // Fetch the Patient subdocument (adjust model name if different)
+  const patientProfile = await Patient.findOne({ userId: patientId }).lean();
+
+  return transformUserResponse(patient, patientProfile);
 };

@@ -154,6 +154,8 @@ export const authenticate = async (email, password) => {
   return user;
 };
 
+// DEAD CODE FLAG
+/*
 export const refreshAccessToken = async (token) => {
   if (!token) {
     throw new AppError(msg("لا يوجد توكن", "No token"), 401);
@@ -175,6 +177,7 @@ export const refreshAccessToken = async (token) => {
     expiresIn: process.env.JWT_EXPIRES_IN || "15m",
   });
 };
+*/
 
 export const sendResetCode = async (email) => {
   const user = await User.findOne({ email: email?.toLowerCase() });

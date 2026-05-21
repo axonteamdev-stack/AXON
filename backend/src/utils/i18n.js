@@ -1,7 +1,8 @@
 const SUPPORTED_LANGUAGES = Object.freeze(["en", "ar"]);
 const DEFAULT_LANGUAGE = "ar";
 
-export const isSupportedLanguage = (lang) => SUPPORTED_LANGUAGES.includes(lang);
+// DEAD CODE FLAG (export was unused)
+const isSupportedLanguage = (lang) => SUPPORTED_LANGUAGES.includes(lang);
 
 export const getLanguage = (reqOrRes) => {
   const req = reqOrRes?.req || reqOrRes;
@@ -20,12 +21,15 @@ export const getLanguage = (reqOrRes) => {
   return DEFAULT_LANGUAGE;
 };
 
+// DEAD CODE FLAG
+/*
 export const setLanguage = (req, res, next) => {
   const lang = getLanguage(req);
   req.lang = lang;
   res.locals.lang = lang;
   next();
 };
+*/
 
 export const getLocalizedString = (messageObj, lang = DEFAULT_LANGUAGE) => {
   if (typeof messageObj === "string") return messageObj;
@@ -37,8 +41,11 @@ export const getLocalizedString = (messageObj, lang = DEFAULT_LANGUAGE) => {
 
 export const msg = (ar, en) => ({ ar, en });
 
+// DEAD CODE FLAG
+/*
 export const createErrorMessages = (messageObj) => {
   if (messageObj?.ar && messageObj?.en) return messageObj;
   const str = String(messageObj ?? "");
   return { ar: str, en: str };
 };
+*/

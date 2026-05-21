@@ -1,6 +1,7 @@
 import { getLocalizedString } from "./i18n.js";
 
-export const sendResponse = (res, statusCode, message, data = null) => {
+// DEAD CODE FLAG (export was unused)
+const sendResponse = (res, statusCode, message, data = null) => {
   const response = {
     success: statusCode < 400,
     message,

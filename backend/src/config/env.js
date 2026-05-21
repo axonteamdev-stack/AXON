@@ -32,4 +32,5 @@ export const validateEnvironment = () => {
     }
 };
 
-export const getEnv = (key, fallback) => process.env[key] || fallback;
+// DEAD CODE FLAG
+// export const getEnv = (key, fallback) => process.env[key] || fallback;

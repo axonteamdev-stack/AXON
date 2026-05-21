@@ -1,3 +1,5 @@
+// DEAD CODE FLAG (Entire file unused)
+import mongoose from "mongoose";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";

@@ -122,6 +122,8 @@ export const errorLogger = pino(
   pino.multistream([{ stream: errorLogsStream, level: "error" }]),
 );
 
+// DEAD CODE FLAG
+/*
 export const createRequestLogger = (req) => {
   const requestId = req.headers["x-request-id"] || generateRequestId();
   return logger.child({
@@ -138,7 +140,10 @@ function generateRequestId() {
     .digest("hex")
     .slice(0, 16);
 }
+*/
 
+// DEAD CODE FLAG
+/*
 export const createPerformanceLogger = (label) => {
   const start = performance.now();
   return {
@@ -152,10 +157,12 @@ export const createPerformanceLogger = (label) => {
     },
   };
 };
+*/
 
 export const closeLogger = () => {
   allLogsStream.end();
   errorLogsStream.end();
 };
 
-export default logger;
+// DEAD CODE FLAG
+// export default logger;
