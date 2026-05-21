@@ -1,3 +1,7 @@
+import 'package:Axon/core/di/di.dart';
+import 'package:Axon/core/errors/mappers/failure_to_message_mapper.dart';
+import 'package:Axon/core/extensions/localization_ext.dart';
+import 'package:Axon/core/helpers/snackbar.dart';
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/manager/home/doctor_home_cubit.dart';
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/widgets/doctor_chat_card.dart';
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/widgets/doctor_home_header.dart';
@@ -7,58 +11,210 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class DoctorHomeView extends StatelessWidget {
-  const DoctorHomeView({super.key});
+class DoctorHomeView
+    extends StatelessWidget {
+
+  const DoctorHomeView({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+
     return BlocProvider(
-      create: (_) => DoctorHomeCubit()..loadDoctorHome(),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const DoctorHomeHeader(),
-              SizedBox(height: 24.h),
-              const DoctorHomeTabs(),
-              SizedBox(height: 20.h),
-              Expanded(
-                child: BlocBuilder<DoctorHomeCubit, DoctorHomeState>(
-                  builder: (context, state) {
-                    if (state.currentTab ==
-                        DoctorHomeTab.requests) {
-                      return ListView.separated(
-                        itemCount: state.requestPatients.length,
-                        separatorBuilder: (_, __) =>
-                            SizedBox(height: 12.h),
-                        itemBuilder: (_, index) {
-                          return const DoctorRequestCard();
-                        },
-                      );
-                    }
 
-                   return ListView.separated(
-  itemCount: state.chatPatients.length,
-  separatorBuilder: (_, __) => SizedBox(height: 12.h),
-  itemBuilder: (_, index) {
-    final patient = state.chatPatients[index];
+      create:
+          (_) =>
+              getIt<
+                  DoctorHomeCubit>()
+                ..loadDoctorHome(),
 
-    return DoctorChatCard(
-      name: patient.name,
-      description: patient.description,
-      image: patient.image,
-    );
-  },
-);
+      child:
+          BlocConsumer<
+              DoctorHomeCubit,
+              DoctorHomeState>(
 
-                  },
+        listener:
+            (
+          context,
+          state,
+        ) {
+
+          if (state
+              is DoctorHomeError) {
+
+            Snackbar.showError(
+
+              context,
+
+              message:
+                  mapFailureToMessage(
+
+                context,
+
+                state.failure,
+              ),
+            );
+          }
+        },
+
+        builder:
+            (
+          context,
+          state,
+        ) {
+
+          if (state
+              is DoctorHomeLoading) {
+
+            return const Center(
+              child:
+                  CircularProgressIndicator(),
+            );
+          }
+
+          if (state
+              is DoctorHomeSuccess) {
+
+            return SafeArea(
+
+              child: Padding(
+
+                padding:
+                    EdgeInsets.all(
+                  16.w,
+                ),
+
+                child: Column(
+
+                  crossAxisAlignment:
+                      CrossAxisAlignment
+                          .start,
+
+                  children: [
+
+                    const DoctorHomeHeader(),
+
+                    SizedBox(
+                      height: 24.h,
+                    ),
+
+                    const DoctorHomeTabs(),
+
+                    SizedBox(
+                      height: 20.h,
+                    ),
+
+                    Expanded(
+
+                      child:
+
+                          state.currentTab ==
+                                  DoctorHomeTab
+                                      .requests
+
+                              ? ListView
+                                  .separated(
+
+                                  itemCount:
+                                      state
+                                          .requestPatients
+                                          .length,
+
+                                  separatorBuilder:
+                                      (
+                                    _,
+                                    __,
+                                  ) =>
+                                          SizedBox(
+                                    height:
+                                        12.h,
+                                  ),
+
+                                  itemBuilder:
+                                      (
+                                    _,
+                                    index,
+                                  ) {
+
+                                    final patient =
+                                        state.requestPatients[
+                                            index];
+
+                                    return DoctorRequestCard(
+
+                                      name:
+                                          patient
+                                              .patientName,
+
+                                      notes:
+                                          patient
+                                              .notes,
+
+                                      image:
+                                          patient
+                                              .patientImage,
+                                    );
+                                  },
+                                )
+
+                              : ListView
+                                  .separated(
+
+                                  itemCount:
+                                      state
+                                          .chatPatients
+                                          .length,
+
+                                  separatorBuilder:
+                                      (
+                                    _,
+                                    __,
+                                  ) =>
+                                          SizedBox(
+                                    height:
+                                        12.h,
+                                  ),
+
+                                  itemBuilder:
+                                      (
+                                    _,
+                                    index,
+                                  ) {
+
+                                    final patient =
+                                        state.chatPatients[
+                                            index];
+
+                                    return DoctorChatCard(
+
+                                      name:
+                                          patient
+                                              .name,
+
+                                      description:
+                                          patient
+                                              .description,
+
+                                      image:
+                                          patient
+                                              .image,
+                                    );
+                                  },
+                                ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
+            );
+          }
+
+          return Center(
+            child: Text(
+             "Something went wrong",
+            ),
+          );
+        },
       ),
     );
   }

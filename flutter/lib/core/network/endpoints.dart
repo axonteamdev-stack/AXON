@@ -52,4 +52,8 @@ class Endpoints {
 
   static const String updateProfile =
     "/users/me";
+
+
+    static const pendingRequests =
+    "/appointments/pending";
 }

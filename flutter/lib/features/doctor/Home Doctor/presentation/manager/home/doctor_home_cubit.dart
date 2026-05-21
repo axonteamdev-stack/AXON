@@ -1,55 +1,138 @@
+import 'package:Axon/core/errors/failures.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/features/doctor/Home%20Doctor/data/models/chat_patient.dart';
+import 'package:Axon/features/doctor/Home%20Doctor/domain/entities/pending_request_entity.dart';
+import 'package:Axon/features/doctor/Home%20Doctor/domain/usecases/get_pending_requests_use_case.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 part 'doctor_home_state.dart';
 
-class DoctorHomeCubit extends Cubit<DoctorHomeState> {
-  DoctorHomeCubit() : super(DoctorHomeState.initial());
+@injectable
+class DoctorHomeCubit
+    extends Cubit<DoctorHomeState> {
 
-  void changeTab(DoctorHomeTab tab) {
-    emit(state.copyWith(currentTab: tab));
+  final GetPendingRequestsUseCase
+      getPendingRequestsUseCase;
+
+  DoctorHomeCubit(
+    this.getPendingRequestsUseCase,
+  ) : super(
+          DoctorHomeInitial(),
+        );
+
+  DoctorHomeTab currentTab =
+      DoctorHomeTab.chats;
+
+  List<ChatPatient>
+      chatPatients = [
+
+    ChatPatient(
+      name:
+          'Abdallah Hassan',
+
+      description:
+          'Back pain and spinal discomfort',
+
+      image:
+          AppImages.onboarding3,
+    ),
+
+    ChatPatient(
+      name:
+          'SS Mohamed',
+
+      description:
+          'Chronic neck pain',
+
+      image:
+          AppImages.onboarding2,
+    ),
+
+    ChatPatient(
+      name:
+          'Seif Ragab',
+
+      description:
+          'Lower back stiffness',
+
+      image:
+          AppImages.onboarding1,
+    ),
+  ];
+
+  void changeTab(
+    DoctorHomeTab tab,
+  ) {
+
+    currentTab = tab;
+
+    if (state
+        is DoctorHomeSuccess) {
+
+      emit(
+
+        (state
+                as DoctorHomeSuccess)
+            .copyWith(
+
+          currentTab: tab,
+        ),
+      );
+    }
   }
 
-  Future<void> loadDoctorHome() async {
-    emit(state.copyWith(status: DoctorHomeStatus.loading));
-
-    await Future.delayed(const Duration(seconds: 1));
+  Future<void> loadDoctorHome()
+      async {
 
     emit(
-      state.copyWith(
-        status: DoctorHomeStatus.success,
-        chatPatients: [
-          ChatPatient(
-            name: 'Abdallah Hassan',
-            description: 'Back pain and spinal discomfort',
-            image: AppImages.onboarding3,
+      DoctorHomeLoading(),
+    );
+
+    final either =
+        await getPendingRequestsUseCase();
+
+    either.fold(
+
+      (failure) {
+
+        emit(
+          DoctorHomeError(
+            failure: failure,
           ),
-          ChatPatient(
-            name: 'SS Mohamed',
-            description: 'Chronic neck pain',
-            image: AppImages.onboarding2,
+        );
+      },
+
+      (requests) {
+
+        emit(
+          DoctorHomeSuccess(
+
+            currentTab:
+                currentTab,
+
+            chatPatients:
+                chatPatients,
+
+            requestPatients:
+                requests,
           ),
-          ChatPatient(
-            name: 'seif Ragab',
-            description: 'Lower back stiffness',
-            image: AppImages.onboarding1,
-          ),
-          ChatPatient(
-            name: 'Mohamed Elaraky',
-            description: 'Shoulder pain after injury',
-            image: AppImages.onboarding3,
-          ),
-          ChatPatient(
-            name: 'Ahmed Hassan',
-            description: 'Spinal nerve irritation',
-            image: AppImages.onboarding1,
-          ),
-        ],
-        requestPatients: List.generate(7, (index) => index),
-      ),
+        );
+      },
     );
   }
 
-  int get requestsCount => state.requestPatients.length;
+  int get requestsCount {
+
+    if (state
+        is DoctorHomeSuccess) {
+
+      return (state
+              as DoctorHomeSuccess)
+          .requestPatients
+          .length;
+    }
+
+    return 0;
+  }
 }

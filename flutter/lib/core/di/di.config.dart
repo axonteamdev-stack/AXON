@@ -57,6 +57,28 @@ import '../../features/doctor/Articles%20Doctor/domain/usecases/get_doctor_posts
     as _i409;
 import '../../features/doctor/Articles%20Doctor/presentation/manager/doctor_articles_cubit.dart'
     as _i197;
+import '../../features/doctor/Home%20Doctor/data/datasources/doctor_home_remote_datasource.dart'
+    as _i1069;
+import '../../features/doctor/Home%20Doctor/data/datasources/impl/doctor_home_remote_datasource_impl.dart'
+    as _i460;
+import '../../features/doctor/Home%20Doctor/data/repo/doctor_home_repo_impl.dart'
+    as _i1022;
+import '../../features/doctor/Home%20Doctor/domain/repo/doctor_home_repo.dart'
+    as _i183;
+import '../../features/doctor/Home%20Doctor/domain/usecases/get_pending_requests_use_case.dart'
+    as _i656;
+import '../../features/doctor/Home%20Doctor/presentation/manager/home/doctor_home_cubit.dart'
+    as _i609;
+import '../../features/doctor/Profile%20Doctor/data/datasources/doctor_profile_remote_datasource.dart'
+    as _i773;
+import '../../features/doctor/Profile%20Doctor/data/datasources/impl/doctor_profile_remote_datasource_impl.dart'
+    as _i185;
+import '../../features/doctor/Profile%20Doctor/data/repo/doctor_profile_repo_impl.dart'
+    as _i824;
+import '../../features/doctor/Profile%20Doctor/domain/repo/doctor_profile_repo.dart'
+    as _i968;
+import '../../features/doctor/Profile%20Doctor/domain/usecases/update_doctor_profile_use_case.dart'
+    as _i811;
 import '../../features/patient/book_doctor/data/data_sourses/remote_data/doctors_remote_data_source.dart'
     as _i846;
 import '../../features/patient/book_doctor/data/data_sourses/remote_data/impl/doctors_remote_data_source_impl.dart'
@@ -146,6 +168,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i932.NetworkInfo>(
       () => _i932.NetworkInfoImpl(gh<_i161.InternetConnection>()),
     );
+    gh.factory<_i773.DoctorProfileRemoteDataSource>(
+      () => _i185.DoctorProfileRemoteDataSourceImpl(
+        apiManager: gh<_i119.ApiManager>(),
+      ),
+    );
+    gh.factory<_i968.DoctorProfileRepo>(
+      () => _i824.DoctorProfileRepoImpl(
+        gh<_i773.DoctorProfileRemoteDataSource>(),
+      ),
+    );
     gh.factory<_i940.DoctorArticlesRemoteDataSource>(
       () => _i649.DoctorArticlesRemoteDataSourceImpl(
         apiManager: gh<_i119.ApiManager>(),
@@ -154,10 +186,18 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i379.HomeRemoteDataSource>(
       () => _i961.HomeRemoteDataSourceImpl(apiManager: gh<_i119.ApiManager>()),
     );
+    gh.factory<_i1069.DoctorHomeRemoteDataSource>(
+      () => _i460.DoctorHomeRemoteDataSourceImpl(
+        apiManager: gh<_i119.ApiManager>(),
+      ),
+    );
     gh.factory<_i536.DoctorArticlesRepo>(
       () => _i182.DoctorArticlesRepoImpl(
         gh<_i940.DoctorArticlesRemoteDataSource>(),
       ),
+    );
+    gh.factory<_i811.UpdateDoctorProfileUseCase>(
+      () => _i811.UpdateDoctorProfileUseCase(gh<_i968.DoctorProfileRepo>()),
     );
     gh.factory<_i627.ProfilePatientRemoteDataSource>(
       () => _i209.ProfilePatientRemoteDataSourceImpl(
@@ -207,6 +247,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i403.UpdateMedicineUseCase>(
       () => _i403.UpdateMedicineUseCase(gh<_i855.MedicineRepo>()),
+    );
+    gh.factory<_i183.DoctorHomeRepo>(
+      () => _i1022.DoctorHomeRepoImpl(
+        remoteDataSource: gh<_i1069.DoctorHomeRemoteDataSource>(),
+      ),
     );
     gh.factory<_i634.GetAllArticlesUseCase>(
       () => _i634.GetAllArticlesUseCase(gh<_i629.HomeRepo>()),
@@ -264,6 +309,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i621.MedicineCubit>(
       () => _i621.MedicineCubit(gh<_i330.AddMedicineUseCase>()),
     );
+    gh.factory<_i656.GetPendingRequestsUseCase>(
+      () => _i656.GetPendingRequestsUseCase(gh<_i183.DoctorHomeRepo>()),
+    );
     gh.factory<_i646.RegisterDoctorUseCase>(
       () => _i646.RegisterDoctorUseCase(authRepo: gh<_i170.AuthRepo>()),
     );
@@ -318,6 +366,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i1052.PatientEditBasicInfoCubit(
         updateProfilePatientUseCase: gh<_i786.UpdateProfilePatientUseCase>(),
       ),
+    );
+    gh.factory<_i609.DoctorHomeCubit>(
+      () => _i609.DoctorHomeCubit(gh<_i656.GetPendingRequestsUseCase>()),
     );
     gh.factory<_i533.DoctorRegistrationCubit>(
       () => _i533.DoctorRegistrationCubit(

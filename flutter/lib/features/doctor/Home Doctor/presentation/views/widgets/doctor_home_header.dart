@@ -181,16 +181,16 @@ class _DoctorHomeHeaderState
         Row(
           children: [
 
-            HeaderIcon(
-              icon:
-                  Icons.search,
+            // HeaderIcon(
+            //   icon:
+            //       Icons.search,
 
-              onTap: () {},
-            ),
+            //   onTap: () {},
+            // ),
 
-            SizedBox(
-              width: 10.w,
-            ),
+            // SizedBox(
+            //   width: 10.w,
+            // ),
 
             NotificationIcon(
               count:

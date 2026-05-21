@@ -1,46 +1,74 @@
 part of 'doctor_home_cubit.dart';
 
-enum DoctorHomeTab { chats, requests }
+enum DoctorHomeTab {
+  chats,
+  requests,
+}
 
-enum DoctorHomeStatus { initial, loading, success, error }
+abstract class DoctorHomeState {}
 
-class DoctorHomeState {
+class DoctorHomeInitial
+    extends DoctorHomeState {}
+
+class DoctorHomeLoading
+    extends DoctorHomeState {}
+
+class DoctorHomeSuccess
+    extends DoctorHomeState {
+
   final DoctorHomeTab currentTab;
-  final DoctorHomeStatus status;
-  final List<ChatPatient> chatPatients;
-  final List<dynamic> requestPatients;
-  final String? errorMessage;
 
-  const DoctorHomeState({
+  final List<ChatPatient>
+      chatPatients;
+
+  final List<
+      PendingRequestEntity>
+  requestPatients;
+
+  DoctorHomeSuccess({
+
     required this.currentTab,
-    required this.status,
+
     required this.chatPatients,
+
     required this.requestPatients,
-    this.errorMessage,
   });
 
-  factory DoctorHomeState.initial() {
-    return const DoctorHomeState(
-      currentTab: DoctorHomeTab.chats,
-      status: DoctorHomeStatus.initial,
-      chatPatients: [],
-      requestPatients: [],
-    );
-  }
+  DoctorHomeSuccess copyWith({
 
-  DoctorHomeState copyWith({
     DoctorHomeTab? currentTab,
-    DoctorHomeStatus? status,
-    List<ChatPatient>? chatPatients,
-    List<dynamic>? requestPatients,
-    String? errorMessage,
+
+    List<ChatPatient>?
+        chatPatients,
+
+    List<
+            PendingRequestEntity>?
+        requestPatients,
   }) {
-    return DoctorHomeState(
-      currentTab: currentTab ?? this.currentTab,
-      status: status ?? this.status,
-      chatPatients: chatPatients ?? this.chatPatients,
-      requestPatients: requestPatients ?? this.requestPatients,
-      errorMessage: errorMessage,
+
+    return DoctorHomeSuccess(
+
+      currentTab:
+          currentTab ??
+              this.currentTab,
+
+      chatPatients:
+          chatPatients ??
+              this.chatPatients,
+
+      requestPatients:
+          requestPatients ??
+              this.requestPatients,
     );
   }
+}
+
+class DoctorHomeError
+    extends DoctorHomeState {
+
+  final Failure failure;
+
+  DoctorHomeError({
+    required this.failure,
+  });
 }

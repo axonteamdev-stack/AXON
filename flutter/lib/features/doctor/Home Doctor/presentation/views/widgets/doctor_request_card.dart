@@ -7,59 +7,139 @@ import 'package:Axon/core/widgets/text_app.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 
 class DoctorRequestCard extends StatelessWidget {
-  const DoctorRequestCard({super.key});
+
+  final String name;
+
+  final String notes;
+
+  final String? image;
+
+  const DoctorRequestCard({
+    super.key,
+    required this.name,
+    required this.notes,
+    this.image,
+  });
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 16.w,
         vertical: 14.h,
       ),
+
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(18.r),
+
+        borderRadius:
+            BorderRadius.circular(
+          18.r,
+        ),
+
         border: Border.all(
-          color: AppColors.grey.withOpacity(0.15),
+          color: AppColors.grey
+              .withOpacity(0.15),
+
           width: 1,
         ),
+
         boxShadow: [
+
           BoxShadow(
-            color: AppColors.black.withOpacity(0.08),
+            color: AppColors.black
+                .withOpacity(0.08),
+
             blurRadius: 18,
+
             spreadRadius: 2,
-            offset: const Offset(0, 8),
+
+            offset: const Offset(
+              0,
+              8,
+            ),
           ),
         ],
       ),
+
       child: Column(
         children: [
+
           Row(
             children: [
+
               CircleAvatar(
                 radius: 26.r,
+
                 backgroundColor:
-                    AppColors.primaryColor.withOpacity(0.12),
-                child: Icon(
-                  Icons.person,
-                  color: AppColors.primaryColor,
-                  size: 22.sp,
+                    AppColors
+                        .primaryColor
+                        .withOpacity(
+                  0.12,
                 ),
+
+                backgroundImage:
+                    image != null &&
+                            image!
+                                .isNotEmpty
+                        ? NetworkImage(
+                            image!,
+                          )
+                        : null,
+
+                child:
+                    image == null ||
+                            image!
+                                .isEmpty
+
+                        ? Icon(
+                            Icons.person,
+
+                            color:
+                                AppColors
+                                    .primaryColor,
+
+                            size:
+                                22.sp,
+                          )
+
+                        : null,
               ),
-              SizedBox(width: 14.w),
+
+              SizedBox(
+                width: 14.w,
+              ),
+
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment
+                          .start,
+
                   children: [
+
                     TextApp(
-                      text: 'Abdallah Hasan',
-                      color: AppColors.black,
-                      weight: AppTextWeight.semiBold,
+                      text: name,
+
+                      color:
+                          AppColors.black,
+
+                      weight:
+                          AppTextWeight
+                              .semiBold,
                     ),
-                    SizedBox(height: 6),
+
+                    SizedBox(
+                      height: 6.h,
+                    ),
+
                     TextApp(
-                      text: context.l10n.chest_pain_short_breath,
-                      color: AppColors.grey,
+                      text: notes,
+
+                      color:
+                          AppColors.grey,
+
                       fontSize: 12,
                     ),
                   ],
@@ -67,27 +147,55 @@ class DoctorRequestCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 16.h),
+
+          SizedBox(
+            height: 16.h,
+          ),
+
           Row(
             children: [
+
               Expanded(
                 child: CustomButton(
-                  text: context.l10n.reject,
+                  text:
+                      context
+                          .l10n
+                          .reject,
+
                   height: 42.h,
-                  color: AppColors.white,
-                  textColor: AppColors.primaryColor,
+
+                  color:
+                      AppColors.white,
+
+                  textColor:
+                      AppColors
+                          .primaryColor,
+
                   border: BorderSide(
-                    color: AppColors.primaryColor,
+                    color:
+                        AppColors
+                            .primaryColor,
+
                     width: 1.2,
                   ),
+
                   onPressed: () {},
                 ),
               ),
-              SizedBox(width: 12.w),
+
+              SizedBox(
+                width: 12.w,
+              ),
+
               Expanded(
                 child: CustomButton(
-                  text: context.l10n.accept,
+                  text:
+                      context
+                          .l10n
+                          .accept,
+
                   height: 42.h,
+
                   onPressed: () {},
                 ),
               ),
