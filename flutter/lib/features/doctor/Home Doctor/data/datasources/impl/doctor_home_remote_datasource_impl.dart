@@ -152,4 +152,149 @@ class DoctorHomeRemoteDataSourceImpl
       );
     }
   }
+
+
+
+  @override
+Future<Either<
+    Failure,
+    String>>
+updateAppointmentStatus({
+
+  required String appointmentId,
+
+  required String status,
+}) async {
+
+  try {
+
+    print(
+      "=========== UPDATE APPOINTMENT STATUS ==========",
+    );
+
+    print(
+      "Appointment ID => $appointmentId",
+    );
+
+    print(
+      "Status => $status",
+    );
+
+    final response =
+        await apiManager.patch(
+
+      Endpoints
+          .updateAppointmentStatus(
+        appointmentId,
+      ),
+
+      {
+        "status": status,
+      },
+    );
+
+    print(response);
+
+    return Right(
+      response['message'],
+    );
+
+  } on DioException catch (e) {
+
+    print(
+      e.response?.data,
+    );
+
+    return Left(
+      mapExceptionToFailure(
+        ErrorHandler.handle(e),
+      ),
+    );
+
+  } on AppException catch (e) {
+
+    return Left(
+      mapExceptionToFailure(e),
+    );
+
+  } catch (e) {
+
+    return Left(
+      ServerFailure(),
+    );
+  }
+}
+
+
+
+@override
+Future<Either<
+    Failure,
+    List<PendingRequestModel>>>
+getDoctorHistory() async {
+
+  try {
+
+    print(
+      "=========== GET DOCTOR HISTORY ==========",
+    );
+
+    final response =
+        await apiManager.get(
+      Endpoints.doctorHistory,
+    );
+
+    print(response);
+
+    final List appointments =
+        response['data']
+            ['appointments'];
+
+    final acceptedAppointments =
+        appointments.where(
+
+      (e) =>
+          e['status'] ==
+          "accepted",
+    ).toList();
+
+    print(
+      "Accepted Count => ${acceptedAppointments.length}",
+    );
+
+    final history =
+        acceptedAppointments.map(
+
+      (e) =>
+          PendingRequestModel
+              .fromJson(e),
+    ).toList();
+
+    return Right(history);
+
+  } on DioException catch (e) {
+
+    print(
+      e.response?.data,
+    );
+
+    return Left(
+      mapExceptionToFailure(
+        ErrorHandler.handle(e),
+      ),
+    );
+
+  } on AppException catch (e) {
+
+    return Left(
+      mapExceptionToFailure(e),
+    );
+
+  } catch (e) {
+
+    return Left(
+      ServerFailure(),
+    );
+  }
+}
 }

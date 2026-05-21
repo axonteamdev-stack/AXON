@@ -1,7 +1,6 @@
+import 'package:Axon/core/errors/failures.dart';
+import 'package:Axon/features/doctor/Home%20Doctor/data/models/pending_request_model.dart';
 import 'package:dartz/dartz.dart';
-
-import '../../../../../core/errors/failures.dart';
-import '../models/pending_request_model.dart';
 
 abstract class DoctorHomeRemoteDataSource {
 
@@ -9,4 +8,20 @@ abstract class DoctorHomeRemoteDataSource {
       Failure,
       List<PendingRequestModel>>>
   getPendingRequests();
+
+  Future<Either<
+      Failure,
+      String>>
+  updateAppointmentStatus({
+
+    required String appointmentId,
+
+    required String status,
+  });
+
+
+  Future<Either<
+    Failure,
+    List<PendingRequestModel>>>
+getDoctorHistory();
 }

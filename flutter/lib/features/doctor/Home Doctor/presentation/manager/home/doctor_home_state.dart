@@ -1,7 +1,9 @@
 part of 'doctor_home_cubit.dart';
 
 enum DoctorHomeTab {
+
   chats,
+
   requests,
 }
 

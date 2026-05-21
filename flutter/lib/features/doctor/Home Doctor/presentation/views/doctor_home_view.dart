@@ -1,6 +1,5 @@
 import 'package:Axon/core/di/di.dart';
 import 'package:Axon/core/errors/mappers/failure_to_message_mapper.dart';
-import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/helpers/snackbar.dart';
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/manager/home/doctor_home_cubit.dart';
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/widgets/doctor_chat_card.dart';
@@ -108,100 +107,216 @@ class DoctorHomeView
                     Expanded(
 
                       child:
+                          RefreshIndicator(
 
-                          state.currentTab ==
-                                  DoctorHomeTab
-                                      .requests
+                        onRefresh:
+                            () async {
 
-                              ? ListView
-                                  .separated(
+                          await context
+                              .read<
+                                  DoctorHomeCubit>()
+                              .loadDoctorHome();
+                        },
 
-                                  itemCount:
-                                      state
-                                          .requestPatients
-                                          .length,
+                        child:
 
-                                  separatorBuilder:
-                                      (
-                                    _,
-                                    __,
-                                  ) =>
+                            state.currentTab ==
+                                    DoctorHomeTab
+                                        .requests
+
+                                ? state
+                                        .requestPatients
+                                        .isEmpty
+
+                                    ? ListView(
+                                        children: [
+
                                           SizedBox(
-                                    height:
-                                        12.h,
-                                  ),
+                                            height:
+                                                250.h,
+                                          ),
 
-                                  itemBuilder:
-                                      (
-                                    _,
-                                    index,
-                                  ) {
+                                          Center(
+                                            child:
+                                                Text(
 
-                                    final patient =
-                                        state.requestPatients[
-                                            index];
+                                              "No Requests Yet",
 
-                                    return DoctorRequestCard(
+                                              style:
+                                                  TextStyle(
 
-                                      name:
-                                          patient
-                                              .patientName,
+                                                fontSize:
+                                                    16.sp,
 
-                                      notes:
-                                          patient
-                                              .notes,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .w600,
 
-                                      image:
-                                          patient
-                                              .patientImage,
-                                    );
-                                  },
-                                )
+                                                color:
+                                                    Colors
+                                                        .grey,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      )
 
-                              : ListView
-                                  .separated(
+                                    : ListView
+                                        .separated(
 
-                                  itemCount:
-                                      state
-                                          .chatPatients
-                                          .length,
+                                        itemCount:
+                                            state
+                                                .requestPatients
+                                                .length,
 
-                                  separatorBuilder:
-                                      (
-                                    _,
-                                    __,
-                                  ) =>
+                                        separatorBuilder:
+                                            (
+                                          _,
+                                          __,
+                                        ) =>
+                                                SizedBox(
+                                          height:
+                                              12.h,
+                                        ),
+
+                                        itemBuilder:
+                                            (
+                                          context,
+                                          index,
+                                        ) {
+
+                                          final patient =
+                                              state.requestPatients[
+                                                  index];
+
+                                          return DoctorRequestCard(
+
+                                            appointmentId:
+                                                patient.id,
+
+                                            name:
+                                                patient
+                                                    .patientName,
+
+                                            notes:
+                                                patient
+                                                    .notes,
+
+                                            image:
+                                                patient
+                                                    .patientImage,
+
+                                            onAccept:
+                                                () {
+
+                                              context
+                                                  .read<
+                                                      DoctorHomeCubit>()
+                                                  .acceptRequest(
+
+                                                    appointmentId:
+                                                        patient.id,
+                                                  );
+                                            },
+
+                                            onReject:
+                                                () {
+
+                                              context
+                                                  .read<
+                                                      DoctorHomeCubit>()
+                                                  .rejectRequest(
+
+                                                    appointmentId:
+                                                        patient.id,
+                                                  );
+                                            },
+                                          );
+                                        },
+                                      )
+
+                                : state
+                                        .chatPatients
+                                        .isEmpty
+
+                                    ? ListView(
+                                        children: [
+
                                           SizedBox(
-                                    height:
-                                        12.h,
-                                  ),
+                                            height:
+                                                250.h,
+                                          ),
 
-                                  itemBuilder:
-                                      (
-                                    _,
-                                    index,
-                                  ) {
+                                          Center(
+                                            child:
+                                                Text(
 
-                                    final patient =
-                                        state.chatPatients[
-                                            index];
+                                              "No Chats Yet",
 
-                                    return DoctorChatCard(
+                                              style:
+                                                  TextStyle(
 
-                                      name:
-                                          patient
-                                              .name,
+                                                fontSize:
+                                                    16.sp,
 
-                                      description:
-                                          patient
-                                              .description,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .w600,
 
-                                      image:
-                                          patient
-                                              .image,
-                                    );
-                                  },
-                                ),
+                                                color:
+                                                    Colors
+                                                        .grey,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+
+                                    : ListView
+                                        .separated(
+
+                                        itemCount:
+                                            state
+                                                .chatPatients
+                                                .length,
+
+                                        separatorBuilder:
+                                            (
+                                          _,
+                                          __,
+                                        ) =>
+                                                SizedBox(
+                                          height:
+                                              12.h,
+                                        ),
+
+                                        itemBuilder:
+                                            (
+                                          _,
+                                          index,
+                                        ) {
+
+                                          final patient =
+                                              state.chatPatients[
+                                                  index];
+
+                                          return DoctorChatCard(
+
+                                            name:
+                                                patient
+                                                    .name,
+
+                                            description:
+                                                patient
+                                                    .description,
+
+                                            image:
+                                                patient
+                                                    .image,
+                                          );
+                                        },
+                                      ),
+                      ),
                     ),
                   ],
                 ),
@@ -209,9 +324,9 @@ class DoctorHomeView
             );
           }
 
-          return Center(
+          return const Center(
             child: Text(
-             "Something went wrong",
+              "Something went wrong",
             ),
           );
         },

@@ -9,4 +9,21 @@ abstract class DoctorHomeRepo {
       Failure,
       List<PendingRequestEntity>>>
   getPendingRequests();
+
+
+  Future<Either<
+    Failure,
+    String>>
+updateAppointmentStatus({
+
+  required String appointmentId,
+
+  required String status,
+});
+
+
+Future<Either<
+    Failure,
+    List<PendingRequestEntity>>>
+getDoctorHistory();
 }

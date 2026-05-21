@@ -27,4 +27,36 @@ class DoctorHomeRepoImpl
     return remoteDataSource
         .getPendingRequests();
   }
+
+
+  @override
+Future<Either<
+    Failure,
+    String>>
+updateAppointmentStatus({
+
+  required String appointmentId,
+
+  required String status,
+}) {
+
+  return remoteDataSource
+      .updateAppointmentStatus(
+
+    appointmentId:
+        appointmentId,
+
+    status: status,
+  );
+}
+
+@override
+Future<Either<
+    Failure,
+    List<PendingRequestEntity>>>
+getDoctorHistory() {
+
+  return remoteDataSource
+      .getDoctorHistory();
+}
 }

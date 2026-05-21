@@ -6,7 +6,10 @@ import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 
-class DoctorRequestCard extends StatelessWidget {
+class DoctorRequestCard
+    extends StatelessWidget {
+
+  final String appointmentId;
 
   final String name;
 
@@ -14,11 +17,24 @@ class DoctorRequestCard extends StatelessWidget {
 
   final String? image;
 
+  final VoidCallback onAccept;
+
+  final VoidCallback onReject;
+
   const DoctorRequestCard({
     super.key,
+
+    required this.appointmentId,
+
     required this.name,
+
     required this.notes,
+
     this.image,
+
+    required this.onAccept,
+
+    required this.onReject,
   });
 
   @override
@@ -179,7 +195,8 @@ class DoctorRequestCard extends StatelessWidget {
                     width: 1.2,
                   ),
 
-                  onPressed: () {},
+                  onPressed:
+                      onReject,
                 ),
               ),
 
@@ -196,7 +213,8 @@ class DoctorRequestCard extends StatelessWidget {
 
                   height: 42.h,
 
-                  onPressed: () {},
+                  onPressed:
+                      onAccept,
                 ),
               ),
             ],

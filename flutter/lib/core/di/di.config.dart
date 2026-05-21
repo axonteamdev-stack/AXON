@@ -65,8 +65,12 @@ import '../../features/doctor/Home%20Doctor/data/repo/doctor_home_repo_impl.dart
     as _i1022;
 import '../../features/doctor/Home%20Doctor/domain/repo/doctor_home_repo.dart'
     as _i183;
+import '../../features/doctor/Home%20Doctor/domain/usecases/get_doctor_history_use_case.dart'
+    as _i364;
 import '../../features/doctor/Home%20Doctor/domain/usecases/get_pending_requests_use_case.dart'
     as _i656;
+import '../../features/doctor/Home%20Doctor/domain/usecases/update_appointment_status_use_case.dart'
+    as _i605;
 import '../../features/doctor/Home%20Doctor/presentation/manager/home/doctor_home_cubit.dart'
     as _i609;
 import '../../features/doctor/Profile%20Doctor/data/datasources/doctor_profile_remote_datasource.dart'
@@ -309,8 +313,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i621.MedicineCubit>(
       () => _i621.MedicineCubit(gh<_i330.AddMedicineUseCase>()),
     );
+    gh.factory<_i364.GetDoctorHistoryUseCase>(
+      () => _i364.GetDoctorHistoryUseCase(gh<_i183.DoctorHomeRepo>()),
+    );
     gh.factory<_i656.GetPendingRequestsUseCase>(
       () => _i656.GetPendingRequestsUseCase(gh<_i183.DoctorHomeRepo>()),
+    );
+    gh.factory<_i605.UpdateAppointmentStatusUseCase>(
+      () => _i605.UpdateAppointmentStatusUseCase(gh<_i183.DoctorHomeRepo>()),
     );
     gh.factory<_i646.RegisterDoctorUseCase>(
       () => _i646.RegisterDoctorUseCase(authRepo: gh<_i170.AuthRepo>()),
@@ -336,6 +346,13 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i197.DoctorArticlesCubit(
         gh<_i194.CreateArticleUseCase>(),
         gh<_i409.GetDoctorPostsUseCase>(),
+      ),
+    );
+    gh.factory<_i609.DoctorHomeCubit>(
+      () => _i609.DoctorHomeCubit(
+        gh<_i656.GetPendingRequestsUseCase>(),
+        gh<_i605.UpdateAppointmentStatusUseCase>(),
+        gh<_i364.GetDoctorHistoryUseCase>(),
       ),
     );
     gh.factory<_i65.LoginCubit>(
@@ -366,9 +383,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i1052.PatientEditBasicInfoCubit(
         updateProfilePatientUseCase: gh<_i786.UpdateProfilePatientUseCase>(),
       ),
-    );
-    gh.factory<_i609.DoctorHomeCubit>(
-      () => _i609.DoctorHomeCubit(gh<_i656.GetPendingRequestsUseCase>()),
     );
     gh.factory<_i533.DoctorRegistrationCubit>(
       () => _i533.DoctorRegistrationCubit(

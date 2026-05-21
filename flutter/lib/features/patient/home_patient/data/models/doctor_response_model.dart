@@ -1,27 +1,49 @@
-
-
 import 'package:Axon/features/patient/home_patient/domain/entities/doctor_rsponse_entity.dart';
 
-class DoctorResponseModel extends DoctorRsponseEntity {
+class DoctorResponseModel
+    extends DoctorRsponseEntity {
+
   DoctorResponseModel({
+
     required super.id,
+
     required super.fullName,
+
     super.personalPhoto,
   });
 
-  factory DoctorResponseModel.fromJson(Map<String, dynamic> json) {
+  factory DoctorResponseModel.fromJson(
+    Map<String, dynamic> json,
+  ) {
+
     return DoctorResponseModel(
-      id: json["_id"],
-      fullName: json["fullName"],
-      personalPhoto: json["personalPhoto"],
+
+      id:
+          json["_id"]
+                  ?.toString() ??
+              '',
+
+      fullName:
+          json["fullName"]
+                  ?.toString() ??
+              '',
+
+      personalPhoto:
+          json["personalPhoto"]
+              ?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
+
     return {
+
       "_id": id,
+
       "fullName": fullName,
-      "personalPhoto": personalPhoto,
+
+      "personalPhoto":
+          personalPhoto,
     };
   }
 }
