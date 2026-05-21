@@ -738,7 +738,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hi_doctor(Object name) {
-    return 'Hi, Dr $name';
+    return 'Hi,$name';
   }
 
   @override

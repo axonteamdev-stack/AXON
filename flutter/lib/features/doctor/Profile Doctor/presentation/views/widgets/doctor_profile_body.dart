@@ -3,7 +3,7 @@ import 'package:Axon/features/doctor/Profile Doctor/presentation/manager/profile
 import 'package:Axon/features/doctor/Profile Doctor/presentation/views/doctor_edit_profile_view.dart';
 import 'package:Axon/features/doctor/Profile Doctor/presentation/views/widgets/doctor_profile_header.dart';
 import 'package:Axon/features/doctor/Profile Doctor/presentation/views/widgets/doctor_profile_header_delegate.dart';
-import 'package:Axon/features/doctor/Profile%20Doctor/presentation/manager/profile%20doctor/doctor_profile_state.dartdoctor_profile_state.dart';
+import 'package:Axon/features/doctor/Profile%20Doctor/presentation/manager/profile%20doctor/doctor_profile_state.dart';
 import 'package:Axon/features/onboarding/presentation/views/widgets/language_switch.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/confirm_delete_account_sheet.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/confirm_logout_sheet.dart';

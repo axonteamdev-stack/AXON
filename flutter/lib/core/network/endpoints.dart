@@ -22,7 +22,7 @@ class Endpoints {
 
   static const String resetPassword = "/auth/reset-password";
 
-  static const String refreshToken = "/auth/refresh-token";
+  static const String refreshToken = "/auth/refresh";
 
   // ================== ARTICLES ==================
   static const String getAllArticales = "/articles";
@@ -48,4 +48,8 @@ class Endpoints {
   static const String getDoctorPosts =
     "/posts/doctor";
   static const String searchDoctors = "/auth/search-doctors";
+
+
+  static const String updateProfile =
+    "/users/me";
 }

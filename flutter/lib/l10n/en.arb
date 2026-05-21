@@ -355,7 +355,7 @@
   "type_message": "Type your message...",
 
   
-  "hi_doctor": "Hi, Dr {name}",
+  "hi_doctor": "Hi,{name}",
   "manage_patients": "Manage your patients easily",
 
   "chats": "Chats",

@@ -1517,7 +1517,7 @@ abstract class AppLocalizations {
   /// No description provided for @hi_doctor.
   ///
   /// In en, this message translates to:
-  /// **'Hi, Dr {name}'**
+  /// **'Hi,{name}'**
   String hi_doctor(Object name);
 
   /// No description provided for @manage_patients.
