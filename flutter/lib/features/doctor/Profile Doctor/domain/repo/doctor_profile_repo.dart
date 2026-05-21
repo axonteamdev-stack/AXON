@@ -19,6 +19,8 @@ abstract class DoctorProfileRepo {
 
     required String price,
 
+    required String specialization,
+
     String? imagePath,
   });
 }

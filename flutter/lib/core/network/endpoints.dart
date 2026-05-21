@@ -24,8 +24,7 @@ class Endpoints {
   static const String getAllArticales = "/posts/articles?page=1&limit=10";
 
   static const String createArticle = "posts/articles";
-  static String getArticleById(String id) =>
-    "/posts/$id";
+  static String getArticleById(String id) => "/posts/$id";
 
   // ================== MEDICINE ==================
 
@@ -41,13 +40,17 @@ class Endpoints {
 
   // ================== DOCTORS ==================
 
-  static const String getAllDoctors = "/auth/all-doctors";
+  static const String getAllDoctors = "users/doctors?page=1&limit=10";
+  // "/auth/all-doctors";
 
   static const String getDoctorById = "/auth/doctor";
 
   static const String getDoctorPosts = "/posts/doctor";
 
-  static const String searchDoctors = "/auth/search-doctors";
+  // static const String searchDoctors = 
+  // "/auth/search-doctors";
+  static const String searchDoctors =
+    "/users/doctors/search";
 
   static const String updateProfile = "/users/me";
 

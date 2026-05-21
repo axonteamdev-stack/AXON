@@ -125,6 +125,11 @@ class DoctorProfileCubit
       PrefKeys.price,
     ) ?? "";
 
+    final image =
+        await pref.getString(
+      PrefKeys.personalPhoto,
+    );
+
     selectedSpecialization =
         profession;
 
@@ -141,6 +146,7 @@ class DoctorProfileCubit
             licenseImage,
         about: about,
         price: price,
+        image: image,
       ),
     );
 
@@ -192,6 +198,10 @@ class DoctorProfileCubit
       price:
           priceCtrl.text,
 
+      specialization:
+          selectedSpecialization ??
+              state.profession,
+
       imagePath:
           state.image,
     );
@@ -239,6 +249,14 @@ class DoctorProfileCubit
           selectedSpecialization ??
               "",
         );
+
+        if (state.image != null) {
+
+          await pref.setString(
+            PrefKeys.personalPhoto,
+            state.image!,
+          );
+        }
 
         emit(
           state.copyWith(

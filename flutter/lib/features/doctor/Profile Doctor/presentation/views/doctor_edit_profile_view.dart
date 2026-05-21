@@ -385,6 +385,10 @@ state.isEdit
         ),
       ),
 
+       SizedBox(
+                  height: 20.h,
+                ),
+
                 // ================= LICENSE NUMBER =================
 
                 FormLabel(

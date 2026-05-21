@@ -19,5 +19,6 @@ abstract class DoctorProfileRemoteDataSource {
     required String price,
 
     String? imagePath,
+    required String specialization,
   });
 }

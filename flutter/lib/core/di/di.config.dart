@@ -231,9 +231,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i940.DoctorArticlesRemoteDataSource>(),
       ),
     );
-    gh.factory<_i811.UpdateDoctorProfileUseCase>(
-      () => _i811.UpdateDoctorProfileUseCase(gh<_i968.DoctorProfileRepo>()),
-    );
     gh.factory<_i627.ProfilePatientRemoteDataSource>(
       () => _i209.ProfilePatientRemoteDataSourceImpl(
         networkInfo: gh<_i932.NetworkInfo>(),
@@ -274,6 +271,9 @@ extension GetItInjectableX on _i174.GetIt {
         networkInfo: gh<_i932.NetworkInfo>(),
         apiManager: gh<_i119.ApiManager>(),
       ),
+    );
+    gh.factory<_i811.UpdateDoctorProfileUseCase>(
+      () => _i811.UpdateDoctorProfileUseCase(gh<_i968.DoctorProfileRepo>()),
     );
     gh.factory<_i629.HomeRepo>(
       () => _i848.HomeRepoImpl(gh<_i379.HomeRemoteDataSource>()),

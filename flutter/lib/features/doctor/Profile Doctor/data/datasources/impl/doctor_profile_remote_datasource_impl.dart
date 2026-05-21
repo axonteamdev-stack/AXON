@@ -48,6 +48,8 @@ class DoctorProfileRemoteDataSourceImpl
 
     required String price,
 
+    required String specialization,
+
     String? imagePath,
 
   }) async {
@@ -73,8 +75,8 @@ class DoctorProfileRemoteDataSourceImpl
         "price":
             price,
 
-        /// IMPORTANT
-        /// API EXPECTS personalPhoto
+        "specialization":
+            specialization,
 
         if (imagePath != null)
           "personalPhoto":

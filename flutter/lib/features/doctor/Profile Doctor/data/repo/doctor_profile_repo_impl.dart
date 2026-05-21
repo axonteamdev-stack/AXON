@@ -41,6 +41,8 @@ class DoctorProfileRepoImpl
 
     required String price,
 
+    required String specialization,
+
     String? imagePath,
 
   }) async {
@@ -71,6 +73,9 @@ class DoctorProfileRepoImpl
       about: about,
 
       price: price,
+
+      specialization:
+          specialization,
 
       imagePath: imagePath,
     );

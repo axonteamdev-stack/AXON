@@ -11,10 +11,10 @@ import 'package:injectable/injectable.dart';
 @injectable
 class UpdateDoctorProfileUseCase {
 
-  final DoctorProfileRepo repo;
+  final DoctorProfileRepo repository;
 
   UpdateDoctorProfileUseCase(
-    this.repo,
+    this.repository,
   );
 
   Future<Either<
@@ -30,11 +30,13 @@ class UpdateDoctorProfileUseCase {
 
     required String price,
 
-    String? imagePath,
+    required String specialization,
 
+    String? imagePath,
   }) {
 
-    return repo.updateDoctorProfile(
+    return repository
+        .updateDoctorProfile(
 
       phoneNumber: phoneNumber,
 
@@ -44,6 +46,9 @@ class UpdateDoctorProfileUseCase {
       about: about,
 
       price: price,
+
+      specialization:
+          specialization,
 
       imagePath: imagePath,
     );
