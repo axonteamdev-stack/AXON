@@ -8,6 +8,7 @@ import postRoutes from "./postRoutes.js";
 import recordRoutes from "./recordRoutes.js";
 import ddiRoutes from "./ddiRoutes.js";
 import notificationRoutes from "./notificationRoutes.js";
+import prescriptionRoutes from "./prescriptionRoutes.js";
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use("/posts", postRoutes);
 router.use("/records", recordRoutes);
 router.use("/ddi", ddiRoutes);
 router.use("/notifications", notificationRoutes);
+router.use("/prescriptions", prescriptionRoutes);
 
 export default router;

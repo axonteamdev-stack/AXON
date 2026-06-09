@@ -73,11 +73,6 @@ const medicationSchema = new Schema(
             type: Date,
             required: true,
         },
-        prescribedBy: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-        },
         indication: {
             type: String,
             trim: true,
@@ -103,7 +98,6 @@ const medicationSchema = new Schema(
 medicationSchema.index({ patientId: 1, isActive: 1 });
 medicationSchema.index({ patientId: 1, startDate: -1 });
 medicationSchema.index({ endDate: 1 });
-medicationSchema.index({ prescribedBy: 1, createdAt: -1 });
 
 medicationSchema.virtual("isExpired").get(function () {
     return new Date() > this.endDate;
