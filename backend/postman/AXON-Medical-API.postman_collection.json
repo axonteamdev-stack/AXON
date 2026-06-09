@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "axon-collection-v1",
+    "_postman_id": "axon-collection-v2",
     "name": "AXON Medical API",
-    "description": "Full API collection for AXON Medical Platform",
+    "description": "Full API collection for AXON Medical Platform - Updated with self-medication",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -196,7 +196,7 @@
           }
         },
         {
-          "name": "Login",
+          "name": "Login Patient",
           "request": {
             "method": "POST",
             "header": [
@@ -733,7 +733,7 @@
       "name": "Medications",
       "item": [
         {
-          "name": "Create Medication (with startTime)",
+          "name": "Create Medication (Doctor - with startTime)",
           "request": {
             "method": "POST",
             "header": [
@@ -783,6 +783,45 @@
               }
             }
           ]
+        },
+        {
+          "name": "Create Self-Medication (Patient)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "ar"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/medications/self",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "medications",
+                "self"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medicineName\": \"Vitamin C\",\n  \"dosage\": {\n    \"value\": 500,\n    \"unit\": \"mg\"\n  },\n  \"frequency\": \"once daily\",\n  \"startTime\": \"09:00\",\n  \"startDate\": \"2026-06-05T00:00:00Z\",\n  \"endDate\": \"2026-06-30T00:00:00Z\",\n  \"indication\": \"Immune support\",\n  \"notes\": \"Take with breakfast\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
         },
         {
           "name": "Create Medication (with intakeTimes)",
