@@ -105,3 +105,30 @@ export const getPendingDoses = catchAsync(async (req, res) => {
     req.lang,
   );
 });
+
+export const createSelfMedication = catchAsync(async (req, res) => {
+  const medication = await MedicationService.create({
+    ...req.body,
+    patientId: req.user.id,
+    prescribedBy: req.user.id,
+    isSelfPrescribed: true,
+  });
+  sendLocalizedResponse(
+    res,
+    201,
+    msg("تم إضافة الدواء بنجاح", "Medication added"),
+    { medication },
+    req.lang,
+  );
+});
+
+export const getPatientMedications = catchAsync(async (req, res) => {
+  const medications = await MedicationService.getByPatient(req.params.patientId);
+  sendLocalizedResponse(
+    res,
+    200,
+    msg("تم جلب أدوية المريض", "Patient medications fetched"),
+    { medications },
+    req.lang,
+  );
+});
