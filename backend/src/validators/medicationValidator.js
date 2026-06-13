@@ -19,16 +19,15 @@ export const createMedicationSchema = z.object({
     unit: z.enum(DOSAGE_UNITS),
   }),
   frequency: z.enum(FREQUENCY_OPTIONS),
-  intakeTimes: z.array(z.string()).optional(),
   startTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/).optional(),
   startDate: z.string().datetime(),
   endDate: z.string().datetime(),
-  patientId: z.string().min(1),
+  patientId: z.string().min(1).optional(),   // <-- optional for self
   indication: z.string().optional(),
   notes: z.string().optional(),
 }).refine(
-  (d) => d.intakeTimes?.length || d.startTime,
-  { message: msg("يرجى إرسال intakeTimes أو startTime", "Provide intakeTimes or startTime"), path: ["intakeTimes"] },
+  (d) => d.startTime,
+  { message: msg("يرجى إرسال startTime", "Provide startTime"), path: ["startTime"] },
 );
 
 export const updateMedicationSchema = z.object({
