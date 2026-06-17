@@ -7,70 +7,33 @@ import { logger } from "../config/logger.js";
 
 const QR_EXPIRY_MS = 24 * 60 * 60 * 1000;
 
-// DEAD CODE FLAG
-/*
-export const getOrCreate = async (patientId) => {
-  let record = await Patient.findOne({ userId: patientId });
-  if (!record) {
-    record = await Patient.create({ userId: patientId });
-  }
-  return record;
-};
-*/
-
-export const getByPatient = async (patientId) => {
-  const record = await Patient.findOne({ userId: patientId }).lean();
-  if (!record) {
+export const generateQR = async (patientId) => {
+  const patient = await Patient.findOne({ userId: patientId }).lean();
+  if (!patient) {
     throw new AppError(
       msg("السجل الطبي غير موجود", "Medical record not found"),
       404,
     );
   }
-  return record;
-};
 
-export const update = async (patientId, updateData) => {
-  const allowedFields = [
-    "bloodType",
-    "height",
-    "weight",
-    "conditions",
-    "allergies",
-  ];
-  const update = {};
-
-  allowedFields.forEach((field) => {
-    if (updateData[field] !== undefined) update[field] = updateData[field];
-  });
-
-  if (Object.keys(update).length === 0) {
-    throw new AppError(msg("لا توجد بيانات للتحديث", "No data to update"), 400);
-  }
-
-  const record = await Patient.findOneAndUpdate(
-    { userId: patientId },
-    { $set: update },
-    { new: true, upsert: true },
-  );
-
-  return record;
-};
-
-export const addTest = async (patientId, type, testData) => {
-  const field = type === "radiology" ? "radiologyTests" : "labTests";
-  const record = await Patient.findOneAndUpdate(
-    { userId: patientId },
-    { $push: { [field]: testData } },
-    { new: true, upsert: true },
-  );
-
-  return record;
-};
-
-export const generateQR = async (patientId) => {
   const token = crypto.randomBytes(32).toString("hex");
   const pin = crypto.randomInt(1000, 10000).toString();
   const expiresAt = new Date(Date.now() + QR_EXPIRY_MS);
+
+  const vitalsPayload = [
+    patient.bloodType || "Unknown",
+    (patient.conditions || []).join(","),
+    (patient.allergies || []).join(","),
+  ].join("|");
+
+  const encodedVitals = Buffer.from(vitalsPayload, "utf-8")
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+
+  const baseUrl = process.env.APP_URL || "http://localhost:3000";
+  const qrUrl = `${baseUrl}/records/emergency/${token}?data=${encodedVitals}`;
 
   await Patient.findOneAndUpdate(
     { userId: patientId },
@@ -88,7 +51,7 @@ export const generateQR = async (patientId) => {
     },
   );
 
-  const qrCode = await QRCode.toDataURL(token, {
+  const qrCode = await QRCode.toDataURL(qrUrl, {
     width: 300,
     errorCorrectionLevel: "M",
   });
@@ -96,46 +59,33 @@ export const generateQR = async (patientId) => {
   return { qrCode, pin, expiresAt };
 };
 
-export const getByQR = async (token, pin, clientIp) => {
-  const record = await Patient.findOne({
-    "emergencyQR.token": token,
-    "emergencyQR.expiresAt": { $gt: new Date() },
-  }).populate("userId", "fullName phoneNumber gender");
+export const getByQRDirect = async (tokenParam, clientIp) => {
+  const record = await Patient.findOneAndUpdate(
+    { "emergencyQR.token": tokenParam },
+    {
+      $set: { "emergencyQR.usedAt": new Date() },
+      $push: {
+        "emergencyQR.accessLog": {
+          accessedAt: new Date(),
+          ip: clientIp || null,
+        },
+      },
+    },
+    { new: true },
+  ).populate("userId", "fullName phoneNumber gender");
 
   if (!record) {
     throw new AppError(
-      msg("رمز QR غير صالح أو منتهي", "Invalid or expired QR code"),
+      msg("السجل الطبي غير موجود", "Medical record not found"),
       404,
     );
   }
 
-  const hashedPin = crypto.createHash("sha256").update(pin).digest("hex");
-  if (record.emergencyQR.pin !== hashedPin) {
-    throw new AppError(msg("رمز PIN غير صحيح", "Invalid PIN"), 401);
+  const cleanRecord = record.toObject();
+  if (cleanRecord.emergencyQR) {
+    delete cleanRecord.emergencyQR.pin;
+    delete cleanRecord.emergencyQR.token;
   }
 
-  if (record.emergencyQR.usedAt) {
-    throw new AppError(
-      msg("رمز QR تم استخدامه بالفعل", "QR code already used"),
-      410,
-    );
-  }
-
-  record.emergencyQR.usedAt = new Date();
-  record.emergencyQR.accessLog.push({
-    accessedAt: new Date(),
-    ip: clientIp || null,
-  });
-
-  await record.save();
-
-  logger.info(
-    {
-      patientId: record.userId?._id,
-      token: token.substring(0, 8) + "...",
-    },
-    "Emergency QR accessed",
-  );
-
-  return record;
+  return cleanRecord;
 };

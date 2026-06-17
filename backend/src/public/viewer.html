@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AXON Emergency QR Profile Viewer</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .workspace-container {
+        width: 100%;
+        max-width: 600px;
+        background-color: #1e1e1e;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        padding: 24px;
+        border: 1px solid #2d2d2d;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        color: #ffffff;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+
+      p.subtitle {
+        font-size: 0.9rem;
+        color: #aaaaaa;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #3b82f6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 120px;
+        background-color: #121212;
+        border: 1px solid #333333;
+        border-radius: 8px;
+        color: #ffffff;
+        padding: 12px;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.85rem;
+        resize: none;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      textarea:focus {
+        border-color: #3b82f6;
+      }
+
+      button {
+        width: 100%;
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        padding: 14px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          background-color 0.2s,
+          transform 0.1s;
+      }
+
+      button:hover {
+        background-color: #2563eb;
+      }
+
+      button:active {
+        transform: scale(0.99);
+      }
+
+      .preview-box {
+        margin-top: 24px;
+        background-color: #121212;
+        border: 1px dashed #333333;
+        border-radius: 12px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 280px;
+      }
+
+      .preview-box h3 {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+        color: #ffffff;
+      }
+
+      .qr-wrapper {
+        background-color: white;
+        padding: 12px;
+        border-radius: 8px;
+        display: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .qr-wrapper img {
+        display: block;
+        width: 220px;
+        height: 220px;
+      }
+
+      .placeholder-text {
+        color: #666666;
+        font-size: 0.9rem;
+        text-align: center;
+      }
+
+      .error-message {
+        color: #ef4444;
+        font-size: 0.85rem;
+        margin-top: 8px;
+        display: none;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="workspace-container">
+      <h2>AXON Medical QR Studio</h2>
+      <p class="subtitle">
+        Parse and isolate Base64 payloads into valid image components
+      </p>
+
+      <div class="input-group">
+        <label for="base64Input">Paste Base64 Data String</label>
+        <textarea
+          id="base64Input"
+          placeholder="Paste text starting with data:image/png;base64,..."
+        ></textarea>
+      </div>
+
+      <button id="renderBtn">Render Image Matrix</button>
+
+      <div class="preview-box">
+        <h3 id="previewTitle" style="display: none">Emergency Scan Preview</h3>
+        <div id="placeholder" class="placeholder-text">
+          Waiting for payload injection...
+        </div>
+        <div id="qrWrapper" class="qr-wrapper">
+          <img id="qrImage" src="" alt="Decoded QR Element" />
+        </div>
+        <div id="errorBox" class="error-message"></div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("renderBtn")
+        .addEventListener("click", function () {
+          const rawInput = document.getElementById("base64Input").value;
+          const qrImage = document.getElementById("qrImage");
+          const qrWrapper = document.getElementById("qrWrapper");
+          const placeholder = document.getElementById("placeholder");
+          const previewTitle = document.getElementById("previewTitle");
+          const errorBox = document.getElementById("errorBox");
+
+          errorBox.style.display = "none";
+
+          if (!rawInput.trim()) {
+            showError("Input cannot be empty.");
+            return;
+          }
+
+          // 1. Strip out spaces, quotes, and line breaks
+          let cleanPayload = rawInput.replace(/["'\s\n\r]/g, "");
+
+          // 2. DETECT AND REPAIR DOUBLE-ENCODED STRINGS:
+          if (
+            !cleanPayload.startsWith("data:image") &&
+            !cleanPayload.startsWith("iVBOR")
+          ) {
+            try {
+              const decodedString = atob(cleanPayload);
+              if (decodedString.includes("data:image/png;base64,")) {
+                cleanPayload = decodedString.replace(/["'\s\n\r]/g, "");
+              }
+            } catch (e) {
+              // Not double encoded, let standard validation handle it below
+            }
+          }
+
+          // 3. Fallback header matching
+          if (!cleanPayload.startsWith("data:image")) {
+            if (cleanPayload.startsWith("iVBOR")) {
+              cleanPayload = "data:image/png;base64," + cleanPayload;
+            } else {
+              showError(
+                "Invalid structure: Missing valid PNG matrix signatures.",
+              );
+              return;
+            }
+          }
+
+          try {
+            qrImage.src = cleanPayload;
+            placeholder.style.display = "none";
+            previewTitle.style.display = "block";
+            qrWrapper.style.display = "block";
+          } catch (err) {
+            showError("Parsing failure: Payload stream corrupted.");
+          }
+        });
+
+      function showError(msg) {
+        document.getElementById("qrWrapper").style.display = "none";
+        document.getElementById("previewTitle").style.display = "none";
+        document.getElementById("placeholder").style.display = "block";
+        document.getElementById("errorBox").innerText = msg;
+        document.getElementById("errorBox").style.display = "block";
+      }
+    </script>
+  </body>
+</html>

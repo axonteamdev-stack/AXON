@@ -19,12 +19,17 @@ const qrLimiter = rateLimit({
   },
 });
 
-router.post(
-  "/qr/access",
+router.get("/qr-test", recordController.openViewer);
+
+router.get(
+  "/emergency/:token",
   qrLimiter,
-  parseUniversal(),
-  recordController.getByQR,
+  recordController.renderEmergencyPage,
 );
+
+router.get("/emergency-data/:token", qrLimiter, recordController.getByQR);
+
+router.get("/qr/access/:patientId", qrLimiter, recordController.getByQR);
 
 router.use(protect);
 

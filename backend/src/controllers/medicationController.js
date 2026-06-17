@@ -96,12 +96,12 @@ export const markDose = catchAsync(async (req, res) => {
 });
 
 export const getPendingDoses = catchAsync(async (req, res) => {
-  const doses = await MedicationService.getPendingDoses(req.user.id);
+  const dose = await MedicationService.getPendingDoses(req.user.id);
   sendLocalizedResponse(
     res,
     200,
-    msg("تم جلب الجرعات المعلقة", "Pending doses fetched"),
-    { doses },
+    msg("تم جلب الجرعة القادمة المعلقة", "Next pending dose fetched"),
+    { dose },
     req.lang,
   );
 });
@@ -123,7 +123,9 @@ export const createSelfMedication = catchAsync(async (req, res) => {
 });
 
 export const getPatientMedications = catchAsync(async (req, res) => {
-  const medications = await MedicationService.getByPatient(req.params.patientId);
+  const medications = await MedicationService.getByPatient(
+    req.params.patientId,
+  );
   sendLocalizedResponse(
     res,
     200,

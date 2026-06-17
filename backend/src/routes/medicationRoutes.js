@@ -15,7 +15,6 @@ const router = Router();
 
 router.use(protect);
 
-// Doctor: prescribe medication
 router.post(
   "/",
   restrictTo("doctor"),
@@ -24,7 +23,6 @@ router.post(
   medicationController.create,
 );
 
-// Patient: add self-medication
 router.post(
   "/self",
   restrictTo("patient"),
@@ -33,13 +31,10 @@ router.post(
   medicationController.createSelfMedication,
 );
 
-// Patient: get my medications
 router.get("/", medicationController.getMyMedications);
 
-// Patient: get pending doses
 router.get("/pending-doses", medicationController.getPendingDoses);
 
-// Doctor: view specific patient's medications
 router.get(
   "/patient/:patientId",
   restrictTo("doctor"),

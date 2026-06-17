@@ -12,8 +12,8 @@ const INTERVAL_MAP = Object.freeze({
   "every 6 hours": 6,
   "every 8 hours": 8,
   "every 12 hours": 12,
-  "weekly": 168,
-  "monthly": 720,
+  weekly: 168,
+  monthly: 720,
   "as needed": 0,
 });
 
@@ -26,8 +26,8 @@ const COUNT_MAP = Object.freeze({
   "every 6 hours": 4,
   "every 8 hours": 3,
   "every 12 hours": 2,
-  "weekly": 1,
-  "monthly": 1,
+  weekly: 1,
+  monthly: 1,
   "as needed": 0,
 });
 
@@ -51,7 +51,9 @@ const calcIntakeTimes = (startTime, frequency) => {
     const total = startMin + i * step;
     const hour = Math.floor(total / 60) % 24;
     const minute = total % 60;
-    times.push(`${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`);
+    times.push(
+      `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
+    );
   }
   return times;
 };
@@ -80,28 +82,6 @@ export const create = async (data) => {
 
   await DoseLog.insertMany(doseLogs);
   return medication;
-};
-
-export const getByPatient = async (patientId) => {
-  const medications = await Medication.find({ patientId }).sort({ createdAt: -1 });
-  const today = getTodayString();
-
-  return Promise.all(
-    medications.map(async (med) => {
-      const doseLogs = await DoseLog.find({ medicationId: med._id, date: today }).lean();
-      return {
-        ...med.toObject(),
-        doseLogs,
-        stats: {
-          total: doseLogs.length,
-          pending: doseLogs.filter((d) => d.status === "pending").length,
-          taken: doseLogs.filter((d) => d.status === "taken").length,
-          skipped: doseLogs.filter((d) => d.status === "skipped").length,
-        },
-        isExpired: med.endDate < new Date(),
-      };
-    }),
-  );
 };
 
 export const getById = async (medicationId, patientId) => {
@@ -143,6 +123,33 @@ export const remove = async (medicationId, patientId) => {
   return medication;
 };
 
+export const getByPatient = async (patientId) => {
+  const medications = await Medication.find({ patientId }).sort({
+    createdAt: -1,
+  });
+  const today = getTodayString();
+
+  return Promise.all(
+    medications.map(async (med) => {
+      const doseLogs = await DoseLog.find({
+        medicationId: med._id,
+        date: today,
+      }).lean();
+      return {
+        ...med.toObject(),
+        doseLogs,
+        stats: {
+          total: doseLogs.length,
+          pending: doseLogs.filter((d) => d.status === "pending").length,
+          taken: doseLogs.filter((d) => d.status === "taken").length,
+          skipped: doseLogs.filter((d) => d.status === "skipped").length,
+        },
+        isExpired: med.endDate < new Date(),
+      };
+    }),
+  );
+};
+
 export const markDose = async (medicationId, patientId, time, status) => {
   const today = getTodayString();
 
@@ -154,7 +161,10 @@ export const markDose = async (medicationId, patientId, time, status) => {
 
   if (!doseLog) {
     throw new AppError(
-      msg("هذه الجرعة تم تسجيلها بالفعل أو غير موجودة", "This dose was already marked or not found"),
+      msg(
+        "هذه الجرعة تم تسجيلها بالفعل أو غير موجودة",
+        "This dose was already marked or not found",
+      ),
       409,
     );
   }
@@ -163,9 +173,6 @@ export const markDose = async (medicationId, patientId, time, status) => {
 
 export const getPendingDoses = async (patientId) => {
   const today = getTodayString();
-  const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
 
   const pendingDoses = await DoseLog.find({
     patientId,
@@ -173,8 +180,19 @@ export const getPendingDoses = async (patientId) => {
     status: "pending",
   }).populate("medicationId", "medicineName dosage");
 
-  return pendingDoses.filter((dose) => {
-    const [hour, minute] = dose.time.split(":").map(Number);
-    return hour < currentHour || (hour === currentHour && minute <= currentMinute);
+  if (pendingDoses.length === 0) {
+    return null;
+  }
+
+  pendingDoses.sort((a, b) => {
+    const [hA, mA] = a.time.split(":").map(Number);
+    const [hB, mB] = b.time.split(":").map(Number);
+
+    const minutesA = hA * 60 + mA;
+    const minutesB = hB * 60 + mB;
+
+    return minutesA - minutesB;
   });
+
+  return pendingDoses[0];
 };
