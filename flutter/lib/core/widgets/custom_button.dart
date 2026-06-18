@@ -27,7 +27,7 @@ class CustomButton extends StatelessWidget {
     this.icon,
     this.padding,
     this.child,
-    this.shadowColor,  
+    this.shadowColor,
   });
 
   final VoidCallback? onPressed;
@@ -62,18 +62,15 @@ class CustomButton extends StatelessWidget {
       width: width ?? double.infinity,
       height: height ?? 50.h,
       decoration: BoxDecoration(
-        color: color ?? AppColors.primaryColor,
-        borderRadius: BorderRadius.circular(borderRadius ?? 12.r),
-        border: border != null ? Border.fromBorderSide(border!) : null,
-        boxShadow: shadowColor != null
-            ? [
-                BoxShadow(
-                  color: shadowColor!,
-                  offset: const Offset(0, 4),
-                  blurRadius: 4,
-                ),
-              ]
+        color: color,
+        gradient: color == null
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.primaryColor, AppColors.blue],
+              )
             : null,
+        borderRadius: BorderRadius.circular(borderRadius ?? 12.r),
       ),
       child: Material(
         color: Colors.transparent,
@@ -94,27 +91,24 @@ class CustomButton extends StatelessWidget {
                       ),
                     )
                   : child ??
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (icon != null) ...[
-                            icon!,
-                            SizedBox(width: 8.w),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (icon != null) ...[icon!, SizedBox(width: 8.w)],
+                            TextApp(
+                              text: text,
+                              fontSize: fontSize ?? 16.sp,
+                              color: textColor ?? AppColors.white,
+                              textAlign: textAlign ?? TextAlign.center,
+                              weight: fontWeight == ButtonTextWeight.bold
+                                  ? AppTextWeight.bold
+                                  : AppTextWeight.regular,
+                              overflow: TextOverflow.visible,
+                              softWrap: false,
+                            ),
                           ],
-                          TextApp(
-                            text: text,
-                            fontSize: fontSize ?? 16.sp,
-                            color: textColor ?? AppColors.white,
-                            textAlign: textAlign ?? TextAlign.center,
-                            weight: fontWeight == ButtonTextWeight.bold
-                                ? AppTextWeight.bold
-                                : AppTextWeight.regular,
-                            overflow: TextOverflow.visible,
-                            softWrap: false,
-                          ),
-                        ],
-                      ),
+                        ),
             ),
           ),
         ),

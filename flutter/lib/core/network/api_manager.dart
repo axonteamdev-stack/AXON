@@ -62,85 +62,76 @@ class ApiManager {
           handler.next(response);
         },
 
-       onError: (error, handler) async {
-  print("❌ [ERROR] ${error.message}");
+        onError: (error, handler) async {
+          print("❌ [ERROR] ${error.message}");
 
-  /// لو access token انتهى
-  if (error.response?.statusCode == 401) {
-    print("🔄 Access token expired");
+          // لو الـ Access Token انتهت صلاحيته
+          if (error.response?.statusCode == 401) {
+            print("🔄 Access token expired");
 
-    final refreshToken =
-        SharedPref().getString(
-      PrefKeys.refreshToken,
-    );
+            final refreshToken = SharedPref().getString(PrefKeys.refreshToken);
 
-    print("🔄 Refresh Token => $refreshToken");
+            print("🔄 Refresh Token => $refreshToken");
 
-    if (refreshToken != null &&
-        refreshToken.isNotEmpty) {
-      try {
-        /// استدعاء refresh endpoint
-        final refreshResponse =
-            await dio.post(
-          Endpoints.refreshToken,
-          options: Options(
-            headers: {
-              "cookie":
-                  "refreshToken=$refreshToken",
-            },
-          ),
-        );
+            if (refreshToken != null && refreshToken.isNotEmpty) {
+              try {
+                // استدعاء API الخاص بتجديد التوكن
+                final refreshResponse = await dio.post(
+                  Endpoints.refreshToken,
+                  options: Options(
+                    headers: {"cookie": "refreshToken=$refreshToken"},
+                  ),
+                );
 
-        print("✅ Token refreshed successfully");
+                print("✅ Token refreshed successfully");
+                print("📥 Refresh Response: ${refreshResponse.data}");
 
-        /// السيرفر يرجع:
-        /// data.token
-        final newToken =
-            refreshResponse.data["data"]["token"];
+                // ✅ القراءة الصحيحة من الـ Response
+                final newAccessToken =
+                    refreshResponse.data["data"]["accessToken"] as String;
 
-        await SharedPref().setString(
-          PrefKeys.accessToken,
-          newToken,
-        );
+                final newRefreshToken =
+                    refreshResponse.data["data"]["refreshToken"] as String;
 
-        print("🆕 New Access Token => $newToken");
+                // حفظ التوكنات الجديدة
+                await SharedPref().setString(
+                  PrefKeys.accessToken,
+                  newAccessToken,
+                );
 
-        /// إعادة نفس الطلب القديم
-        final requestOptions =
-            error.requestOptions;
+                await SharedPref().setString(
+                  PrefKeys.refreshToken,
+                  newRefreshToken,
+                );
 
-        requestOptions.headers[
-            "Authorization"] =
-            "Bearer $newToken";
+                print("🆕 New Access Token => $newAccessToken");
+                print("🆕 New Refresh Token => $newRefreshToken");
 
-        final clonedResponse =
-            await dio.fetch(
-          requestOptions,
-        );
+                // إعادة إرسال الطلب الأصلي
+                final requestOptions = error.requestOptions;
 
-        print("✅ Original request retried");
+                requestOptions.headers["Authorization"] =
+                    "Bearer $newAccessToken";
 
-        return handler.resolve(
-          clonedResponse,
-        );
-      } catch (e) {
-        print("❌ Refresh token failed");
-        print(e.toString());
+                final clonedResponse = await dio.fetch(requestOptions);
 
-        /// لو refresh نفسه فشل
-        await SharedPref().removePreference(
-  PrefKeys.accessToken,
-);
+                print("✅ Original request retried successfully");
 
-await SharedPref().removePreference(
-  PrefKeys.refreshToken,
-);
-      }
-    }
-  }
+                return handler.resolve(clonedResponse);
+              } catch (e) {
+                print("❌ Refresh token failed");
+                print(e);
 
-  handler.next(error);
-}
+                // حذف التوكنات في حالة الفشل
+                await SharedPref().removePreference(PrefKeys.accessToken);
+
+                await SharedPref().removePreference(PrefKeys.refreshToken);
+              }
+            }
+          }
+
+          handler.next(error);
+        },
       ),
     );
   }
@@ -178,44 +169,30 @@ await SharedPref().removePreference(
   // ================== TOKEN ==================
 
   Future<void> _saveTokens(Response response) async {
-    final cookies = response.headers.map['set-cookie'];
+    try {
+      final data = response.data;
 
-    print("📦 [TOKENS] Headers: ${response.headers}");
+      if (data is Map<String, dynamic>) {
+        final tokens = data["data"]?["tokens"];
 
-    if (cookies == null) {
-      print("❌ [TOKENS] No cookies found");
-      return;
-    }
+        if (tokens != null) {
+          final accessToken = tokens["accessToken"];
+          final refreshToken = tokens["refreshToken"];
 
-    for (var cookie in cookies) {
-      print("🍪 [TOKENS] Raw Cookie: $cookie");
+          if (accessToken != null) {
+            await SharedPref().setString(PrefKeys.accessToken, accessToken);
+          }
 
-      // 🔥 Access Token
-      if (cookie.contains("jwt=")) {
-        final token = cookie.split(";").first.split("=").last;
+          if (refreshToken != null) {
+            await SharedPref().setString(PrefKeys.refreshToken, refreshToken);
+          }
 
-        await SharedPref().setString(PrefKeys.accessToken, token);
-
-        print("🔑 [TOKENS] Access Token saved:");
-        print("👉 $token");
+          print("💾 Access Token Saved: $accessToken");
+          print("💾 Refresh Token Saved: $refreshToken");
+        }
       }
-
-      // 🔥 Refresh Token
-      if (cookie.contains("refreshToken=")) {
-        final token = cookie.split(";").first.split("=").last;
-
-        await SharedPref().setString(PrefKeys.refreshToken, token);
-
-        print("🔄 [TOKENS] Refresh Token saved:");
-        print("👉 $token");
-      }
+    } catch (e) {
+      print("❌ Error saving tokens: $e");
     }
-
-    // 🔥 تأكيد إن التوكن اتسيف
-    final savedAccess = SharedPref().getString(PrefKeys.accessToken);
-    final savedRefresh = SharedPref().getString(PrefKeys.refreshToken);
-
-    print("💾 [TOKENS] Saved Access Token: $savedAccess");
-    print("💾 [TOKENS] Saved Refresh Token: $savedRefresh");
   }
 }

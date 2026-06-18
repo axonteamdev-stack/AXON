@@ -8,14 +8,16 @@ import 'package:injectable/injectable.dart';
 
 @injectable
 class MedicineCubit extends Cubit<MedicineState> {
-  MedicineCubit(
-    this.addMedicineUseCase,
-  ) : super(InitialMedicineState());
+  MedicineCubit(this.addMedicineUseCase) : super(InitialMedicineState());
 
   final AddMedicineUseCase addMedicineUseCase;
 
-  final TextEditingController medicineNameController =
+  final TextEditingController medicineNameController = TextEditingController();
+
+  final TextEditingController medicineDosageController =
       TextEditingController();
+
+  final TextEditingController medicineNotesController = TextEditingController();
 
   final formKey = GlobalKey<FormState>();
 
@@ -66,10 +68,7 @@ class MedicineCubit extends Cubit<MedicineState> {
     emit(MedicineIntakeTimeChangedState());
   }
 
-  void setDuration({
-    required DateTime start,
-    required DateTime end,
-  }) {
+  void setDuration({required DateTime start, required DateTime end}) {
     print("Duration Updated");
     print("Start Date => $start");
     print("End Date => $end");
@@ -89,9 +88,7 @@ class MedicineCubit extends Cubit<MedicineState> {
       return;
     }
 
-    print(
-      "Medicine Name => ${medicineNameController.text.trim()}",
-    );
+    print("Medicine Name => ${medicineNameController.text.trim()}");
     print("Selected Frequency => $selectedFrequency");
     print("Intake Times => $intakeTimes");
 
@@ -107,16 +104,9 @@ class MedicineCubit extends Cubit<MedicineState> {
     if (endDate == null) {
       print("ERROR ❌ End Date is NULL");
 
-      Snackbar.showError(
-        context,
-        message: "Please select end date",
-      );
+      Snackbar.showError(context, message: "Please select end date");
 
-      emit(
-        MedicineErrorState(
-          failure: ServerFailure(),
-        ),
-      );
+      emit(MedicineErrorState(failure: ServerFailure()));
 
       return;
     }
@@ -125,28 +115,17 @@ class MedicineCubit extends Cubit<MedicineState> {
     if (endDate!.isBefore(startDate!)) {
       print("ERROR ❌ End Date is before Start Date");
 
-      Snackbar.showError(
-        context,
-        message: "End date must be after start date",
-      );
+      Snackbar.showError(context, message: "End date must be after start date");
 
-      emit(
-        MedicineErrorState(
-          failure: ServerFailure(),
-        ),
-      );
+      emit(MedicineErrorState(failure: ServerFailure()));
 
       return;
     }
 
     print("Validation Passed ✅");
 
-    print(
-      "Start Date FINAL => ${startDate!.toIso8601String()}",
-    );
-    print(
-      "End Date FINAL => ${endDate!.toIso8601String()}",
-    );
+    print("Start Date FINAL => ${startDate!.toIso8601String()}");
+    print("End Date FINAL => ${endDate!.toIso8601String()}");
 
     emit(MedicineLoadingState());
 
@@ -154,53 +133,40 @@ class MedicineCubit extends Cubit<MedicineState> {
     /// API REQUEST
     /// =============================
     final result = await addMedicineUseCase.call(
-      medicineName:
-          medicineNameController.text.trim(),
+      medicineName: medicineNameController.text.trim(),
 
       /// الآن سيتم إرسال القيمة الصحيحة للـ API
       frequency: selectedFrequency,
 
       /// لو مفيش وقت مختار
-      intakeTime: intakeTimes.isNotEmpty
-          ? intakeTimes.first
-          : "08:00",
+      intakeTime: intakeTimes.isNotEmpty ? intakeTimes.first : "08:00",
 
-      startDate: startDate!.toIso8601String(),
-      endDate: endDate!.toIso8601String(),
+      startDate: "${startDate!.toUtc().toIso8601String().split('.').first}Z",
+      endDate: "${endDate!.toUtc().toIso8601String().split('.').first}Z",
+      dosage: double.tryParse(medicineDosageController.text.trim()) ?? 0.0,
+      notes: medicineNotesController.text,
     );
 
     print("API Request Sent 🚀");
 
-    result.fold(
-      (failure) {
-        print("API FAILED ❌");
-        print("Failure => $failure");
-
-        Snackbar.showError(
-          context,
-          message: "Failed to add medicine",
-        );
-
-        emit(
-          MedicineErrorState(
-            failure: failure,
-          ),
-        );
-      },
-      (response) {
-        print("API SUCCESS ✅");
-        print("Medicine Added Successfully");
-
-        Snackbar.showSuccess(
-          context,
-          message: "Medicine added successfully",
-        );
-
-        emit(
-          MedicineSuccessState(),
-        );
-      },
+   result.fold(
+  (failure) {
+    Snackbar.showError(
+      context,
+      message: "Failed to add medicine",
     );
+
+    emit(MedicineErrorState(failure: failure));
+  },
+  (response) {
+    Snackbar.showSuccess(
+      context,
+      message: "Medicine added successfully",
+    );
+
+    emit(MedicineSuccessState());
+  },
+);
 
     print("========== ADD MEDICINE END ==========");
   }

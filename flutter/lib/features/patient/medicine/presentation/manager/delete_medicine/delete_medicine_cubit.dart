@@ -3,37 +3,25 @@ import 'package:Axon/features/patient/medicine/presentation/manager/delete_medic
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-
-
 @injectable
-class DeleteMedicineCubit
-    extends Cubit<DeleteMedicineState> {
-  final DeleteMedicineUseCase
-      deleteMedicineUseCase;
+class DeleteMedicineCubit extends Cubit<DeleteMedicineState> {
+  final DeleteMedicineUseCase deleteMedicineUseCase;
 
-  DeleteMedicineCubit({
-    required this.deleteMedicineUseCase,
-  }) : super(DeleteMedicineInitial());
+  DeleteMedicineCubit({required this.deleteMedicineUseCase})
+    : super(DeleteMedicineInitial());
 
-  Future<void> deleteMedicine(
-    String medicineId,
-  ) async {
+  Future<void> deleteMedicine(String medicineId) async {
     emit(DeleteMedicineLoading());
 
-    final result =
-        await deleteMedicineUseCase.call(
-      medicineId: medicineId,
-    );
+    final result = await deleteMedicineUseCase.call(medicineId: medicineId);
 
     result.fold(
       (failure) {
-        emit(
-          DeleteMedicineError(
-            failure: failure,
-          ),
-        );
+        print("DELETE FAILED: $failure");
+        emit(DeleteMedicineError(failure: failure));
       },
       (response) {
+        print("DELETE SUCCESS");
         emit(DeleteMedicineSuccess());
       },
     );

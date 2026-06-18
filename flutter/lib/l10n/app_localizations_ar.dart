@@ -724,7 +724,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tap_to_select => 'اضغط للاختيار';
 
   @override
-  String get save => 'حفظ';
+  String get save => 'حفظ العلاج';
 
   @override
   String get ai_intro =>
@@ -908,4 +908,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get no_events_found => 'لا توجد فعاليات';
+
+  @override
+  String get medicine_upper => 'العلاج';
+
+  @override
+  String get instructions_notes => 'ضف تعليمات وملاحظات خاصة...';
+
+  @override
+  String get dosage_hint => '500 ملي';
+
+  @override
+  String get dosage => 'الجرعه';
+
+  @override
+  String get instructions__notes => 'التعليمات والملاحظات';
 }

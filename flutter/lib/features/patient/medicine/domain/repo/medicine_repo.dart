@@ -8,10 +8,12 @@ import 'package:dartz/dartz.dart';
 abstract class MedicineRepo {
   Future<Either<Failure, MedicineEntity>> addMedicine({
     required String medicineName,
+    required double dosage,
     required String frequency,
     required String intakeTime,
     required String startDate,
     required String endDate,
+    required String notes,
   });
 
 Future<Either<Failure, GetMedicineEntity>> getMedicines();

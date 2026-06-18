@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/core/extensions/context_extension.dart';
 
 class ConfirmLogoutSheet extends StatelessWidget {
   final VoidCallback onConfirm;

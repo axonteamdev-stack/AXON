@@ -7,10 +7,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScrollableContent extends StatelessWidget {
   final List<ArticleEntity> articles;
+  final String medicineName;
+  final String time;
+  final String remainingTime;
+  final VoidCallback onTakeDose;
+  final Future<void> Function() onAddMedicine;
 
   const HomeScrollableContent({
     super.key,
     required this.articles,
+    required this.medicineName,
+    required this.time,
+    required this.remainingTime,
+    required this.onTakeDose,
+    required this.onAddMedicine,
   });
 
   @override
@@ -22,21 +32,22 @@ class HomeScrollableContent extends StatelessWidget {
           children: [
             SizedBox(height: 14.h),
 
-            const TodayMedicationSection(
-              taken: 2,
+            TodayMedicationSection(
+              taken: 1,
               total: 4,
-              medicineName: "Vitamin D",
+              remainingTime: remainingTime,
+              medicineName: medicineName,
+              time: time,
+              onTakeDose: onTakeDose,
             ),
 
             SizedBox(height: 16.h),
 
-            const QuickActionsSection(),
+            QuickActionsSection(onAddMedicine: onAddMedicine),
 
             SizedBox(height: 16.h),
 
-            ArticlesTipsSection(
-              articles: articles,
-            ),
+            ArticlesTipsSection(articles: articles),
 
             SizedBox(height: 25.h),
           ],

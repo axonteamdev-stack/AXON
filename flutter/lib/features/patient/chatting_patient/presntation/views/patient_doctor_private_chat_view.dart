@@ -27,8 +27,7 @@ class PatientDoctorPrivateChatView extends StatefulWidget {
 
 class _PatientDoctorPrivateChatViewState
     extends State<PatientDoctorPrivateChatView> {
-  final TextEditingController messageController =
-      TextEditingController();
+  final TextEditingController messageController = TextEditingController();
 
   late List<Map<String, dynamic>> messages;
 
@@ -36,11 +35,7 @@ class _PatientDoctorPrivateChatViewState
   void initState() {
     super.initState();
     messages = [
-      {
-               'text': "What is your complaint?",
-
-        'isMe': false,
-      },
+      {'text': "What is your complaint?", 'isMe': false},
     ];
   }
 
@@ -58,26 +53,21 @@ class _PatientDoctorPrivateChatViewState
         children: [
           /// ================= App Bar =================
           CustomAppBar(
+            
             title: widget.name,
             trailing: InkWell(
               onTap: () {
                 Navigator.pushNamed(
                   context,
                   AppRoutes.doctorShowPatientProfile,
-                  arguments: {
-                    'name': widget.name,
-                    'image': widget.image,
-                  },
+                  arguments: {'name': widget.name, 'image': widget.image},
                 );
               },
               child: Container(
                 padding: EdgeInsets.all(2.w),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.white,
-                    width: 2,
-                  ),
+                  border: Border.all(color: AppColors.white, width: 2),
                 ),
                 child: CircleAvatar(
                   radius: 18,
@@ -90,10 +80,7 @@ class _PatientDoctorPrivateChatViewState
           /// ================= Messages =================
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(
-                horizontal: 16.w,
-                vertical: 12.h,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               itemCount: messages.length,
               itemBuilder: (_, index) {
                 final msg = messages[index];
@@ -114,16 +101,12 @@ class _PatientDoctorPrivateChatViewState
                       vertical: 10.h,
                     ),
                     decoration: BoxDecoration(
-                      color: isMe
-                          ? AppColors.primaryColor
-                          : AppColors.white,
+                      color: isMe ? AppColors.primaryColor : AppColors.white,
                       borderRadius: BorderRadius.circular(16.r),
                     ),
                     child: TextApp(
                       text: msg['text'],
-                      color: isMe
-                          ? AppColors.white
-                          : AppColors.black,
+                      color: isMe ? AppColors.white : AppColors.black,
                       fontSize: 13,
                     ),
                   ),
@@ -134,27 +117,17 @@ class _PatientDoctorPrivateChatViewState
 
           /// ================= Input =================
           Container(
-            padding: EdgeInsets.fromLTRB(
-              16.w,
-              10.h,
-              16.w,
-              16.h,
-            ),
+            padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 16.h),
             decoration: const BoxDecoration(
               color: AppColors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 8,
-                ),
-              ],
+              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8)],
             ),
             child: Row(
               children: [
                 Expanded(
                   child: CustomTextField(
                     controller: messageController,
-                      hintText: context.l10n.type_message,
+                    hintText: context.l10n.type_message,
                   ),
                 ),
                 SizedBox(width: 10.w),

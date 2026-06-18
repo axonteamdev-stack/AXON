@@ -97,8 +97,8 @@ import '../../features/patient/book_doctor/domain/useCases/get_doctor_by_id_usec
     as _i94;
 import '../../features/patient/book_doctor/domain/useCases/search_doctors_usecase.dart'
     as _i182;
-import '../../features/patient/book_doctor/prsentation/manager/doctors_cubit.dart'
-    as _i649;
+import '../../features/patient/book_doctor/presentation/manager/doctors_cubit.dart'
+    as _i892;
 import '../../features/patient/comunity_patient/data/datasources/community_remote_datasource.dart'
     as _i543;
 import '../../features/patient/comunity_patient/data/datasources/impl/community_remote_datasource_impl.dart'
@@ -121,18 +121,44 @@ import '../../features/patient/home_patient/data/data_sources/home_remote_dataso
     as _i379;
 import '../../features/patient/home_patient/data/data_sources/impl/home_remote_datasource_impl.dart'
     as _i961;
+import '../../features/patient/home_patient/data/data_sources/impl/pending_remote_data_source_impl.dart'
+    as _i69;
+import '../../features/patient/home_patient/data/data_sources/impl/profile_remote_data_source_impl.dart'
+    as _i949;
+import '../../features/patient/home_patient/data/data_sources/pending_remote_data_source.dart'
+    as _i881;
+import '../../features/patient/home_patient/data/data_sources/profile_remote_data_source.dart'
+    as _i798;
 import '../../features/patient/home_patient/data/repoes/home_repo_impl.dart'
     as _i848;
+import '../../features/patient/home_patient/data/repoes/pending_repo_impl.dart'
+    as _i806;
+import '../../features/patient/home_patient/data/repoes/profile_repository_impl.dart'
+    as _i32;
 import '../../features/patient/home_patient/domain/repo/home_repo.dart'
     as _i629;
+import '../../features/patient/home_patient/domain/repo/pending_repo.dart'
+    as _i551;
+import '../../features/patient/home_patient/domain/repo/profile_repository.dart'
+    as _i116;
 import '../../features/patient/home_patient/domain/useCases/get_all_articales_usecase.dart'
     as _i634;
 import '../../features/patient/home_patient/domain/useCases/get_article_details_usecase.dart'
     as _i1011;
+import '../../features/patient/home_patient/domain/useCases/get_profile_use_case.dart'
+    as _i475;
+import '../../features/patient/home_patient/domain/useCases/mark_dose_as_taken_use_case.dart'
+    as _i344;
+import '../../features/patient/home_patient/domain/useCases/pending_use_case.dart'
+    as _i858;
 import '../../features/patient/home_patient/presentation/manager/article_patient/article_details_cubit.dart'
     as _i829;
+import '../../features/patient/home_patient/presentation/manager/basc_info/profile_cubit.dart'
+    as _i668;
 import '../../features/patient/home_patient/presentation/manager/home/home_cubit.dart'
     as _i719;
+import '../../features/patient/home_patient/presentation/manager/medicine_take/pending_doses_cubit.dart'
+    as _i66;
 import '../../features/patient/medicine/data/data_sources/medicine_remote_data_source.dart'
     as _i909;
 import '../../features/patient/medicine/data/data_sources/repo%20impl/medicine_remote_data_source_impl.dart'
@@ -173,6 +199,18 @@ import '../../features/patient/profile_patient/presentation/manager/patient_edit
     as _i1052;
 import '../../features/patient/profile_patient/presentation/manager/patient_edit_documents/patient_edit_documents_cubit.dart'
     as _i961;
+import '../../features/patient/qr_patient/data/data_sources/impl/qr_patient_remote_data_source_impl.dart'
+    as _i68;
+import '../../features/patient/qr_patient/data/data_sources/qr_patient_remote_data_source.dart'
+    as _i238;
+import '../../features/patient/qr_patient/data/repositories/qr_patient_repository_impl.dart'
+    as _i537;
+import '../../features/patient/qr_patient/domain/repositories/qr_patient_repository.dart'
+    as _i127;
+import '../../features/patient/qr_patient/domain/usecases/get_qr_patient_use_case.dart'
+    as _i414;
+import '../../features/patient/qr_patient/presentation/manager/qr%20manager/qr_patient_cubit.dart'
+    as _i244;
 import '../network/api_manager.dart' as _i119;
 import '../network/network_info.dart' as _i932;
 import '../network/network_module.dart' as _i200;
@@ -191,6 +229,25 @@ extension GetItInjectableX on _i174.GetIt {
       () => networkModule.internetConnection,
     );
     gh.lazySingleton<_i631.GenderCubit>(() => _i631.GenderCubit());
+    gh.factory<_i798.ProfileRemoteDataSource>(
+      () => _i949.ProfileRemoteDataSourceImpl(gh<_i119.ApiManager>()),
+    );
+    gh.factory<_i238.QrPatientRemoteDataSource>(
+      () => _i68.QrPatientRemoteDataSourceImpl(gh<_i119.ApiManager>()),
+    );
+    gh.factory<_i127.QrPatientRepository>(
+      () =>
+          _i537.QrPatientRepositoryImpl(gh<_i238.QrPatientRemoteDataSource>()),
+    );
+    gh.factory<_i414.GetQrPatientUseCase>(
+      () => _i414.GetQrPatientUseCase(gh<_i127.QrPatientRepository>()),
+    );
+    gh.factory<_i881.MedicationRemoteDataSource>(
+      () => _i69.MedicationRemoteDataSourceImpl(gh<_i119.ApiManager>()),
+    );
+    gh.factory<_i116.ProfileRepository>(
+      () => _i32.ProfileRepositoryImpl(gh<_i798.ProfileRemoteDataSource>()),
+    );
     gh.lazySingleton<_i932.NetworkInfo>(
       () => _i932.NetworkInfoImpl(gh<_i161.InternetConnection>()),
     );
@@ -231,6 +288,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i940.DoctorArticlesRemoteDataSource>(),
       ),
     );
+    gh.factory<_i551.MedicationRepository>(
+      () => _i806.MedicationRepositoryImpl(
+        gh<_i881.MedicationRemoteDataSource>(),
+      ),
+    );
     gh.factory<_i627.ProfilePatientRemoteDataSource>(
       () => _i209.ProfilePatientRemoteDataSourceImpl(
         networkInfo: gh<_i932.NetworkInfo>(),
@@ -242,6 +304,9 @@ extension GetItInjectableX on _i174.GetIt {
         networkInfo: gh<_i932.NetworkInfo>(),
         apiManager: gh<_i119.ApiManager>(),
       ),
+    );
+    gh.factory<_i475.GetProfileUseCase>(
+      () => _i475.GetProfileUseCase(gh<_i116.ProfileRepository>()),
     );
     gh.factory<_i846.DoctorsRemoteDataSource>(
       () => _i983.DoctorsRemoteDataSourceImpl(
@@ -266,6 +331,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i353.GetCommunityPostsUseCase>(
       () => _i353.GetCommunityPostsUseCase(gh<_i443.PatientCommunityRepo>()),
     );
+    gh.factory<_i244.QrPatientCubit>(
+      () => _i244.QrPatientCubit(gh<_i414.GetQrPatientUseCase>()),
+    );
     gh.factory<_i223.AuthRemoteDataSource>(
       () => _i810.AuthRemoteDataSourceImpl(
         networkInfo: gh<_i932.NetworkInfo>(),
@@ -275,8 +343,18 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i811.UpdateDoctorProfileUseCase>(
       () => _i811.UpdateDoctorProfileUseCase(gh<_i968.DoctorProfileRepo>()),
     );
+    gh.factory<_i668.ProfileCubit>(
+      () =>
+          _i668.ProfileCubit(getProfileUseCase: gh<_i475.GetProfileUseCase>()),
+    );
     gh.factory<_i629.HomeRepo>(
       () => _i848.HomeRepoImpl(gh<_i379.HomeRemoteDataSource>()),
+    );
+    gh.factory<_i344.MarkDoseAsTakenUseCase>(
+      () => _i344.MarkDoseAsTakenUseCase(gh<_i551.MedicationRepository>()),
+    );
+    gh.factory<_i858.GetPendingDosesUseCase>(
+      () => _i858.GetPendingDosesUseCase(gh<_i551.MedicationRepository>()),
     );
     gh.factory<_i855.MedicineRepo>(
       () => _i674.MedicineRepoImpl(
@@ -347,13 +425,19 @@ extension GetItInjectableX on _i174.GetIt {
         deleteMedicineUseCase: gh<_i51.DeleteMedicineUseCase>(),
       ),
     );
+    gh.factory<_i66.PendingDosesCubit>(
+      () => _i66.PendingDosesCubit(
+        gh<_i858.GetPendingDosesUseCase>(),
+        gh<_i344.MarkDoseAsTakenUseCase>(),
+      ),
+    );
     gh.factory<_i437.MedicineListCubit>(
       () => _i437.MedicineListCubit(
         getMedicinesUseCase: gh<_i24.GetMedicinesUseCase>(),
       ),
     );
-    gh.factory<_i649.DoctorsCubit>(
-      () => _i649.DoctorsCubit(
+    gh.factory<_i892.DoctorsCubit>(
+      () => _i892.DoctorsCubit(
         getAllDoctorsUseCase: gh<_i826.GetAllDoctorsUseCase>(),
         searchDoctorsUseCase: gh<_i182.SearchDoctorsUseCase>(),
       ),

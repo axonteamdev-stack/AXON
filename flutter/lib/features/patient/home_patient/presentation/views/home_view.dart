@@ -1,9 +1,14 @@
 import 'package:Axon/core/di/di.dart';
 import 'package:Axon/core/style/colors.dart';
+import 'package:Axon/features/patient/home_patient/presentation/manager/basc_info/profile_cubit.dart';
+import 'package:Axon/features/patient/home_patient/presentation/manager/basc_info/profile_states.dart';
 import 'package:Axon/features/patient/home_patient/presentation/manager/home/home_cubit.dart';
 import 'package:Axon/features/patient/home_patient/presentation/manager/home/home_state.dart';
+import 'package:Axon/features/patient/home_patient/presentation/manager/medicine_take/pending_doses_cubit.dart';
+import 'package:Axon/features/patient/home_patient/presentation/manager/medicine_take/pending_doses_state.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/widgets/home_header.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/widgets/home_scrollable_content.dart';
+import 'package:Axon/features/patient/medicine/presentation/view/add_medicine_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,41 +17,147 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<HomeCubit>()..fetchHomeArticles(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<HomeCubit>()..fetchHomeArticles()),
+        BlocProvider(create: (_) => getIt<ProfileCubit>()..getProfile()),
+        BlocProvider(
+          create: (_) => getIt<PendingDosesCubit>()..getPendingDoses(),
+        ),
+      ],
       child: Scaffold(
         backgroundColor: AppColors.white,
-        body: SafeArea(
-          child: BlocBuilder<HomeCubit, HomeState>(
-            builder: (context, state) {
+        body: BlocBuilder<HomeCubit, HomeState>(
+          builder: (context, homeState) {
+            if (homeState is HomeLoading || homeState is HomeInitial) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-              if (state is HomeLoading || state is HomeInitial) {
-                return const Center(child: CircularProgressIndicator());
-              }
+            if (homeState is HomeError) {
+              return Center(child: Text(homeState.failure.toString()));
+            }
 
-              if (state is HomeError) {
-                return Center(child: Text(state.failure.toString()));
-              }
+            if (homeState is HomeSuccess) {
+              final articles = homeState.articlesEntity?.articles ?? [];
 
-              if (state is HomeSuccess) {
-                final articles = state.articlesEntity?.articles ?? [];
+              return BlocBuilder<ProfileCubit, ProfileState>(
+                builder: (context, profileState) {
+                  String userName = "User";
+                  String? userImage;
 
-                return Column(
-                  children: [
-                    const HomeHeader(
-                      name: "Abdullah",
-                      notificationCount: 5,
-                    ),
-                    HomeScrollableContent(
-                      articles: articles,
-                    ),
-                  ],
-                );
-              }
+                  if (profileState is ProfileSuccess) {
+                    userName = profileState.profile.fullName;
+                    userImage = profileState.profile.personalPhoto;
+                  }
 
-              return const SizedBox();
-            },
-          ),
+                  HomeHeader(
+                    name: userName,
+                    imageUrl: userImage,
+                    notificationCount: 5,
+                  );
+
+                  final pendingState = context.watch<PendingDosesCubit>().state;
+
+                  String medicineName = "No Medicine";
+
+                  if (pendingState is PendingDosesSuccess &&
+                      pendingState.response.data.doses.isNotEmpty) {
+                    medicineName = pendingState
+                        .response
+                        .data
+                        .doses
+                        .first
+                        .medication
+                        .medicineName;
+                  }
+
+                  return Column(
+                    children: [
+                      HomeHeader(
+                        name: userName,
+                        imageUrl: userImage,
+                        notificationCount: 5,
+                      ),
+
+                      BlocBuilder<PendingDosesCubit, PendingDosesState>(
+                        builder: (context, pendingState) {
+                          String medicineName = "No Medicine";
+                          String time = "00:00";
+                          String remainingTime = "";
+
+                          // لاحظ: استبدل نوع الـ dynamic بنوع الـ Entity عندك لو تعرفه
+                          dynamic dose;
+
+                          if (pendingState is PendingDosesSuccess &&
+                              pendingState.response.data.doses.isNotEmpty) {
+                            dose = pendingState.response.data.doses.first;
+
+                            medicineName = dose.medication.medicineName;
+                            time = dose.time;
+
+                            final parts = dose.time.split(':');
+
+                            final doseDateTime = DateTime(
+                              DateTime.now().year,
+                              DateTime.now().month,
+                              DateTime.now().day,
+                              int.parse(parts[0]),
+                              int.parse(parts[1]),
+                            );
+
+                            final diff = doseDateTime.difference(
+                              DateTime.now(),
+                            );
+
+                            if (diff.isNegative) {
+                              remainingTime = "Dose time has passed";
+                            } else {
+                              final hours = diff.inHours;
+                              final minutes = diff.inMinutes % 60;
+                              remainingTime = "$hours h $minutes min";
+                            }
+                          }
+
+                          return HomeScrollableContent(
+                            remainingTime: remainingTime,
+                            articles: articles,
+                            medicineName: medicineName,
+                            time: time,
+                            onTakeDose: () async {
+                              if (dose == null) return;
+
+                              await context
+                                  .read<PendingDosesCubit>()
+                                  .markDoseAsTaken(
+                                    medicationId: dose.medication.id,
+                                    time: dose.time,
+                                  );
+                            },
+                            onAddMedicine: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const AddMedicineView(),
+                                ),
+                              );
+
+                              if (result == true && context.mounted) {
+                                context
+                                    .read<PendingDosesCubit>()
+                                    .getPendingDoses();
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+
+            return const SizedBox();
+          },
         ),
       ),
     );

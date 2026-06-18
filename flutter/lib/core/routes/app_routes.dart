@@ -25,10 +25,10 @@ import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart
 import 'package:Axon/features/patient/book_doctor/domain/entities/doctor_entity.dart';
 import 'package:Axon/features/patient/book_doctor/domain/useCases/get_all_doctors_usecase.dart';
 import 'package:Axon/features/patient/book_doctor/domain/useCases/search_doctors_usecase.dart';
-import 'package:Axon/features/patient/book_doctor/prsentation/manager/doctors_cubit.dart';
-import 'package:Axon/features/patient/book_doctor/prsentation/view/book_doctor_view.dart';
-import 'package:Axon/features/patient/book_doctor/prsentation/view/doctor_details_view.dart';
-import 'package:Axon/features/patient/book_doctor/prsentation/view/doctors_tabs_view.dart';
+import 'package:Axon/features/patient/book_doctor/presentation/manager/doctors_cubit.dart';
+import 'package:Axon/features/patient/book_doctor/presentation/view/book_doctor_view.dart';
+import 'package:Axon/features/patient/book_doctor/presentation/view/doctor_details_view.dart';
+import 'package:Axon/features/patient/book_doctor/presentation/view/doctors_tabs_view.dart';
 import 'package:Axon/features/patient/chat%20bot/presentation/views/chat_bot_view.dart';
 import 'package:Axon/features/patient/chatting_patient/presntation/views/patient_doctor_private_chat_view.dart';
 import 'package:Axon/features/patient/comunity_patient/presentation/views/patient_community_view.dart';
@@ -45,6 +45,7 @@ import 'package:Axon/features/patient/profile_patient/presentation/views/patient
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_lab_tests_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_edit_radiology_view.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/patient_profile_view.dart';
+import 'package:Axon/features/patient/qr_patient/presentation/view/qr_scanner_view.dart';
 import 'package:Axon/features/splash/Presentation/views/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,74 +84,63 @@ class AppRoutes {
   // Home
   static const home = 'home';
 
+  // qr patient
+  static const qrPatient = 'qrPatient';
+
   // Patient Profile
   static const patientProfile = 'patientProfile';
 
-
   static const bookDoctorTabs = 'bookDoctorTabs';
-static const doctorDetails = 'doctorDetails';
-static const bookDoctor = 'bookDoctor';
+  static const doctorDetails = 'doctorDetails';
+  static const bookDoctor = 'bookDoctor';
 
-  
   // Patient Edit Pages
-static const patientEditBasicInfo = 'patientEditBasicInfo';
-static const patientEditMedicalProfile = 'patientEditMedicalProfile';
-static const patientEditHealthConditions = 'patientEditHealthConditions';
-static const patientEditAllergies = 'patientEditAllergies';
-static const patientEditRadiology = 'patientEditRadiology';
-static const patientEditLabTests = 'patientEditLabTests';
-// Security
-static const changePassword = 'changePassword';
-static const deleteAccount = 'deleteAccount';
+  static const patientEditBasicInfo = 'patientEditBasicInfo';
+  static const patientEditMedicalProfile = 'patientEditMedicalProfile';
+  static const patientEditHealthConditions = 'patientEditHealthConditions';
+  static const patientEditAllergies = 'patientEditAllergies';
+  static const patientEditRadiology = 'patientEditRadiology';
+  static const patientEditLabTests = 'patientEditLabTests';
+  // Security
+  static const changePassword = 'changePassword';
+  static const deleteAccount = 'deleteAccount';
 
-// Patient Main
-static const patientMain = 'patientMain';
+  // Patient Main
+  static const patientMain = 'patientMain';
 
-// doctor Main
-static const doctorMain = 'doctorMain';
-//doctor Auth Success
+  // doctor Main
+  static const doctorMain = 'doctorMain';
+  //doctor Auth Success
   static const accountCreatedDoctor = 'accountCreatedDoctor';
   //doctor edit profile
   static const doctorEditProfile = 'doctorEditProfile';
 
-static const doctorChat = 'doctorChat';
-static const doctorShowPatientProfile = 'doctorShowPatientProfile';
+  static const doctorChat = 'doctorChat';
+  static const doctorShowPatientProfile = 'doctorShowPatientProfile';
 
-static const doctorViewPatientBasicInfo = '/doctorViewPatientBasicInfo';
-static const doctorViewPatientHealthConditions = '/doctorViewPatientHealthConditions';
-static const doctorViewPatientAllergies = '/doctorViewPatientAllergies';
-static const doctorViewPatientRadiology = '/doctorViewPatientRadiology';
-static const doctorViewPatientLabTests = '/doctorViewPatientLabTests';
+  static const doctorViewPatientBasicInfo = '/doctorViewPatientBasicInfo';
+  static const doctorViewPatientHealthConditions =
+      '/doctorViewPatientHealthConditions';
+  static const doctorViewPatientAllergies = '/doctorViewPatientAllergies';
+  static const doctorViewPatientRadiology = '/doctorViewPatientRadiology';
+  static const doctorViewPatientLabTests = '/doctorViewPatientLabTests';
   static const chatBot = 'chatBot';
   static const patientArticleDetails = 'patientarticleDetails';
-// Patient Community
-static const patientCommunity = 'patientCommunity';
+  // Patient Community
+  static const patientCommunity = 'patientCommunity';
 
-static const addMedicine = 'addMedicine';
-static const viewAll = 'viewAll';
+  static const addMedicine = 'addMedicine';
+  static const viewAll = 'viewAll';
 
-
-  static const patientDoctorPrivateChat =
-    'patientDoctorPrivateChat';
-
-
-
-
-
-
-
-
-
-
+  static const patientDoctorPrivateChat = 'patientDoctorPrivateChat';
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-
       // Splash & Onboarding
       case splash:
         return BaseRoute(page: const SplashView());
 
-        case intro :
+      case intro:
         return BaseRoute(page: const IntroView());
 
       case onBoarding:
@@ -168,34 +158,25 @@ static const viewAll = 'viewAll';
 
       // Doctor Registration
       case registrationDoctor:
-        
-
-        return BaseRoute(
-          page:  DoctorRegistrationView(),
-        );
+        return BaseRoute(page: DoctorRegistrationView());
 
       // Patient Registration
       case patientMedicalProfile:
-        return BaseRoute(
-          page: PatientRegistrationFlow(),
-        );
+        return BaseRoute(page: PatientRegistrationFlow());
 
-      
-// case AppRoutes.patientAllergies:
-//   return BaseRoute(
-//     page: const PatientAllergiesView(),
-//   );
+      // case AppRoutes.patientAllergies:
+      //   return BaseRoute(
+      //     page: const PatientAllergiesView(),
+      //   );
 
-// case AppRoutes.patientHealthConditions:
-//   return BaseRoute(
-//     page:  PatientHealthConditionsView(),
-//   );
-
-
+      // case AppRoutes.patientHealthConditions:
+      //   return BaseRoute(
+      //     page:  PatientHealthConditionsView(),
+      //   );
 
       // Forgot Password
       case forgotPasswordEmail:
-        return BaseRoute(page:  ForgotPasswordEmailView());
+        return BaseRoute(page: ForgotPasswordEmailView());
 
       case forgotPasswordOtp:
         return BaseRoute(page: const ForgotPasswordOtpView());
@@ -217,210 +198,159 @@ static const viewAll = 'viewAll';
       case accountCreatedDoctor:
         return BaseRoute(page: const AccountDoctorCreatedView());
 
-
-
       // Home
       case home:
         return BaseRoute(page: const HomeView());
+
+      // qr
+      case qrPatient:
+        return BaseRoute(
+          page: QrPatientView(),
+        );
 
       // Patient Profile
       case patientProfile:
         return BaseRoute(page: const PatientProfileView());
 
-  case AppRoutes.patientEditBasicInfo:
-  return BaseRoute(
-    page: PatientEditBasicInfoView(),
-   
-  );
+      case AppRoutes.patientEditBasicInfo:
+        return BaseRoute(page: PatientEditBasicInfoView());
 
-
-
-
-case AppRoutes.patientEditHealthConditions:
-  return BaseRoute(
-    page: BlocProvider(
-      create: (_) => PatientEditProfileCubit(),
-      child: const PatientEditHealthConditionsView(),
-    ),
-  );
-
-case AppRoutes.patientEditAllergies:
-  return BaseRoute(
-    page: BlocProvider(
-      create: (_) => PatientEditProfileCubit(),
-      child: const PatientEditAllergiesView(),
-    ),
-  );
-
-case AppRoutes.patientEditRadiology:
-  return BaseRoute(
-    page: BlocProvider(
-      create: (_) => PatientEditProfileCubit(),
-      child: const PatientEditRadiologyView(),
-    ),
-  );
-
-case AppRoutes.patientEditLabTests:
-  return BaseRoute(
-    page: BlocProvider(
-      create: (_) => PatientEditProfileCubit(),
-      child: const PatientEditLabTestsView(),
-    ),
-  );
-
-
-  // Change Password
-case AppRoutes.changePassword:
-  return BaseRoute(
-    page: const ChangePasswordView(),
-  );
-
-
-
-
-
-// Patient Main
-case patientMain:
-  return BaseRoute(page: const PatientMainView());
-
-// Doctor Main
-case doctorMain:
-  return BaseRoute(page: const DoctorMainView());
-// case accountCreatedDoctor:
-  // return BaseRoute(page: const AccountDoctorCreatedView());
-
-  // Doctor edit profile
-
-case doctorEditProfile:
-  return BaseRoute(page: const DoctorEditProfileView());
-
-case doctorChat:
-  final args = settings.arguments as Map<String, dynamic>;
-  return BaseRoute(
-    page: DoctorChatView(
-      name: args['name'] as String,
-      image: args['image'] as String,
-      description: args['description'] as String,
-    ),
-  );
-
-
-
-case doctorShowPatientProfile:
-  final args = settings.arguments as Map<String, dynamic>;
-
-  return BaseRoute(
-    page: DoctorShowPatientProfileView(
-      name: args['name'],
-      image: args['image'],
-    
-    ),
-    
-  );
-
-case AppRoutes.patientDoctorPrivateChat:
-  final args = settings.arguments as Map<String, dynamic>;
-  return BaseRoute(
-    page: PatientDoctorPrivateChatView(
-      name: args['name'],
-      image: args['image'],
-      description: args['description'],
-    ),
-  );
-
-
-case AppRoutes.doctorViewPatientBasicInfo:
-  return BaseRoute(page: DoctorViewPatientBasicInfoView());
-
-case AppRoutes.doctorViewPatientHealthConditions:
-  return BaseRoute(page: DoctorViewPatientHealthConditionsView());
-
-case AppRoutes.doctorViewPatientAllergies:
-  return BaseRoute(page: DoctorViewPatientAllergiesView());
-
-case AppRoutes.doctorViewPatientRadiology:
-  return BaseRoute(page: DoctorViewPatientRadiologyView());
-
-case AppRoutes.doctorViewPatientLabTests:
-  return BaseRoute(page: DoctorViewPatientLabTestsView());
-
-
-case chatBot:
+      case AppRoutes.patientEditHealthConditions:
         return BaseRoute(
-          page: ChatBotView(),
+          page: BlocProvider(
+            create: (_) => PatientEditProfileCubit(),
+            child: const PatientEditHealthConditionsView(),
+          ),
         );
 
-   
+      case AppRoutes.patientEditAllergies:
+        return BaseRoute(
+          page: BlocProvider(
+            create: (_) => PatientEditProfileCubit(),
+            child: const PatientEditAllergiesView(),
+          ),
+        );
 
+      case AppRoutes.patientEditRadiology:
+        return BaseRoute(
+          page: BlocProvider(
+            create: (_) => PatientEditProfileCubit(),
+            child: const PatientEditRadiologyView(),
+          ),
+        );
 
+      case AppRoutes.patientEditLabTests:
+        return BaseRoute(
+          page: BlocProvider(
+            create: (_) => PatientEditProfileCubit(),
+            child: const PatientEditLabTestsView(),
+          ),
+        );
 
+      // Change Password
+      case AppRoutes.changePassword:
+        return BaseRoute(page: const ChangePasswordView());
 
-  case AppRoutes.bookDoctorTabs:
-  return BaseRoute(
-    page: BlocProvider(
-      create: (_) => DoctorsCubit(
-        getAllDoctorsUseCase: getIt<GetAllDoctorsUseCase>(),
-        searchDoctorsUseCase: getIt<SearchDoctorsUseCase>(),
-      )..getAllDoctors(),
-      child: const DoctorsTabsView(),
-    ),
-  );
+      // Patient Main
+      case patientMain:
+        return BaseRoute(page: const PatientMainView());
 
-case AppRoutes.doctorDetails:
-  final doctor = settings.arguments as DoctorEntity;
+      // Doctor Main
+      case doctorMain:
+        return BaseRoute(page: const DoctorMainView());
+      // case accountCreatedDoctor:
+      // return BaseRoute(page: const AccountDoctorCreatedView());
 
-  return BaseRoute(
-    page: DoctorDetailsView(
-      doctor: doctor,
-    ),
-  );
+      // Doctor edit profile
 
-case AppRoutes.bookDoctor:
-  final doctor = settings.arguments as DoctorEntity;
+      case doctorEditProfile:
+        return BaseRoute(page: const DoctorEditProfileView());
 
-  return BaseRoute(
-    page: BookDoctorView(
-      doctor: doctor,
-    ),
-  );
+      case doctorChat:
+        final args = settings.arguments as Map<String, dynamic>;
+        return BaseRoute(
+          page: DoctorChatView(
+            name: args['name'] as String,
+            image: args['image'] as String,
+            description: args['description'] as String,
+          ),
+        );
 
-  case AppRoutes.patientArticleDetails:
-  final articleId = settings.arguments as String;
+      case doctorShowPatientProfile:
+        final args = settings.arguments as Map<String, dynamic>;
 
-  return BaseRoute(
-    page: PatientArticleDetailsView(
-      articleId: articleId,
-    ),
-  );
+        return BaseRoute(
+          page: DoctorShowPatientProfileView(
+            name: args['name'],
+            image: args['image'],
+          ),
+        );
 
+      case AppRoutes.patientDoctorPrivateChat:
+        final args = settings.arguments as Map<String, dynamic>;
+        return BaseRoute(
+          page: PatientDoctorPrivateChatView(
+            name: args['name'],
+            image: args['image'],
+            description: args['description'],
+          ),
+        );
 
+      case AppRoutes.doctorViewPatientBasicInfo:
+        return BaseRoute(page: DoctorViewPatientBasicInfoView());
 
-case AppRoutes.patientCommunity:
-  return BaseRoute(
-    page: const PatientCommunityView(),
-  );
-case AppRoutes.addMedicine:
-  return BaseRoute(
-    page: const AddMedicineView(),
-  );
-case AppRoutes.viewAll:
-  return BaseRoute(
-    page: const ViewAllMedicine(),
-  );
+      case AppRoutes.doctorViewPatientHealthConditions:
+        return BaseRoute(page: DoctorViewPatientHealthConditionsView());
 
-      
+      case AppRoutes.doctorViewPatientAllergies:
+        return BaseRoute(page: DoctorViewPatientAllergiesView());
+
+      case AppRoutes.doctorViewPatientRadiology:
+        return BaseRoute(page: DoctorViewPatientRadiologyView());
+
+      case AppRoutes.doctorViewPatientLabTests:
+        return BaseRoute(page: DoctorViewPatientLabTestsView());
+
+      case chatBot:
+        return BaseRoute(page: ChatBotView());
+
+      case AppRoutes.bookDoctorTabs:
+        return BaseRoute(
+          page: BlocProvider(
+            create: (_) => DoctorsCubit(
+              getAllDoctorsUseCase: getIt<GetAllDoctorsUseCase>(),
+              searchDoctorsUseCase: getIt<SearchDoctorsUseCase>(),
+            )..getAllDoctors(),
+            child: const DoctorsTabsView(),
+          ),
+        );
+
+      case AppRoutes.doctorDetails:
+        final doctor = settings.arguments as DoctorEntity;
+
+        return BaseRoute(page: DoctorDetailsView(doctor: doctor));
+
+      case AppRoutes.bookDoctor:
+        final doctor = settings.arguments as DoctorEntity;
+
+        return BaseRoute(page: BookDoctorView(doctor: doctor));
+
+      case AppRoutes.patientArticleDetails:
+        final articleId = settings.arguments as String;
+
+        return BaseRoute(page: PatientArticleDetailsView(articleId: articleId));
+
+      case AppRoutes.patientCommunity:
+        return BaseRoute(page: const PatientCommunityView());
+      case AppRoutes.addMedicine:
+        return BaseRoute(page: const AddMedicineView());
+      case AppRoutes.viewAll:
+        return BaseRoute(page: const ViewAllMedicine());
 
       default:
         return BaseRoute(
-          page: const Scaffold(
-            body: Center(child: Text('Route not found')),
-          ),
+          page: const Scaffold(body: Center(child: Text('Route not found'))),
         );
     }
   }
-
-
-
-
-
 }

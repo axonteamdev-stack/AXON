@@ -1,4 +1,3 @@
-import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/delete_medicine/delete_medicine_cubit.dart';
@@ -21,9 +20,7 @@ class MedicineList extends StatelessWidget {
       builder: (context, medicineState) {
         /// Loading
         if (medicineState is MedicineListLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         /// Error
@@ -40,18 +37,18 @@ class MedicineList extends StatelessWidget {
         if (medicineState is MedicineListSuccess) {
           return BlocBuilder<MedicineFilterCubit, MedicineFilterState>(
             builder: (context, filterState) {
-              /// فلترة البحث + فلترة التاريخ 🔥
-              final filtered =
-                  medicineState.medicines.where((medicine) {
-                /// البحث بالاسم
-                final matchSearch = medicine
-                    .medicineName
-                    .toLowerCase()
-                    .contains(
-                      filterState.search.toLowerCase(),
-                    );
+              final filtered = medicineState.medicines.where((medicine) {
+                // إخفاء الأدوية غير النشطة
+                if (!medicine.isActive) {
+                  return false;
+                }
 
-                /// فلترة التاريخ
+                // البحث بالاسم
+                final matchSearch = medicine.medicineName
+                    .toLowerCase()
+                    .contains(filterState.search.toLowerCase());
+
+                // فلترة التاريخ
                 bool matchDate = true;
 
                 if (filterState.date != null) {
@@ -61,11 +58,8 @@ class MedicineList extends StatelessWidget {
                     filterState.date!.day,
                   );
 
-                  final startDate =
-                      DateTime.parse(medicine.startDate);
-
-                  final endDate =
-                      DateTime.parse(medicine.endDate);
+                  final startDate = DateTime.parse(medicine.startDate);
+                  final endDate = DateTime.parse(medicine.endDate);
 
                   final normalizedStart = DateTime(
                     startDate.year,
@@ -79,21 +73,11 @@ class MedicineList extends StatelessWidget {
                     endDate.day,
                   );
 
-                  /// يظهر الدواء لو التاريخ المختار
-                  /// داخل مدة العلاج
                   matchDate =
-                      selectedDate.isAtSameMomentAs(
-                            normalizedStart,
-                          ) ||
-                          selectedDate.isAtSameMomentAs(
-                            normalizedEnd,
-                          ) ||
-                          (selectedDate.isAfter(
-                                normalizedStart,
-                              ) &&
-                              selectedDate.isBefore(
-                                normalizedEnd,
-                              ));
+                      selectedDate.isAtSameMomentAs(normalizedStart) ||
+                      selectedDate.isAtSameMomentAs(normalizedEnd) ||
+                      (selectedDate.isAfter(normalizedStart) &&
+                          selectedDate.isBefore(normalizedEnd));
                 }
 
                 return matchSearch && matchDate;
@@ -104,22 +88,19 @@ class MedicineList extends StatelessWidget {
                 final aDate = DateTime.parse(a.startDate);
                 final bDate = DateTime.parse(b.startDate);
 
-                final dateCompare =
-                    aDate.compareTo(bDate);
+                final dateCompare = aDate.compareTo(bDate);
 
                 if (dateCompare != 0) {
                   return dateCompare;
                 }
 
-                final aTime =
-                    a.intakeTime.isNotEmpty
-                        ? a.intakeTime.first
-                        : "23:59";
+                final aTime = a.intakeTimes.isNotEmpty
+                    ? a.intakeTimes.first
+                    : "23:59";
 
-                final bTime =
-                    b.intakeTime.isNotEmpty
-                        ? b.intakeTime.first
-                        : "23:59";
+                final bTime = b.intakeTimes.isNotEmpty
+                    ? b.intakeTimes.first
+                    : "23:59";
 
                 return aTime.compareTo(bTime);
               });
@@ -141,80 +122,61 @@ class MedicineList extends StatelessWidget {
                   final item = filtered[index];
 
                   /// الوقت القادم
-                  final nextTime =
-                      item.intakeTime.isNotEmpty
-                          ? item.intakeTime.first
-                          : "08:00";
+                  final nextTime = item.intakeTimes.isNotEmpty
+                      ? item.intakeTimes.first
+                      : "00:00";
 
-                  /// عدد المرات
-                  final frequency =
-                      item.frequency;
+
 
                   return MedicineCard(
-  id: item.id,
-  name: item.medicineName,
-  frequency: item.frequency,
-  nextTime: nextTime,
-  startDate: item.startDate,
-  endDate: item.endDate,
+                    id: item.id,
+                    unit: item.dosage.unit,
+                    name: item.medicineName,
+                    dosage: item.dosage.value,
+                    frequency: item.frequency,
+                    nextTime: nextTime,
+                    startDate: item.startDate,
+                    notes: item.notes ?? "",
+                    endDate: item.endDate,
 
                     /// UPDATE
                     onEdit: () async {
-                      final result =
-                          await Navigator.push(
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              UpdateMedicineView(
+                          builder: (_) => UpdateMedicineView(
                             medicineId: item.id,
-                            medicineName:
-                                item.medicineName,
+                            medicineName: item.medicineName,
                             frequency: item.frequency,
-                            intakeTime:
-                                item.intakeTime
-                                        .isNotEmpty
-                                    ? item.intakeTime
-                                        .first
-                                    : "08:00",
-                            startDate:
-                                item.startDate,
+                            intakeTime: item.intakeTimes.isNotEmpty
+                                ? item.intakeTimes.first
+                                : "08:00",
+                            startDate: item.startDate,
                             endDate: item.endDate,
                           ),
                         ),
                       );
 
-                      print(
-                          "UPDATE RESULT => $result");
+                      print("UPDATE RESULT => $result");
 
                       if (result == true) {
-                        print(
-                            "REFRESH MEDICINES 🔥");
+                        print("REFRESH MEDICINES 🔥");
 
-                        context
-                            .read<
-                                MedicineListCubit>()
-                            .getMedicines();
+                        context.read<MedicineListCubit>().getMedicines();
                       }
                     },
 
                     /// DELETE
                     onDelete: () async {
-                      await context
-                          .read<
-                              DeleteMedicineCubit>()
-                          .deleteMedicine(
-                            item.id,
-                          );
+                      await context.read<DeleteMedicineCubit>().deleteMedicine(
+                        item.id,
+                      );
 
-                      context
-                          .read<
-                              MedicineListCubit>()
-                          .getMedicines();
+                      context.read<MedicineListCubit>().getMedicines();
                     },
                   );
                 },
-                separatorBuilder: (_, __) =>
-                    SizedBox(height: 12.h),
+                separatorBuilder: (_, __) => SizedBox(height: 12.h),
               );
             },
           );

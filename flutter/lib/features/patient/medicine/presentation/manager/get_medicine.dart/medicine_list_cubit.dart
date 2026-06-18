@@ -7,9 +7,8 @@ import 'package:injectable/injectable.dart';
 class MedicineListCubit extends Cubit<MedicineListState> {
   final GetMedicinesUseCase getMedicinesUseCase;
 
-  MedicineListCubit({
-    required this.getMedicinesUseCase,
-  }) : super(MedicineListInitial());
+  MedicineListCubit({required this.getMedicinesUseCase})
+    : super(MedicineListInitial());
 
   Future<void> getMedicines() async {
     print("========== GET MEDICINES START ==========");
@@ -23,21 +22,13 @@ class MedicineListCubit extends Cubit<MedicineListState> {
         print("GET MEDICINES FAILED ❌");
         print("Failure => $failure");
 
-        emit(
-          MedicineListError(
-            failure: failure,
-          ),
-        );
+        emit(MedicineListError(failure: failure));
       },
       (response) {
         print("GET MEDICINES SUCCESS ✅");
-        print("Medicines Count => ${response.data.length}");
+        print("Medicines Count => ${response.data.medications.length}");
 
-        emit(
-          MedicineListSuccess(
-            medicines: response.data,
-          ),
-        );
+        emit(MedicineListSuccess(medicines: response.data.medications));
       },
     );
 

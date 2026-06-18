@@ -1,19 +1,19 @@
-import 'package:Axon/core/di/di.dart';
 import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
+import 'package:Axon/features/patient/home_patient/presentation/manager/basc_info/profile_cubit.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/widgets/quick_action_item.dart';
-import 'package:Axon/features/patient/medicine/presentation/manager/medicine%20cubit/medicine_cubit.dart';
-import 'package:Axon/features/patient/medicine/presentation/view/add_medicine_view.dart';
+import 'package:Axon/features/patient/qr_patient/presentation/view/qr_scanner_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class QuickActionsSection extends StatelessWidget {
-  const QuickActionsSection({super.key});
+  const QuickActionsSection({super.key, required this.onAddMedicine});
+  final Future<void> Function() onAddMedicine;
 
   @override
   Widget build(BuildContext context) {
@@ -27,24 +27,26 @@ class QuickActionsSection extends StatelessWidget {
       ),
 
       QuickActionItem(
-        icon: AppImages.hospital1,
-        label: context.l10n.hospitals,
-        onTap: () {},
+        icon: AppImages.qr,
+        label: "QR",
+        onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => BlocProvider.value(
+        value: context.read<ProfileCubit>(),
+        child: const QrPatientView(),
+      ),
+    ),
+  );
+},
       ),
 
       QuickActionItem(
         icon: AppImages.Med1,
         label: context.l10n.medicine,
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BlocProvider(
-                create: (_) => getIt<MedicineCubit>(),
-                child: const AddMedicineView(),
-              ),
-            ),
-          );
+        onTap: () async {
+          await onAddMedicine();
         },
       ),
 
@@ -61,9 +63,7 @@ class QuickActionsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 20.w,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: TextApp(
             text: context.l10n.quick_actions,
             weight: AppTextWeight.semiBold,
@@ -75,14 +75,9 @@ class QuickActionsSection extends StatelessWidget {
         SizedBox(height: 10.h),
 
         Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 10.h,
-              horizontal: 12.w,
-            ),
+            padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 12.w),
             decoration: BoxDecoration(
               color: AppColors.white,
               borderRadius: BorderRadius.circular(16.r),
@@ -95,8 +90,7 @@ class QuickActionsSection extends StatelessWidget {
               ],
             ),
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: items,
             ),
           ),

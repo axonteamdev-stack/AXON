@@ -7,7 +7,6 @@ import 'package:Axon/features/patient/comunity_patient/domain/entities/comments_
 
 import 'package:Axon/features/patient/comunity_patient/domain/entities/community_posts_entity.dart';
 
-import 'package:Axon/features/patient/comunity_patient/domain/repo/patient_community_repo.dart';
 
 import 'package:dartz/dartz.dart';
 

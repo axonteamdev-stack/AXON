@@ -1,7 +1,7 @@
 import 'package:Axon/core/widgets/custom_text_field.dart';
-import 'package:Axon/features/patient/book_doctor/prsentation/manager/doctors_cubit.dart';
-import 'package:Axon/features/patient/book_doctor/prsentation/manager/doctors_state.dart';
-import 'package:Axon/features/patient/book_doctor/prsentation/widget/doctor_card.dart';
+import 'package:Axon/features/patient/book_doctor/presentation/manager/doctors_cubit.dart';
+import 'package:Axon/features/patient/book_doctor/presentation/manager/doctors_state.dart';
+import 'package:Axon/features/patient/book_doctor/presentation/widget/doctor_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -19,6 +19,11 @@ class Endpoints {
 
   static const String refreshToken = "/auth/refresh";
 
+  // ============== my profile ==============
+  static const String myProfile = "/users/me";
+
+  static  String getPatientById(String id) => "/users/patients/$id";
+
   // ================== ARTICLES ==================
 
   static const String getAllArticales = "/posts/articles?page=1&limit=10";
@@ -28,7 +33,7 @@ class Endpoints {
 
   // ================== MEDICINE ==================
 
-  static const String addMedicine = "/medications";
+  static const String addMedicine = "/medications/self";
 
   static const String getMedicine = "/medications";
 
@@ -38,6 +43,9 @@ class Endpoints {
 
   static const String updateMe = "/auth/updateMe";
 
+  static const String getMedicineDose = "/medications/pending-doses";
+
+static String markDoseAsTaken(String id) => "/medications/$id/doses";
   // ================== DOCTORS ==================
 
   static const String getAllDoctors = "users/doctors?page=1&limit=10";

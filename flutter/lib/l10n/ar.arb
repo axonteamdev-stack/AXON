@@ -337,7 +337,7 @@
   "end_date": "تاريخ النهاية",
   "tap_to_select": "اضغط للاختيار",
 
-  "save": "حفظ",
+  "save": "حفظ العلاج",
   
   
   "select_blood_type_error": "من فضلك اختر فصيلة الدم",
@@ -423,7 +423,12 @@
 "date_past": "لا يمكن أن يكون التاريخ في الماضي",
 "time_required": "وقت الحدث مطلوب",
 "date_time_required": "تاريخ ووقت الحدث مطلوبان",
-"no_events_found": "لا توجد فعاليات"
+"no_events_found": "لا توجد فعاليات",
+"medicine_upper":"العلاج",
+"instructions_notes":"ضف تعليمات وملاحظات خاصة...",
+"dosage_hint":"500 ملي",
+"dosage":"الجرعه",
+"instructions__notes":"التعليمات والملاحظات"
 
 
 

@@ -1,10 +1,7 @@
-
-import 'package:Axon/features/patient/comunity_patient/data/models/community_post_model.dart';
+import 'package:Axon/features/patient/comunity_patient/domain/entities/community_post_entity.dart';
 
 class CommunityPostsEntity {
-
-  final List<CommunityPostEntity>
-      posts;
+  final List<CommunityPostEntity> posts;
 
   const CommunityPostsEntity({
     required this.posts,

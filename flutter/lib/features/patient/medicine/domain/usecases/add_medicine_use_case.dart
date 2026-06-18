@@ -13,17 +13,19 @@ class AddMedicineUseCase {
 
   Future<Either<Failure, MedicineEntity>> call({
     required String medicineName,
+    required double dosage,
     required String frequency,
     required String intakeTime,
     required String startDate,
     required String endDate,
+    required String notes,
   }) {
     return medicineRepo.addMedicine(
       medicineName: medicineName,
       frequency: frequency,
       intakeTime: intakeTime,
       startDate: startDate,
-      endDate: endDate,
+      endDate: endDate, dosage: dosage, notes: notes,
     );
   }
 }

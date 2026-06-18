@@ -13,35 +13,34 @@ import 'package:injectable/injectable.dart';
 class MedicineRepoImpl implements MedicineRepo {
   final MedicineRemoteDataSource remoteDataSource;
 
-  MedicineRepoImpl({
-    required this.remoteDataSource,
-  });
+  MedicineRepoImpl({required this.remoteDataSource});
 
   @override
   Future<Either<Failure, MedicineEntity>> addMedicine({
     required String medicineName,
+    required double dosage,
     required String frequency,
     required String intakeTime,
     required String startDate,
     required String endDate,
+    required String notes,
   }) {
     return remoteDataSource.addMedicine(
       medicineName: medicineName,
       frequency: frequency,
       intakeTime: intakeTime,
       startDate: startDate,
-      endDate: endDate,
+      endDate: endDate, dosage: dosage, notes: notes,
+      
     );
   }
 
- @override
+  @override
   Future<Either<Failure, GetMedicineEntity>> getMedicines() {
     return remoteDataSource.getMedicines();
   }
 
-
-
-    @override
+  @override
   Future<Either<Failure, UpdateMedicineEntity>> updateMedicine({
     required String medicineId,
     required String medicineName,
@@ -64,10 +63,6 @@ class MedicineRepoImpl implements MedicineRepo {
   Future<Either<Failure, DeleteMedicineEntity>> deleteMedicine({
     required String medicineId,
   }) {
-    return remoteDataSource.deleteMedicine(
-      medicineId: medicineId,
-    );
+    return remoteDataSource.deleteMedicine(medicineId: medicineId);
   }
-
-  
 }

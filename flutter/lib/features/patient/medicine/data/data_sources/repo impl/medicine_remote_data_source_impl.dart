@@ -20,8 +20,7 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
 @Injectable(as: MedicineRemoteDataSource)
-class MedicineRemoteDataSourceImpl
-    implements MedicineRemoteDataSource {
+class MedicineRemoteDataSourceImpl implements MedicineRemoteDataSource {
   final NetworkInfo networkInfo;
   final ApiManager apiManager;
 
@@ -33,26 +32,27 @@ class MedicineRemoteDataSourceImpl
   @override
   Future<Either<Failure, MedicineModel>> addMedicine({
     required String medicineName,
+    required double dosage,
     required String frequency,
     required String intakeTime,
     required String startDate,
     required String endDate,
+    required String notes,
   }) async {
     try {
       if (!await networkInfo.isConnected) {
         throw OfflineException();
       }
 
-      final response = await apiManager.post(
-        Endpoints.addMedicine,
-        {
-          "medicineName": medicineName,
-          "frequency": frequency,
-          "intakeTime": intakeTime,
-          "startDate": startDate,
-          "endDate": endDate,
-        },
-      );
+      final response = await apiManager.post(Endpoints.addMedicine, {
+        "medicineName": medicineName,
+        "dosage": {"value": dosage, "unit": "mg"},
+        "frequency": frequency,
+        "startTime": intakeTime,
+        "startDate": startDate,
+        "endDate": endDate,
+        "notes": notes,
+      });
 
       print("add medicine response: $response");
 
@@ -61,72 +61,44 @@ class MedicineRemoteDataSourceImpl
     } on DioException catch (e) {
       print("add medicine error: ${e.response?.data}");
 
-      return Left(
-        mapExceptionToFailure(
-          ErrorHandler.handle(e),
-        ),
-      );
+      return Left(mapExceptionToFailure(ErrorHandler.handle(e)));
     } on AppException catch (e) {
-      return Left(
-        mapExceptionToFailure(e),
-      );
+      return Left(mapExceptionToFailure(e));
     } catch (e) {
       print("unknown error: $e");
-      return Left(
-        ServerFailure(),
-      );
+      return Left(ServerFailure());
     }
   }
-
-
-
-
-
 
   @override
-Future<Either<Failure, GetMedicineModel>> getMedicines() async {
-  try {
-    if (!await networkInfo.isConnected) {
-      throw OfflineException();
+  Future<Either<Failure, GetMedicineModel>> getMedicines() async {
+    try {
+      if (!await networkInfo.isConnected) {
+        throw OfflineException();
+      }
+
+      final response = await apiManager.get(Endpoints.getMedicine);
+
+      print("get medicines response: $response");
+
+      final result = GetMedicineModel.fromJson(response);
+
+      return Right(result);
+    } on DioException catch (e) {
+      print("get medicines error: ${e.response?.data}");
+
+      return Left(mapExceptionToFailure(ErrorHandler.handle(e)));
+    } on AppException catch (e) {
+      return Left(mapExceptionToFailure(e));
+    } catch (e) {
+      print("unknown error: $e");
+
+      return Left(ServerFailure());
     }
-
-    final response = await apiManager.get(
-      Endpoints.getMedicine,
-    );
-
-    print("get medicines response: $response");
-
-    final result = GetMedicineModel.fromJson(response);
-
-    return Right(result);
-  } on DioException catch (e) {
-    print("get medicines error: ${e.response?.data}");
-
-    return Left(
-      mapExceptionToFailure(
-        ErrorHandler.handle(e),
-      ),
-    );
-  } on AppException catch (e) {
-    return Left(
-      mapExceptionToFailure(e),
-    );
-  } catch (e) {
-    print("unknown error: $e");
-
-    return Left(
-      ServerFailure(),
-    );
   }
-}
 
-
-
-
-
- @override
-  Future<Either<Failure, UpdateMedicineModel>>
-      updateMedicine({
+  @override
+  Future<Either<Failure, UpdateMedicineModel>> updateMedicine({
     required String medicineId,
     required String medicineName,
     required String frequency,
@@ -139,47 +111,35 @@ Future<Either<Failure, GetMedicineModel>> getMedicines() async {
         throw OfflineException();
       }
 
-      final response = await apiManager.patch(
-        "${Endpoints.updateMedicine}/$medicineId",
-        {
-          "medicineName": medicineName,
-          "frequency": frequency,
-          "intakeTime": intakeTime,
-          "startDate": startDate,
-          "endDate": endDate,
-        },
-      );
+      final response = await apiManager
+          .patch("${Endpoints.updateMedicine}/$medicineId", {
+            "medicineName": medicineName,
+            "frequency": frequency,
+            "intakeTime": intakeTime,
+            "startDate": startDate,
+            "endDate": endDate,
+          });
 
       print("update medicine response: $response");
 
-      final result =
-          UpdateMedicineModel.fromJson(response);
+      final result = UpdateMedicineModel.fromJson(response);
 
       return Right(result);
     } on DioException catch (e) {
       print("update medicine error: ${e.response?.data}");
 
-      return Left(
-        mapExceptionToFailure(
-          ErrorHandler.handle(e),
-        ),
-      );
+      return Left(mapExceptionToFailure(ErrorHandler.handle(e)));
     } on AppException catch (e) {
-      return Left(
-        mapExceptionToFailure(e),
-      );
+      return Left(mapExceptionToFailure(e));
     } catch (e) {
       print("unknown error: $e");
 
-      return Left(
-        ServerFailure(),
-      );
+      return Left(ServerFailure());
     }
   }
 
   @override
-  Future<Either<Failure, DeleteMedicineModel>>
-      deleteMedicine({
+  Future<Either<Failure, DeleteMedicineModel>> deleteMedicine({
     required String medicineId,
   }) async {
     try {
@@ -193,28 +153,19 @@ Future<Either<Failure, GetMedicineModel>> getMedicines() async {
 
       print("delete medicine response: $response");
 
-      final result =
-          DeleteMedicineModel.fromJson(response);
+      final result = DeleteMedicineModel.fromJson(response);
 
       return Right(result);
     } on DioException catch (e) {
       print("delete medicine error: ${e.response?.data}");
 
-      return Left(
-        mapExceptionToFailure(
-          ErrorHandler.handle(e),
-        ),
-      );
+      return Left(mapExceptionToFailure(ErrorHandler.handle(e)));
     } on AppException catch (e) {
-      return Left(
-        mapExceptionToFailure(e),
-      );
+      return Left(mapExceptionToFailure(e));
     } catch (e) {
       print("unknown error: $e");
 
-      return Left(
-        ServerFailure(),
-      );
+      return Left(ServerFailure());
     }
   }
 }

@@ -126,6 +126,7 @@
 
 
 
+
 "article_medication_tips": "5 Tips to Take Your Medication on Time",
 "article_vitamins_importance": "Why Daily Vitamins Matter for Your Health",
 "article_healthy_habits": "Simple Habits for a Healthier Life",
@@ -347,7 +348,7 @@
   "end_date": "End Date",
   "tap_to_select": "Tap to select",
 
-  "save": "SAVE",
+  "save": "SAVE MEDICINE",
 
 
   "ai_intro": "Hi, I’m your AI medical assistant.\nAsk me anything about your health.",
@@ -447,7 +448,12 @@
 "date_past": "Date cannot be in the past",
 "time_required": "Event time is required",
 "date_time_required": "Date & Time Event are required",
-"no_events_found": "No Events Found"
+"no_events_found": "No Events Found",
+"medicine_upper":"MEDICINE",
+"instructions_notes":"Add special instructions & notes...",
+"dosage_hint":"500 ml",
+"dosage":"Dosage",
+"instructions__notes":"Notes & Instructions"
 
 
 

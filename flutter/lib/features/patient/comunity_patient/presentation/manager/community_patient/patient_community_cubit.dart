@@ -1,7 +1,5 @@
 import 'package:Axon/core/errors/failures.dart';
-import 'package:Axon/features/patient/comunity_patient/domain/entities/comment_entity.dart';
 import 'package:Axon/features/patient/comunity_patient/domain/entities/comments_entity.dart';
-import 'package:Axon/features/patient/comunity_patient/domain/entities/community_post_entity.dart';
 import 'package:Axon/features/patient/comunity_patient/domain/entities/community_posts_entity.dart';
 
 import 'package:Axon/features/patient/comunity_patient/domain/usecases/add_comment_usecase.dart';

@@ -2,7 +2,6 @@
 import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/patient/comunity_patient/data/models/community_post_model.dart';
 import 'package:Axon/features/patient/comunity_patient/domain/entities/community_post_entity.dart';
 import 'package:Axon/features/patient/comunity_patient/presentation/manager/community_patient/patient_community_cubit.dart';
 import 'package:Axon/features/patient/comunity_patient/presentation/views/widgets/comments_bottom_sheet.dart';

@@ -2,7 +2,7 @@ import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/features/patient/book_doctor/domain/entities/doctor_entity.dart';
-import 'package:Axon/features/patient/book_doctor/prsentation/view/doctor_details_view.dart';
+import 'package:Axon/features/patient/book_doctor/presentation/view/doctor_details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

@@ -12,13 +12,15 @@ class TodayMedicationCard extends StatelessWidget {
   final int total;
   final String medicineName;
   final String time;
+  final String remainingTime ;
+  final VoidCallback onTakeDose;
 
   const TodayMedicationCard({
     super.key,
     required this.taken,
     required this.total,
     required this.medicineName,
-    this.time = "10:00 PM",
+    this.time = "10:00 PM", required this.remainingTime, required this.onTakeDose,
   });
 
   @override
@@ -46,7 +48,7 @@ class TodayMedicationCard extends StatelessWidget {
                 const Text("💊"),
                 SizedBox(width: 6.w),
                 TextApp(
-                  text: context.l10n.next_dose_in("20"),
+                  text: context.l10n.next_dose_in(remainingTime),
                   weight: AppTextWeight.bold,
                   fontSize: 12.sp,
                   color: AppColors.primaryColor,
@@ -134,7 +136,7 @@ class TodayMedicationCard extends StatelessWidget {
                         fontSize: 11.sp,
                         fontWeight: ButtonTextWeight.bold,
                         color: AppColors.primaryColor,
-                        onPressed: () {},
+                        onPressed: onTakeDose,
                       ),
                       SizedBox(height: 6.h),
                       CustomButton(

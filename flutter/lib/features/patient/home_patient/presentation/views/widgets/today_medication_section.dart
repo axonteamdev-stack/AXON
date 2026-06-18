@@ -11,13 +11,15 @@ class TodayMedicationSection extends StatelessWidget {
   final int total;
   final String medicineName;
   final String time;
+  final String remainingTime ;
+  final VoidCallback onTakeDose;
 
   const TodayMedicationSection({
     super.key,
     required this.taken,
     required this.total,
     required this.medicineName,
-    this.time = "10:00 PM",
+    required this.time, required this.remainingTime, required this.onTakeDose ,
   });
 
   @override
@@ -36,6 +38,8 @@ class TodayMedicationSection extends StatelessWidget {
         ),
         SizedBox(height: 12.h),
         TodayMedicationCard(
+          onTakeDose: onTakeDose,
+          remainingTime:remainingTime ,
           taken: taken,
           total: total,
           medicineName: medicineName,

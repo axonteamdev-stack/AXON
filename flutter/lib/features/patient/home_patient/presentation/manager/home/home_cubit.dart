@@ -7,8 +7,7 @@ import 'package:injectable/injectable.dart';
 class HomeCubit extends Cubit<HomeState> {
   final GetAllArticlesUseCase fetchArticlesUseCase;
 
-  HomeCubit({required this.fetchArticlesUseCase})
-      : super(HomeInitial());
+  HomeCubit({required this.fetchArticlesUseCase}) : super(HomeInitial());
 
   Future<void> fetchHomeArticles() async {
     emit(HomeLoading());

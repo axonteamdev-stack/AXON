@@ -20,9 +20,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   @override
   Future<Either<Failure, GetAllArticlesModel>> getAllArticles() async {
     try {
-      final response = await apiManager.get(
-        Endpoints.getAllArticales,
-      );
+      final response = await apiManager.get(Endpoints.getAllArticales);
 
       print("articles response: $response");
 
@@ -40,67 +38,29 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
   @override
-Future<Either<Failure, ArticleDetailsModel>>
-    getArticleById(String id) async {
+  Future<Either<Failure, ArticleDetailsModel>> getArticleById(String id) async {
+    try {
+      final response = await apiManager.get(Endpoints.getArticleById(id));
 
-  try {
+      print("article details response: $response");
 
-    final response = await apiManager.get(
-      Endpoints.getArticleById(id),
-    );
+      final articleJson = response["data"]["post"];
 
-    print("article details response: $response");
+      final article = ArticleDetailsModel(
+        id: articleJson["_id"] ?? "",
+        title: articleJson["title"] ?? "",
+        image: articleJson["image"] ?? "",
+        content: articleJson["content"] ?? "",
+      );
 
-    final articleJson =
-        response["data"]["post"];
-
-    final article =
-        ArticleDetailsModel(
-      id: articleJson["_id"] ?? "",
-      title: articleJson["title"] ?? "",
-      image: articleJson["image"] ?? "",
-      content: articleJson["content"] ?? "",
-    );
-
-    return Right(article);
-
-  } on DioException catch (e) {
-
-    return Left(
-      mapExceptionToFailure(
-        ErrorHandler.handle(e),
-      ),
-    );
-
-  } on AppException catch (e) {
-
-    return Left(
-      mapExceptionToFailure(e),
-    );
-
-  } catch (e) {
-
-    return Left(
-      ServerFailure(),
-    );
+      return Right(article);
+    } on DioException catch (e) {
+      return Left(mapExceptionToFailure(ErrorHandler.handle(e)));
+    } on AppException catch (e) {
+      return Left(mapExceptionToFailure(e));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
   }
-}
-
-
-
-
-
 }

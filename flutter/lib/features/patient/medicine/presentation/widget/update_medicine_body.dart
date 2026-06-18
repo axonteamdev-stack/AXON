@@ -6,7 +6,6 @@ import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_button.dart';
 import 'package:Axon/core/widgets/custom_text_field.dart';
 import 'package:Axon/core/widgets/text_app.dart';
-import 'package:Axon/features/patient/medicine/presentation/manager/get_medicine.dart/medicine_list_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/update_medicine/update_medicine_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/update_medicine/update_medicine_state.dart';
 import 'package:Axon/features/patient/medicine/presentation/widget/update_duration_widget.dart';

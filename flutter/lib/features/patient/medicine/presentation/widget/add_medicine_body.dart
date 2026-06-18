@@ -30,17 +30,10 @@ class AddMedicineBody extends StatelessWidget {
             context,
             message: context.l10n.medicine_saved_successfully,
           );
-
-          Navigator.pop(context);
-        } 
-        
-        else if (state is MedicineErrorState) {
+        } else if (state is MedicineErrorState) {
           Snackbar.showError(
             context,
-            message: mapFailureToMessage(
-              context,
-              state.failure,
-            ),
+            message: mapFailureToMessage(context, state.failure),
           );
         }
       },
@@ -66,15 +59,34 @@ class AddMedicineBody extends StatelessWidget {
                 SizedBox(height: 12.h),
 
                 CustomTextField(
-                  controller:
-                      medicineCubit.medicineNameController,
-                  hintText:
-                      context.l10n.medicine_example,
+                  controller: medicineCubit.medicineNameController,
+                  hintText: context.l10n.medicine_example,
 
-                  validator: (value) =>
-                      ValidationHelper.validateNotEmpty(
+                  validator: (value) => ValidationHelper.validateNotEmpty(
                     value,
                     fieldName: "Medicine name",
+                  ),
+                ),
+
+                SizedBox(height: 24.h),
+
+                TextApp(
+                  text: context.l10n.dosage,
+                  color: AppColors.primaryColor,
+                  fontSize: 14,
+                  weight: AppTextWeight.semiBold,
+                ),
+
+                SizedBox(height: 12.h),
+
+                CustomTextField(
+                  controller: medicineCubit.medicineDosageController,
+                  hintText: context.l10n.dosage_hint,
+                  keyboardType: TextInputType.numberWithOptions(),
+
+                  validator: (value) => ValidationHelper.validateNotEmpty(
+                    value,
+                    fieldName: "Dosage",
                   ),
                 ),
 
@@ -120,13 +132,36 @@ class AddMedicineBody extends StatelessWidget {
 
                 const DurationWidget(),
 
+                SizedBox(height: 24.h),
+
+                TextApp(
+                  text: context.l10n.instructions__notes,
+                  color: AppColors.primaryColor,
+                  fontSize: 14,
+                  weight: AppTextWeight.semiBold,
+                ),
+
+                SizedBox(height: 12.h),
+
+                CustomTextField(
+                  controller: medicineCubit.medicineNotesController,
+                  hintText: context.l10n.instructions_notes,
+                  maxLines: 4,
+                  validator: (value) => ValidationHelper.validateNotEmpty(
+                    value,
+                    fieldName: "notes",
+                  ),
+                ),
+
                 SizedBox(height: 32.h),
 
-                /// Save Button
+                // todo: Save Button
                 CustomButton(
+                  icon: Icon(Icons.medication_outlined, color: AppColors.white),
+
                   text: context.l10n.save,
-                  isLoading:
-                      state is MedicineLoadingState,
+
+                  isLoading: state is MedicineLoadingState,
                   onPressed: () {
                     medicineCubit.addMedicine(context);
                   },

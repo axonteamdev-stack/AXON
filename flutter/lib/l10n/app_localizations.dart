@@ -1493,7 +1493,7 @@ abstract class AppLocalizations {
   /// No description provided for @save.
   ///
   /// In en, this message translates to:
-  /// **'SAVE'**
+  /// **'SAVE MEDICINE'**
   String get save;
 
   /// No description provided for @ai_intro.
@@ -1849,6 +1849,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No Events Found'**
   String get no_events_found;
+
+  /// No description provided for @medicine_upper.
+  ///
+  /// In en, this message translates to:
+  /// **'MEDICINE'**
+  String get medicine_upper;
+
+  /// No description provided for @instructions_notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Add special instructions & notes...'**
+  String get instructions_notes;
+
+  /// No description provided for @dosage_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'500 ml'**
+  String get dosage_hint;
+
+  /// No description provided for @dosage.
+  ///
+  /// In en, this message translates to:
+  /// **'Dosage'**
+  String get dosage;
+
+  /// No description provided for @instructions__notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes & Instructions'**
+  String get instructions__notes;
 }
 
 class _AppLocalizationsDelegate

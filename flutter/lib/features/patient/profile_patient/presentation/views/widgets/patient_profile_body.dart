@@ -1,8 +1,7 @@
 import 'package:Axon/core/extensions/context_extension.dart';
 import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/features/onboarding/presentation/views/widgets/language_switch.dart';
-import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient/patient_profile_state.dart'
-    show PatientProfileState;
+import 'package:Axon/features/patient/home_patient/presentation/manager/basc_info/profile_states.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/patient_profile_header.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/patient_profile_menu_item.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +11,9 @@ import 'package:Axon/features/patient/profile_patient/presentation/manager/profi
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/confirm_delete_account_sheet.dart';
 import 'package:Axon/features/patient/profile_patient/presentation/views/widgets/confirm_logout_sheet.dart';
 
-import 'patient_profile_header_delegate.dart';
 
 class PatientProfileBody extends StatelessWidget {
-  final PatientProfileState state;
+  final ProfileState state;
 
   const PatientProfileBody({super.key, required this.state});
 
@@ -23,12 +21,7 @@ class PatientProfileBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        SliverPersistentHeader(
-          pinned: true,
-          delegate: PatientProfileHeaderDelegate(
-            child: PatientProfileHeader(state: state),
-          ),
-        ),
+        SliverToBoxAdapter(child: PatientProfileHeader(state: state)),
         SliverList(
           delegate: SliverChildListDelegate([
             const SizedBox(height: 16),
@@ -157,13 +150,12 @@ class PatientProfileBody extends StatelessWidget {
               },
             ),
             PatientProfileMenuItem(
-  icon: Icons.language,
-  title: context.l10n.choose_language,
-  dense: true,
-  trailing: const LanguageSwitch(),
-  onTap: () {},
-),
-
+              icon: Icons.language,
+              title: context.l10n.choose_language,
+              dense: true,
+              trailing: const LanguageSwitch(),
+              onTap: () {},
+            ),
 
             const SizedBox(height: 32),
           ]),

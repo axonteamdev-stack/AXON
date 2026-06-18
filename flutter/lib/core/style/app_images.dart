@@ -38,7 +38,7 @@ class AppImages {
   static const String review = '$IconsPath/review.png';
 
   // quick access
-  static const String hospital = '$IconsPath/hospital.png';
+  static const String qr = '$IconsPath/qr.png';
   static const String Med = '$IconsPath/Med.png';
   static const String History = '$IconsPath/History.png';
 

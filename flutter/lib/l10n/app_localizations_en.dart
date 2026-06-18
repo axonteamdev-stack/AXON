@@ -723,7 +723,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tap_to_select => 'Tap to select';
 
   @override
-  String get save => 'SAVE';
+  String get save => 'SAVE MEDICINE';
 
   @override
   String get ai_intro =>
@@ -908,4 +908,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get no_events_found => 'No Events Found';
+
+  @override
+  String get medicine_upper => 'MEDICINE';
+
+  @override
+  String get instructions_notes => 'Add special instructions & notes...';
+
+  @override
+  String get dosage_hint => '500 ml';
+
+  @override
+  String get dosage => 'Dosage';
+
+  @override
+  String get instructions__notes => 'Notes & Instructions';
 }
