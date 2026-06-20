@@ -4,6 +4,4 @@ __pycache__/
 *.pyc
 *.db
 logs/
-data/
-external/
 .ipynb_checkpoints/
