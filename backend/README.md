@@ -6,8 +6,8 @@
 
 ## Team
 
-| Name | GitHub | Role |
-|------|--------|------|
+| Name | GitHub |
+|------|--------|
 | **Khaled Taha** | [@KTaha0](https://github.com/KTaha0) |
 | **Abd-Elrahman Hosaam** | [@El0Bosh5khep9ri9](https://github.com/El0Bosh5khep9ri9) |
 
