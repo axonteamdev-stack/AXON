@@ -4,17 +4,6 @@
 
 ---
 
-## Team
-
-| Name | GitHub |
-|------|--------|
-| **Khaled Taha** | [@KTaha0](https://github.com/KTaha0) |
-| **Abd-Elrahman Hosaam** | [@El0Bosh5khep9ri9](https://github.com/El0Bosh5khep9ri9) |
-
-**Live API:** [https://tender-morna-axon-fp-b76b6646.koyeb.app/](https://tender-morna-axon-fp-b76b6646.koyeb.app/)
-
----
-
 ## Table of Contents
 
 - [Overview](#overview)
