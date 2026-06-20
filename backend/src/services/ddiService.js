@@ -27,6 +27,15 @@ export const checkDrugInteractions = async (patientId, newMedicationName) => {
     newMedicationName.toLowerCase().trim(),
   ];
 
+  return await callAiService(drugList);
+};
+
+export const checkDirectDrugInteractions = async (drugs) => {
+  const drugList = drugs.map((d) => d.toLowerCase().trim());
+  return await callAiService(drugList);
+};
+
+const callAiService = async (drugList) => {
   try {
     const response = await fetch(getAiUrl(), {
       method: "POST",
