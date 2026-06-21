@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3B82F6;
+  --color-secondary: #0F172A;
+  --color-accent-teal: #14B8A6;
+  --color-accent-orange: #F97316;
+
+  /* Design System Colors */
+  --color-background: #F7F9FC;
+  --color-card: #FFFFFF;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-border: #E5E7EB;
+  --color-success: #10B981;
+
+  --font-sans: "Inter", "Poppins", ui-sans-serif, system-ui;
+}
+
+:root {
+  color-scheme: light;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased text-slate-900 bg-white;
+  }
+
+  [dir="rtl"] {
+    font-family: "Noto Sans Arabic", "Inter", sans-serif;
+  }
+}
+
+.glass {
+  @apply bg-white/80 backdrop-blur-md border border-white/20;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-full font-medium transition-all duration-300;
+}
+
+/* Modern Scrollbar Design */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #3B82F6;
+  background-clip: padding-box;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 350px solid transparent;
+  border-bottom: 350px solid transparent;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #2563EB;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3B82F6 transparent;
+}

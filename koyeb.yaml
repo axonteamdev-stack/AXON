@@ -1,4 +1,5 @@
-name: axon-backend
+
+me: axon-backend
 services:
   - name: web
     type: web
