@@ -1,0 +1,48 @@
+# Dependencies
+**/node_modules/
+**/.pnp
+.pnp.js
+
+# Build/Dist
+**/dist/
+**/build/
+**/out/
+
+# Runtime data
+**/logs/
+**/uploads/*
+!**/uploads/.gitkeep
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Coverage/Test reports
+**/coverage/
+**/.nyc_output/
+**/reports/
+**/report/
+
+# TypeScript
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.claude/
+.cache/
+
+# Misc
+*.zip

@@ -1,56 +1,20 @@
 # Dependencies
 node_modules/
-/.pnp
-.pnp.js
-
-# Build/Dist folders
-/dist
-/build
-/out
 
 # Logs
 npm-debug.log
 *.log
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
+# Temp
+temp/
 
-# Environment variables
-.env
-.env.local
-.env.development
-.env.production
-.env.test
-temp
-
-# TypeScript
-*.tsbuildinfo
-
-# Coverage/Test reports
-/coverage
-.nyc_output
-
-# Editor/OS Files
+# Editor/OS (redundant but safe)
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
-.claude/
-.cache/
-reports/
-report/
-logs/
-notes/
 
-# Accidental/Temp Files
+# Accidental
 Notes/
-*.zip
 routes.md
-
-# Uploaded Content - ignore all files inside upload folders
-uploads/**/*
-!uploads/**/.gitkeep
-!uploads/**/.gitignore
+notes/
