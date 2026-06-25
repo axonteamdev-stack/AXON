@@ -1,0 +1,12 @@
+# dataset
+data/
+
+# backup & saved model
+*.log
+*.pkl
+*.out
+
+# Python cache
+__pycache__/
+.vscode*
+*.pyc
