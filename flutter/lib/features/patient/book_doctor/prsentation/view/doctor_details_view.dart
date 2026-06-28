@@ -52,7 +52,9 @@ class DoctorDetailsView extends StatelessWidget {
         ),
         child: CircleAvatar(
           radius: 38.r,
-          backgroundImage: AssetImage(doctor.image),
+          backgroundImage: doctor.image.isNotEmpty
+              ? NetworkImage(doctor.image)
+              : const AssetImage('assets/images/placeholder.png') as ImageProvider,
         ),
       ),
     ],

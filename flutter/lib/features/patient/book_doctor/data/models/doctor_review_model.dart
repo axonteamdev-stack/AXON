@@ -12,6 +12,15 @@ class DoctorReviewModel {
     required this.rating,
     required this.comment,
   });
+
+  factory DoctorReviewModel.fromJson(Map<String, dynamic> json) {
+    return DoctorReviewModel(
+      name: json['name']?.toString() ?? '',
+      image: json['image']?.toString() ?? '',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      comment: json['comment']?.toString() ?? '',
+    );
+  }
 }
 
 extension DoctorReviewMapper on DoctorReviewModel {

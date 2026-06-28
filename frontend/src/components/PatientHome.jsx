@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { getAllDoctors } from '../api/users';
 import {
   Search, Bell, Settings, Home, FileText, Users, User,
   Plus, ChevronLeft, ChevronRight, CalendarDays, CheckCircle, Heart,
@@ -90,6 +91,9 @@ const PatientHome = () => {
   const [doctorSearch, setDoctorSearch] = useState('');
   const [hospitalBookSearch, setHospitalBookSearch] = useState('');
   const [confirmedBookings, setConfirmedBookings] = useState([]);
+  const [apiDoctors, setApiDoctors] = useState([]);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [doctorsError, setDoctorsError] = useState(null);
   const [historyTab, setHistoryTab] = useState('appointments');
 
   const [user, setUser] = useState(() => {
@@ -142,6 +146,21 @@ const PatientHome = () => {
       setNextDoseInMinutes((m) => (m > 0 ? m - 1 : 0));
     }, 60_000);
     return () => window.clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    setLoadingDoctors(true);
+    setDoctorsError(null);
+    getAllDoctors()
+      .then((res) => {
+        const docs = res?.data?.doctors ?? [];
+        setApiDoctors(docs);
+      })
+      .catch((err) => {
+        setDoctorsError(err?.response?.data?.message || err.message || 'Failed to fetch doctors');
+        setApiDoctors([]);
+      })
+      .finally(() => setLoadingDoctors(false));
   }, []);
 
   const medsProgress = useMemo(() => {
@@ -1963,30 +1982,25 @@ const PatientHome = () => {
     );
   };
 
-  const bookingDoctors = [
-    { id: 1, name: 'Dr. Ahmed Hassan', specialty: 'Cardiology', rating: 4.9, fee: 300, available: true, img: null },
-    { id: 2, name: 'Dr. Sara Mohamed', specialty: 'Neurology', rating: 4.8, fee: 350, available: true, img: null },
-    { id: 3, name: 'Dr. Omar Ali', specialty: 'Internal Medicine', rating: 4.7, fee: 250, available: true, img: null },
-    { id: 4, name: 'Dr. Nour El-Din', specialty: 'Dermatology', rating: 4.6, fee: 280, available: true, img: null },
-    { id: 5, name: 'Dr. Mona Khalil', specialty: 'Pediatrics', rating: 4.9, fee: 320, available: true, img: null },
-    { id: 6, name: 'Dr. Yasser Fathi', specialty: 'Orthopedics', rating: 4.5, fee: 400, available: false, img: null },
-    { id: 7, name: 'Dr. Heba Mansour', specialty: 'Gynecology', rating: 4.8, fee: 350, available: true, img: null },
-    { id: 8, name: 'Dr. Khaled Mostafa', specialty: 'Ophthalmology', rating: 4.7, fee: 270, available: true, img: null },
-    { id: 9, name: 'Dr. Rania Samir', specialty: 'Psychiatry', rating: 4.6, fee: 400, available: true, img: null },
-    { id: 10, name: 'Dr. Tarek Nabil', specialty: 'General Surgery', rating: 4.8, fee: 500, available: true, img: null },
-    { id: 11, name: 'Dr. Dina Fouad', specialty: 'Endocrinology', rating: 4.9, fee: 380, available: true, img: null },
-    { id: 12, name: 'Dr. Amr Shalaby', specialty: 'Urology', rating: 4.5, fee: 300, available: true, img: null },
-    { id: 13, name: 'Dr. Layla Ibrahim', specialty: 'Rheumatology', rating: 4.7, fee: 350, available: false, img: null },
-    { id: 14, name: 'Dr. Sherif Gamal', specialty: 'Gastroenterology', rating: 4.6, fee: 420, available: true, img: null },
-    { id: 15, name: 'Dr. Noha Abdel Aziz', specialty: 'Oncology', rating: 4.9, fee: 600, available: true, img: null },
-  ];
+  const bookingDoctors = useMemo(() =>
+    apiDoctors.map((doc) => ({
+      id: doc.id,
+      name: doc.fullName,
+      specialty: doc.doctorProfile?.specialization || 'General',
+      rating: 4.5,
+      fee: doc.doctorProfile?.price || 300,
+      available: true,
+      img: doc.personalPhoto || null,
+    })),
+    [apiDoctors],
+  );
 
   const timeSlots = ['08:00 AM','08:30 AM','09:00 AM','09:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM','12:30 PM','01:00 PM','01:30 PM','02:00 PM','02:30 PM','03:00 PM','03:30 PM','04:00 PM','04:30 PM','05:00 PM','05:30 PM','06:00 PM'];
 
   const renderBookingContent = () => {
     const filteredDoctors = bookingDoctors.filter(d =>
-      d.name.toLowerCase().includes(doctorSearch.toLowerCase()) ||
-      d.specialty.toLowerCase().includes(doctorSearch.toLowerCase())
+      d.name?.toLowerCase().includes(doctorSearch.toLowerCase()) ||
+      d.specialty?.toLowerCase().includes(doctorSearch.toLowerCase())
     );
     const filteredHospitals = egyptHospitals.filter(h =>
       h.name.toLowerCase().includes(hospitalBookSearch.toLowerCase()) ||
@@ -2076,12 +2090,28 @@ const PatientHome = () => {
               <input value={doctorSearch} onChange={e => setDoctorSearch(e.target.value)} placeholder={isRtl ? 'ابحث باسم الطبيب أو التخصص...' : 'Search by name or specialty...'} className="w-full pl-11 pr-4 py-3 bg-white rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#004A87]/20 text-sm font-medium" />
             </div>
             <div className="space-y-3">
-              {filteredDoctors.map(doc => (
+              {loadingDoctors ? (
+                <div className="text-center py-8 text-slate-400 font-medium">
+                  {isRtl ? 'جاري تحميل الأطباء...' : 'Loading doctors...'}
+                </div>
+              ) : doctorsError ? (
+                <div className="text-center py-8 text-red-500 font-medium">
+                  {isRtl ? 'فشل في تحميل الأطباء' : 'Failed to load doctors'}
+                </div>
+              ) : filteredDoctors.length === 0 ? (
+                <div className="text-center py-8 text-slate-400 font-medium">
+                  {isRtl ? 'لا يوجد أطباء متاحون' : 'No doctors available'}
+                </div>
+              ) : filteredDoctors.map(doc => (
                 <button key={doc.id} onClick={() => { setBookingDoctor(doc); setBookingStep(2); }} disabled={!doc.available}
                   className={`w-full bg-white rounded-2xl p-4 shadow-sm border-2 text-left transition-all hover:shadow-md ${bookingDoctor?.id === doc.id ? 'border-[#004A87]' : 'border-slate-100 hover:border-[#004A87]/40'} ${!doc.available ? 'opacity-50 cursor-not-allowed' : ''}`}>
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-[#004A87]/10 flex items-center justify-center shrink-0">
-                      <User size={26} className="text-[#004A87]" />
+                      {doc.img ? (
+                        <img src={doc.img} alt={doc.name} className="w-full h-full object-cover rounded-2xl" />
+                      ) : (
+                        <User size={26} className="text-[#004A87]" />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">

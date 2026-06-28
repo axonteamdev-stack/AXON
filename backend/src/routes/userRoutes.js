@@ -6,6 +6,8 @@ import { parseUniversal } from "../middlewares/parseUniversal.js";
 
 const router = Router();
 
+router.get("/doctors/search", userController.searchDoctors);
+
 router.get(
   "/doctors/:id",
   validateObjectId("id"),
@@ -17,8 +19,6 @@ router.get(
   validateObjectId("id"),
   userController.getPatientDetails,
 );
-
-router.get("/doctors/search", userController.searchDoctors);
 
 router.get("/doctors", userController.getAllDoctors);
 

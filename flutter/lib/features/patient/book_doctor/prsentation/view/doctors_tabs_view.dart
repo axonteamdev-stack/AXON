@@ -110,6 +110,28 @@ class _DoctorsTabsViewState extends State<DoctorsTabsView> {
             Expanded(
               child: BlocBuilder<DoctorsCubit, DoctorsState>(
                 builder: (_, state) {
+                  if (state is DoctorsLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (state is DoctorsError) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(state.message,
+                              style: const TextStyle(color: Colors.red)),
+                          SizedBox(height: 12.h),
+                          ElevatedButton(
+                            onPressed: () =>
+                                context.read<DoctorsCubit>().loadDoctors(),
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                   if (state is DoctorsLoaded) {
                     return ListView.separated(
                       padding:

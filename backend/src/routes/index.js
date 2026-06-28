@@ -9,6 +9,7 @@ import recordRoutes from "./recordRoutes.js";
 import ddiRoutes from "./ddiRoutes.js";
 import notificationRoutes from "./notificationRoutes.js";
 import prescriptionRoutes from "./prescriptionRoutes.js";
+import chatbotRoutes from "./chatbotRoutes.js";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/records", recordRoutes);
 router.use("/ddi", ddiRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/prescriptions", prescriptionRoutes);
+router.use("/chatbot", chatbotRoutes);
 
 export default router;

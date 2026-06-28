@@ -33,6 +33,26 @@ class DoctorsListView extends StatelessWidget {
       /// ===== Body =====
       body: BlocBuilder<DoctorsCubit, DoctorsState>(
         builder: (context, state) {
+          if (state is DoctorsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is DoctorsError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(state.message,
+                      style: const TextStyle(color: Colors.red)),
+                  SizedBox(height: 12.h),
+                  ElevatedButton(
+                    onPressed: () =>
+                        context.read<DoctorsCubit>().loadDoctors(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
           if (state is DoctorsLoaded) {
             return ListView.separated(
               padding: EdgeInsets.all(16.w),
@@ -60,7 +80,9 @@ class DoctorsListView extends StatelessWidget {
                       /// ===== Avatar =====
                       CircleAvatar(
                         radius: 28.r,
-                        backgroundImage: AssetImage(doctor.image),
+                        backgroundImage: doctor.image.isNotEmpty
+                            ? NetworkImage(doctor.image)
+                            : const AssetImage('assets/images/placeholder.png') as ImageProvider,
                       ),
 
                       SizedBox(width: 12.w),

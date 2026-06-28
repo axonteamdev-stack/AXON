@@ -10,13 +10,18 @@ class DoctorsCubit extends Cubit<DoctorsState> {
     loadDoctors();
   }
 
-  late final List<DoctorModel> _allDoctors;
+  List<DoctorModel> _allDoctors = [];
   String _currentCategory = 'All';
   String _searchQuery = '';
 
-  void loadDoctors() {
-    _allDoctors = repository.getDoctors();
-    _emitFiltered();
+  void loadDoctors() async {
+    emit(DoctorsLoading());
+    try {
+      _allDoctors = await repository.getDoctors();
+      _emitFiltered();
+    } catch (e) {
+      emit(DoctorsError(e.toString()));
+    }
   }
 
   void filterBySpecialty(String specialty) {
@@ -30,7 +35,7 @@ class DoctorsCubit extends Cubit<DoctorsState> {
   }
 
   void _emitFiltered() {
-    List<DoctorModel> result = _allDoctors;
+    List<DoctorModel> result = List.from(_allDoctors);
 
     if (_currentCategory != 'All') {
       result =
