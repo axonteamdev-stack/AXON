@@ -1302,32 +1302,78 @@
         {
           "name": "Access Record by QR",
           "request": {
-            "method": "POST",
+            "method": "GET",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/records/qr/access",
+              "raw": "{{baseUrl}}/records/qr/access/{{patientId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "records",
                 "qr",
-                "access"
+                "access",
+                "{{patientId}}"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\"token\": \"{{qrToken}}\", \"pin\": \"{{qrPin}}\"}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+            }
+          }
+        },
+        {
+          "name": "Open QR Viewer (Test)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/records/qr-test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "records",
+                "qr-test"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Render Emergency Page (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/records/emergency/{{qrToken}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "records",
+                "emergency",
+                "{{qrToken}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Emergency Data by QR Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/records/emergency-data/{{qrToken}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "records",
+                "emergency-data",
+                "{{qrToken}}"
+              ]
             }
           }
         }
@@ -1817,6 +1863,132 @@
       ]
     },
     {
+      "name": "Chatbot",
+      "item": [
+        {
+          "name": "Ask Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "ar",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chatbot/ask",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chatbot",
+                "ask"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"ما هي أعراض السكري؟\",\n  \"conversationId\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Personalized Ask",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "ar",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chatbot/personalized",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chatbot",
+                "personalized"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"ما هي الأدوية المناسبة لضغط الدم؟\",\n  \"conversationId\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Get Conversations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chatbot/conversations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chatbot",
+                "conversations"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Messages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chatbot/{{conversationId}}/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chatbot",
+                "{{conversationId}}",
+                "messages"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "DDI",
       "item": [
         {
@@ -1881,6 +2053,121 @@
             "body": {
               "mode": "raw",
               "raw": "{\"medicineName\": \"Penicillin\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Check Patient Interactions (Doctor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "ar",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ddi/check/appointments/{{appointmentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ddi",
+                "check",
+                "appointments",
+                "{{appointmentId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newMedicationName\": \"Warfarin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Check Patient Contraindications (Doctor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "ar",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ddi/contraindications/appointments/{{appointmentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ddi",
+                "contraindications",
+                "appointments",
+                "{{appointmentId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medicineName\": \"Penicillin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Check Direct Interactions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "ar",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ddi/check-direct",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ddi",
+                "check-direct"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"drugs\": [\"Warfarin\", \"Aspirin\"]\n}",
               "options": {
                 "raw": {
                   "language": "json"

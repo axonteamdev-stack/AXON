@@ -1,8 +1,8 @@
 import Medication from "../models/Medication.js";
 import Patient from "../models/Patient.js";
 
-const AI_TIMEOUT_MS = 8000;
-const DEFAULT_AI_URL = "http://localhost:5001/api/predict-ddi";
+const AI_TIMEOUT_MS = 15000;
+const DEFAULT_AI_URL = "http://localhost:5001/api/predict-ddi-batch";
 
 const getAiUrl = () => process.env.AI_DDI_SERVICE_URL || DEFAULT_AI_URL;
 
