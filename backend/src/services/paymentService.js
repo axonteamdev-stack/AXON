@@ -155,7 +155,8 @@ export const getPayment = async (appointmentId, userId) => {
 export const handleWebhook = async (rawBody, signature) => {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    const event = JSON.parse(rawBody);
+    const body = typeof rawBody === "string" ? rawBody : rawBody.toString();
+    const event = JSON.parse(body);
     return handleEvent(event);
   }
 

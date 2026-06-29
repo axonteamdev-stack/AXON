@@ -1,14 +1,14 @@
 import Notification from "../models/Notification.js";
 import AppError from "../utils/AppError.js";
-import { msg } from "../utils/i18n.js";
+import { getLocalizedString, msg } from "../utils/i18n.js";
 import { getIO } from "../config/socket.js";
 
 export const create = async (userId, type, title, message, data = {}, priority = "normal") => {
   const notification = await Notification.create({
     user: userId,
     type,
-    title,
-    message,
+    title: getLocalizedString(title),
+    message: getLocalizedString(message),
     data,
     priority,
   });
@@ -18,8 +18,8 @@ export const create = async (userId, type, title, message, data = {}, priority =
     io.to(userId.toString()).emit("notification", {
       _id: notification._id,
       type,
-      title,
-      message,
+      title: getLocalizedString(title),
+      message: getLocalizedString(message),
       data,
       priority,
       createdAt: notification.createdAt,
