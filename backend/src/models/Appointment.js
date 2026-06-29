@@ -34,6 +34,11 @@ const appointmentSchema = new mongoose.Schema(
             maxlength: 500,
             default: null,
         },
+        price: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
     },
     { timestamps: true },
 );

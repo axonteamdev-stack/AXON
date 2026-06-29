@@ -10,6 +10,7 @@ import ddiRoutes from "./ddiRoutes.js";
 import notificationRoutes from "./notificationRoutes.js";
 import prescriptionRoutes from "./prescriptionRoutes.js";
 import chatbotRoutes from "./chatbotRoutes.js";
+import paymentRoutes from "./paymentRoutes.js";
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use("/ddi", ddiRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/prescriptions", prescriptionRoutes);
 router.use("/chatbot", chatbotRoutes);
+router.use("/payments", paymentRoutes);
 
 export default router;

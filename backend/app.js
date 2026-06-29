@@ -11,6 +11,7 @@ import compression from "compression";
 import { setLanguage } from "./src/middlewares/i18n.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 import routes from "./src/routes/index.js";
+import * as paymentController from "./src/controllers/paymentController.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -56,6 +57,12 @@ app.use(hpp());
 app.use(compression({ threshold: 1024 }));
 app.use(cookieParser());
 app.use(setLanguage);
+
+app.post(
+  "/payments/webhook",
+  express.raw({ type: "application/json" }),
+  paymentController.webhook,
+);
 
 app.use(express.json({ limit: "100kb", type: "application/json" }));
 app.use(

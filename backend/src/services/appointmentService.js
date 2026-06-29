@@ -1,17 +1,29 @@
 import Appointment from "../models/Appointment.js";
+import User from "../models/User.js";
 import Conversation from "../models/Conversation.js";
 import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
 import { getIO } from "../config/socket.js";
 import * as NotificationService from "./notificationService.js";
+import * as PaymentService from "./paymentService.js";
 
 export const create = async (patientId, { doctorId, scheduledAt, notes }) => {
+    const doctor = await User.findById(doctorId);
+    const price = doctor?.doctorProfile?.price || 0;
+
     const appointment = await Appointment.create({
         patient: patientId,
         doctor: doctorId,
         scheduledAt: new Date(scheduledAt),
         notes,
+        price,
     });
+
+    try {
+        await PaymentService.initPayment(appointment, patientId);
+    } catch {
+        // Payment init is non-critical
+    }
 
     try {
         const io = getIO();
@@ -112,6 +124,12 @@ export const updateStatus = async (id, doctorId, status) => {
             { appointmentId: appointment._id, doctorId: appointment.doctor },
             "urgent",
         );
+
+        try {
+            await PaymentService.chargeAfterAcceptance(appointment._id);
+        } catch {
+            // Payment failure is non-blocking for appointment status
+        }
     } else if (status === "rejected") {
         await NotificationService.create(
             appointment.patient,
