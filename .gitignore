@@ -51,3 +51,6 @@ ai/venv/
 ai/data/
 ai/src/model/
 AXON-DDI
+
+# Presentation data (auto-generated)
+AI_PRESENTATION_DATA.md

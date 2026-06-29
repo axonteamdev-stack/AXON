@@ -1,6 +1,6 @@
 # AXON Medical Platform — Backend API
 
-> A comprehensive healthcare management system backend built with Node.js, Express, and MongoDB. Designed for graduation project — connects patients and doctors with AI-powered drug interaction checking, real-time chat, medication tracking, and emergency medical QR codes.
+> A comprehensive healthcare management system backend built with Node.js, Express, and MongoDB. Designed for graduation project — connects patients and doctors with AI-powered drug interaction checking, AI medical chatbot, real-time chat, medication tracking, and emergency medical QR codes.
 
 ---
 
@@ -25,6 +25,7 @@
   - [DDI (Drug Interaction)](#ddi-drug-interaction)
   - [Notifications](#notifications)
   - [Prescriptions](#prescriptions)
+  - [AI ChatBot](#ai-chatbot)
 - [Models](#models)
 - [Security](#security)
 - [Testing](#testing)
@@ -41,7 +42,8 @@ AXON is a medical platform that bridges the gap between patients and healthcare 
 - Dual-role system: **Patients** and **Doctors**
 - Medication tracking with dose logging
 - Appointment booking with real-time chat
-- AI-powered drug-drug interaction (DDI) checking
+- AI-powered drug-drug interaction (DDI) checking via dedicated AI service
+- AI medical chatbot with OpenRouter (primary) and Gemini (fallback)
 - Emergency medical QR codes for first responders
 - Community posts and doctor articles
 - File uploads (medical images, certificates, profile photos)
@@ -59,8 +61,9 @@ AXON is a medical platform that bridges the gap between patients and healthcare 
 | **Chat** | Real-time messaging via Socket.io tied to appointments |
 | **Posts** | Doctors publish articles; patients create community posts with comments/likes |
 | **Medical Records** | Patient health profiles with radiology/lab test uploads |
-| **Emergency QR** | Generate scannable QR codes with vital medical info for emergencies |
-| **DDI Checker** | AI service integration for drug interaction and contraindication checking |
+| **Emergency QR** | Generate scannable QR codes with vital medical info for emergencies; PIN-protected with access logging |
+| **DDI Checker** | AI service integration for drug interaction and contraindication checking (patient self-check and doctor patient-check) |
+| **AI ChatBot** | Bilingual medical AI assistant using OpenRouter (GPT-4o-mini) with Gemini fallback; supports general and personalized (patient-context-aware) queries |
 | **Notifications** | In-app notification system with unread counts |
 | **i18n** | Bilingual support (Arabic/English) with automatic language detection |
 | **File Uploads** | Secure multipart uploads with temp-to-final routing and cleanup |
@@ -81,7 +84,10 @@ AXON is a medical platform that bridges the gap between patients and healthcare 
 | **File Uploads** | Multer (diskStorage) |
 | **Logging** | Pino + pino-pretty |
 | **Email** | Nodemailer |
-| **Security** | Helmet, CORS, HPP, rate-limiting, input sanitization |
+| **Security** | Helmet, CORS, HPP, rate-limiting, input sanitization (body `$`-prefix stripping) |
+| **Compression** | compression (gzip, threshold 1KB) |
+| **QR Codes** | qrcode |
+| **AI ChatBot** | OpenRouter API (GPT-4o-mini) + Google Gemini fallback |
 | **Testing** | Jest + Supertest + MongoDB Memory Server |
 | **Deployment** | Koyeb |
 
@@ -92,7 +98,8 @@ AXON is a medical platform that bridges the gap between patients and healthcare 
 ```
 backend/
 ├── server.js                 # Entry point — DB connect, server start, graceful shutdown
-├── app.js                    # Express app setup — middleware, routes, health check
+├── app.js                    # Express app setup — middleware, routes, health check, sanitization
+├── jest.config.mjs           # Jest ESM configuration
 ├── package.json
 ├── .env                      # Environment variables (not in repo)
 ├── .env.example              # Environment template
@@ -104,6 +111,10 @@ backend/
 │   ├── posts/
 │   ├── articles/
 │   └── .temp/                # Temporary upload staging
+├── logs/                     # Pino log files (app.log, error.log)
+├── postman/                  # Postman collection + environment files
+├── report/                   # Audit reports
+├── reports/                  # Test coverage reports (HTML)
 ├── src/
 │   ├── config/
 │   │   ├── db.js             # MongoDB connection with retry logic
@@ -120,7 +131,8 @@ backend/
 │   │   ├── recordController.js
 │   │   ├── ddiController.js
 │   │   ├── notificationController.js
-│   │   └── prescriptionController.js
+│   │   ├── prescriptionController.js
+│   │   └── chatbotController.js
 │   ├── services/             # Business logic layer
 │   │   ├── authService.js
 │   │   ├── userService.js
@@ -132,7 +144,8 @@ backend/
 │   │   ├── ddiService.js
 │   │   ├── notificationService.js
 │   │   ├── tokenService.js
-│   │   └── fileService.js
+│   │   ├── fileService.js
+│   │   └── chatbotService.js
 │   ├── models/               # Mongoose schemas
 │   │   ├── User.js
 │   │   ├── Patient.js
@@ -144,7 +157,9 @@ backend/
 │   │   ├── Post.js
 │   │   ├── Comment.js
 │   │   ├── Like.js
-│   │   └── Notification.js
+│   │   ├── Notification.js
+│   │   ├── BotConversation.js
+│   │   └── BotMessage.js
 │   ├── routes/               # API route definitions
 │   │   ├── index.js          # Route aggregator (/api/v1/...)
 │   │   ├── authRoutes.js
@@ -156,7 +171,8 @@ backend/
 │   │   ├── recordRoutes.js
 │   │   ├── ddiRoutes.js
 │   │   ├── notificationRoutes.js
-│   │   └── prescriptionRoutes.js
+│   │   ├── prescriptionRoutes.js
+│   │   └── chatbotRoutes.js
 │   ├── middlewares/
 │   │   ├── auth.js           # JWT protection + role restriction
 │   │   ├── validate.js       # Zod body validation
@@ -164,27 +180,36 @@ backend/
 │   │   ├── errorHandler.js   # Global error handler
 │   │   ├── i18n.js           # Language detection middleware
 │   │   ├── parseUniversal.js # Universal parser (JSON/form-data/multipart)
+│   │   ├── socketAuth.js     # JWT validation for Socket.io connections
 │   │   └── upload.js         # Multer config + file movement helpers
 │   ├── validators/           # Zod schemas
 │   │   ├── authValidator.js
-│   │   └── medicationValidator.js
-│   └── utils/
-│       ├── AppError.js       # Custom error class
-│       ├── catchAsync.js     # Async wrapper for controllers
-│       ├── i18n.js           # Localization helpers
-│       ├── response.js       # Standardized response formatter
-│       └── transformers.js   # Data transformation utilities
+│   │   ├── medicationValidator.js
+│   │   └── chatbotValidator.js
+│   ├── utils/
+│   │   ├── AppError.js       # Custom error class
+│   │   ├── catchAsync.js     # Async wrapper for controllers
+│   │   ├── i18n.js           # Localization helpers
+│   │   ├── response.js       # Standardized response formatter
+│   │   └── transformers.js   # Data transformation utilities
+│   └── public/               # Static HTML pages
+│       ├── emergency-view.html  # Emergency QR viewer page
+│       └── viewer.html         # QR studio viewer
 └── tests/                    # Jest test suite
+    ├── setup.js
+    ├── teardown.js
     ├── auth.test.js
-    ├── users.test.js
-    ├── medications.test.js
-    ├── appointments.test.js
-    ├── posts.test.js
-    ├── records.test.js
+    ├── user.test.js
+    ├── medication.test.js
+    ├── appointment.test.js
+    ├── post.test.js
+    ├── record.test.js
     ├── chat.test.js
     ├── ddi.test.js
-    ├── notifications.test.js
-    └── health.test.js
+    ├── notification.test.js
+    ├── health.test.js
+    ├── integration.test.js
+    └── covrage.test.js
 ```
 
 ---
@@ -195,7 +220,9 @@ backend/
 
 - Node.js >= 20.0.0
 - MongoDB Atlas cluster (or local MongoDB)
-- AI DDI service running on port 5001 (optional — falls back to manual review)
+- AI DDI service running (optional — falls back to manual review)
+- OpenRouter API key (for AI ChatBot)
+- Gemini API key (for AI ChatBot fallback)
 
 ### Installation
 
@@ -259,7 +286,24 @@ LOG_ROTATION_COUNT=5
 
 # CORS
 ALLOWED_ORIGINS=http://localhost:3000
+
+# AI DDI Service
+AI_DDI_SERVICE_URL=http://localhost:5001/api/predict-ddi-batch
+
+# AI ChatBot
+OPENROUTER_API_KEY=<your-openrouter-api-key>
+GEMINI_API_KEY=<your-gemini-api-key>
+CHATBOT_MODEL=gpt-4o-mini
+GEMINI_FALLBACK_MODEL=gemini-1.5-flash
 ```
+
+**Additional optional variables:**
+- `DB_MAX_RETRIES` — MongoDB connection retries (default: 5)
+- `DB_RETRY_DELAY_MS` — Delay between retries (default: 5000)
+- `DB_CONNECT_TIMEOUT_MS` — Connection timeout (default: 10000)
+- `DB_MAX_POOL_SIZE` — Max connection pool size (default: 50)
+- `DB_MIN_POOL_SIZE` — Min connection pool size (default: 10)
+- `UPLOAD_DIR` — Upload directory path (default: `./uploads`)
 
 **Production values:**
 ```env
@@ -276,15 +320,15 @@ Base URL: `https://tender-morna-axon-fp-b76b6646.koyeb.app/api/v1`
 
 ### Authentication
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/auth/signup/patient` | — | Register a new patient (supports multipart for photos) |
-| POST | `/auth/signup/doctor` | — | Register a new doctor (requires license image) |
-| POST | `/auth/login` | — | Login with email/password |
-| POST | `/auth/logout` | ✓ | Clear auth cookies |
-| POST | `/auth/refresh` | ✓ | Rotate access/refresh tokens |
-| POST | `/auth/forgot-password` | — | Request password reset code |
-| POST | `/auth/reset-password` | — | Reset password with code |
+| Method | Endpoint | Rate Limit | Description |
+|--------|----------|------------|-------------|
+| POST | `/auth/signup/patient` | 10/15min | Register a new patient (supports multipart for photos) |
+| POST | `/auth/signup/doctor` | 10/15min | Register a new doctor (requires license image) |
+| POST | `/auth/login` | 5/15min | Login with email/password |
+| POST | `/auth/logout` | — | Clear auth cookies |
+| POST | `/auth/refresh` | 10/15min | Rotate access/refresh tokens |
+| POST | `/auth/forgot-password` | 10/15min | Request password reset code |
+| POST | `/auth/reset-password` | 10/15min | Reset password with code |
 
 ### Users
 
@@ -319,7 +363,7 @@ Base URL: `https://tender-morna-axon-fp-b76b6646.koyeb.app/api/v1`
 | GET | `/appointments/my` | ✓ | patient | Get my appointments |
 | GET | `/appointments/pending` | ✓ | doctor | Get pending requests |
 | GET | `/appointments/history` | ✓ | doctor | Get appointment history |
-| PATCH | `/appointments/:id/status` | ✓ | doctor | Accept/reject appointment |
+| PATCH | `/appointments/:id/status` | ✓ | doctor | Accept/reject appointment (auto-creates chat on accept) |
 | PATCH | `/appointments/:id/cancel` | ✓ | patient | Cancel appointment |
 
 ### Chat
@@ -331,7 +375,7 @@ Base URL: `https://tender-morna-axon-fp-b76b6646.koyeb.app/api/v1`
 | GET | `/chat/:conversationId/messages` | ✓ | Get messages (marks as read) |
 | POST | `/chat/:conversationId/messages` | ✓ | Send message (text or image) |
 
-**WebSocket Events:**
+**WebSocket Events (JWT-authenticated):**
 - `joinConversation` — Join a conversation room
 - `newMessage` — Receive real-time messages
 - `appointmentUpdated` — Receive status updates
@@ -361,15 +405,20 @@ Base URL: `https://tender-morna-axon-fp-b76b6646.koyeb.app/api/v1`
 | PATCH | `/records/me` | ✓ | Update medical record |
 | POST | `/records/tests/:type` | ✓ | Add radiology/lab test (with image) |
 | POST | `/records/qr` | ✓ | Generate emergency QR code |
-| GET | `/records/emergency/:token` | — | View emergency page (rate-limited) |
-| GET | `/records/emergency-data/:token` | — | Get emergency data JSON |
+| GET | `/records/emergency/:token` | — | View emergency page (rate-limited: 5/15min) |
+| GET | `/records/emergency-data/:token` | — | Get emergency data JSON (rate-limited) |
+| GET | `/records/qr/access/:patientId` | — | Access patient record by patient ID (rate-limited) |
+| GET | `/records/qr-test` | — | Open QR studio viewer HTML page |
 
 ### DDI (Drug Interaction)
 
 | Method | Endpoint | Auth | Role | Description |
 |--------|----------|------|------|-------------|
-| POST | `/ddi/check` | ✓ | doctor | Check interactions with new medication |
-| POST | `/ddi/contraindications` | ✓ | doctor | Check contraindications for patient |
+| POST | `/ddi/check` | ✓ | patient | Check new medication against own existing medications |
+| POST | `/ddi/contraindications` | ✓ | patient | Check contraindications for self |
+| POST | `/ddi/check/appointments/:appointmentId` | ✓ | doctor | Check new med against appointment patient's medications |
+| POST | `/ddi/contraindications/appointments/:appointmentId` | ✓ | doctor | Check contraindications for appointment patient |
+| POST | `/ddi/check-direct` | ✓ | — | Direct drug-to-drug interaction check (arbitrary drug list) |
 
 ### Notifications
 
@@ -387,6 +436,23 @@ Base URL: `https://tender-morna-axon-fp-b76b6646.koyeb.app/api/v1`
 | POST | `/prescriptions/appointment/:appointmentId` | ✓ | doctor | Prescribe from appointment |
 | POST | `/prescriptions/qr` | ✓ | doctor | Prescribe via emergency QR + PIN |
 
+### AI ChatBot
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/chatbot/ask` | ✓ | Ask a general medical question to the AI |
+| POST | `/chatbot/personalized` | ✓ | Ask with patient context (blood type, conditions, allergies, active medications) |
+| GET | `/chatbot/conversations` | ✓ | List chatbot conversation history |
+| GET | `/chatbot/:conversationId/messages` | ✓ | Get messages in a conversation |
+
+**ChatBot Details:**
+- Primary AI: **OpenRouter** (defaults to `gpt-4o-mini`)
+- Fallback: **Google Gemini** (defaults to `gemini-1.5-flash`)
+- Bilingual system prompts (Arabic/English)
+- Patient-aware context: loads blood type, conditions, allergies, active medications for personalized queries
+- 10-second timeout per model
+- Conversation history stored in MongoDB (last 20 messages used as context)
+
 ---
 
 ## Models
@@ -395,16 +461,19 @@ Base URL: `https://tender-morna-axon-fp-b76b6646.koyeb.app/api/v1`
 - `fullName`, `email`, `phoneNumber`, `gender`, `password`
 - `role`: `patient` | `doctor` | `admin`
 - `personalPhoto`, `preferredLanguage` (en/ar)
-- `doctorProfile`: specialization, license, price, about
-- `isVerified` (doctors require verification)
+- `doctorProfile`: specialization, `yearsExperience`, `medicalLicenseNumber`, licenseImage, price, about
+- `isVerified` (doctors require verification), `lastLoginAt`
+- `passwordResetToken`, `passwordResetExpires` (select: false)
+- `isDeleted` (soft-delete, select: false)
+- Virtuals: `isDoctor`, `isPatient`
 - Password hashing with bcrypt (salt rounds: 12)
 
 ### Patient (sub-document)
-- `userId` (1:1 with User)
+- `userId` (1:1 with User, unique index)
 - Health profile: `bloodType`, `height`, `weight`, `conditions`, `allergies`
 - `emergencyContact`: name, phone, relationship
-- `emergencyQR`: token, hashed PIN, expiry, access log
-- `radiologyTests` & `labTests`: image + description arrays
+- `emergencyQR`: token, hashed PIN, expiry, `usedAt`, `accessLog` (IP + timestamp)
+- `radiologyTests` & `labTests`: image + description + date + archived flag arrays
 
 ### Medication
 - `patientId`, `medicineName`, `dosage` (value + unit)
@@ -417,35 +486,45 @@ Base URL: `https://tender-morna-axon-fp-b76b6646.koyeb.app/api/v1`
 - `status`: `pending` | `taken` | `skipped` | `missed`
 
 ### Appointment
-- `patient`, `doctor`, `status`, `scheduledAt`, `notes`
-- Status flow: `pending` → `accepted`/`rejected` → `completed`/`cancelled`
+- `patient`, `doctor`, `status` (`pending` → `accepted`/`rejected` → `completed`/`cancelled`), `scheduledAt`, `notes`
 
 ### Post
 - `author`, `type`: `article` | `community`
 - `title`, `content`, `image`, `category`, `tags`
-- `views`, `status`: `draft` | `published` | `archived`
-- Soft-delete with `isDeleted`
+- `status`: `draft` | `published` | `archived`
+- `views`, `isDeleted` (soft-delete, select: false)
 
 ### Conversation & Message
 - Conversation tied to `appointmentId` (unique)
 - Messages: `sender`, `conversation`, `text`, `image`, `read`, `readAt`
-- Real-time delivery via Socket.io
+- Real-time delivery via Socket.io (JWT-authenticated)
+
+### BotConversation
+- `userId` (ref User), `title`, `lastMessage`, `lastMessageAt`
+- Indexed by `userId + lastMessageAt` for sorted queries
+
+### BotMessage
+- `conversation` (ref BotConversation), `role` (`user` | `assistant`), `content`
+- Indexed by `conversation + createdAt` for chronological retrieval
 
 ---
 
 ## Security
 
-- **Helmet** — Security headers (CSP disabled for uploads, HSTS enabled)
-- **CORS** — Origin whitelist with credentials
-- **Rate Limiting** — Login (5/15min), auth endpoints (10/15min), QR access (5/15min)
+- **Helmet** — Security headers (CSP disabled for uploads, HSTS enabled, frameguard deny, referrer-policy strict-origin-when-cross-origin)
+- **CORS** — Origin whitelist with credentials, preflight cache 1hr
+- **Rate Limiting** — Login (5/15min), auth signup/refresh/reset (10/15min), QR access (5/15min)
 - **HPP** — HTTP Parameter Pollution protection
-- **Input Sanitization** — MongoDB operator injection prevention (`$` prefix stripping)
+- **Input Sanitization** — MongoDB `$` operator injection stripping from request bodies
+- **Body Size Limit** — JSON/URL-encoded payloads limited to 100KB
+- **Compression** — Gzip compression for responses (threshold 1KB)
 - **File Upload Security** —
   - Allowed types: JPEG, PNG, GIF, WebP, PDF
-  - Max size: 10MB per file
+  - Max size: 10MB per file, max 10 files
   - Temp-to-final routing with cleanup on failure
   - Path traversal prevention
 - **JWT** — Short-lived access tokens (15min) + long-lived refresh tokens (7d) in httpOnly cookies
+- **Socket.io Auth** — JWT validation required for WebSocket connections
 - **Password Reset** — 6-digit code, SHA-256 hashed, 10-minute expiry
 - **Emergency QR** — SHA-256 hashed PIN, 24-hour expiry, access logging with IP
 
@@ -459,6 +538,9 @@ npm test
 
 # Run with coverage
 npm run test:coverage
+
+# Run with coverage from specific source folders
+npm run test:file
 
 # Watch mode
 npm run test:watch
@@ -507,6 +589,8 @@ Response:
   }
 }
 ```
+
+Returns `503` with `"status": "degraded"` if database is disconnected.
 
 ---
 
