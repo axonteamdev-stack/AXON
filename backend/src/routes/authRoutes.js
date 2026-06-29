@@ -13,31 +13,37 @@ import {
 
 const router = Router();
 
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
-  standardHeaders: true,
-  legacyHeaders: false,
-  handler: (req, res) => {
-    res.status(429).json({
-      status: "fail",
-      message: "Too many login attempts. Please try again later.",
-    });
-  },
-});
+const isTest = process.env.NODE_ENV === "test";
 
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  handler: (req, res) => {
-    res.status(429).json({
-      status: "fail",
-      message: "Too many requests. Please try again later.",
+const loginLimiter = isTest
+  ? (req, res, next) => next()
+  : rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 5,
+      standardHeaders: true,
+      legacyHeaders: false,
+      handler: (req, res) => {
+        res.status(429).json({
+          status: "fail",
+          message: "Too many login attempts. Please try again later.",
+        });
+      },
     });
-  },
-});
+
+const authLimiter = isTest
+  ? (req, res, next) => next()
+  : rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 10,
+      standardHeaders: true,
+      legacyHeaders: false,
+      handler: (req, res) => {
+        res.status(429).json({
+          status: "fail",
+          message: "Too many requests. Please try again later.",
+        });
+      },
+    });
 
 router.post(
   "/signup/patient",

@@ -4,6 +4,7 @@ import Appointment from "../models/Appointment.js";
 import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
 import { getIO } from "../config/socket.js";
+import * as NotificationService from "./notificationService.js";
 
 export const start = async (appointmentId) => {
     let conversation = await Conversation.findOne({ appointmentId });
@@ -60,6 +61,24 @@ export const send = async (conversationId, senderId, { text, image }) => {
         });
     } catch {
         console.warn("Socket emission failed");
+    }
+
+    const recipientId = conversation.participants.find(
+        (p) => p.toString() !== senderId.toString(),
+    );
+    if (recipientId) {
+        await NotificationService.create(
+            recipientId,
+            "chat",
+            msg("رسالة جديدة", "New Message"),
+            text || msg("تم إرسال صورة", "An image was sent"),
+            {
+                conversationId,
+                senderId,
+                messageId: message._id,
+            },
+            "normal",
+        );
     }
 
     return message;

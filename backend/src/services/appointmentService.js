@@ -3,6 +3,7 @@ import Conversation from "../models/Conversation.js";
 import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
 import { getIO } from "../config/socket.js";
+import * as NotificationService from "./notificationService.js";
 
 export const create = async (patientId, { doctorId, scheduledAt, notes }) => {
     const appointment = await Appointment.create({
@@ -19,8 +20,20 @@ export const create = async (patientId, { doctorId, scheduledAt, notes }) => {
             message: "لديك طلب كشف جديد",
         });
     } catch {
-        console.warn("Socket not available");
+        // Socket not available
     }
+
+    await NotificationService.create(
+        doctorId,
+        "appointment",
+        msg("موعد جديد", "New Appointment"),
+        msg(
+            "لديك طلب كشف جديد من أحد المرضى",
+            "You have a new appointment request",
+        ),
+        { appointmentId: appointment._id, patientId },
+        "urgent",
+    );
 
     return appointment;
 };
@@ -84,7 +97,33 @@ export const updateStatus = async (id, doctorId, status) => {
             status,
         });
     } catch {
-        console.warn("Socket not available");
+        // Socket not available
+    }
+
+    if (status === "accepted") {
+        await NotificationService.create(
+            appointment.patient,
+            "appointment",
+            msg("تم قبول الموعد", "Appointment Accepted"),
+            msg(
+                "تم قبول طلب الكشف الخاص بك من قبل الطبيب",
+                "Your appointment request has been accepted by the doctor",
+            ),
+            { appointmentId: appointment._id, doctorId: appointment.doctor },
+            "urgent",
+        );
+    } else if (status === "rejected") {
+        await NotificationService.create(
+            appointment.patient,
+            "appointment",
+            msg("تم رفض الموعد", "Appointment Rejected"),
+            msg(
+                "عذراً، تم رفض طلب الكشف الخاص بك",
+                "Sorry, your appointment request has been rejected",
+            ),
+            { appointmentId: appointment._id, doctorId: appointment.doctor },
+            "normal",
+        );
     }
 
     return appointment;
@@ -114,6 +153,18 @@ export const cancel = async (id, patientId) => {
 
     appointment.status = "cancelled";
     await appointment.save();
+
+    await NotificationService.create(
+        appointment.doctor,
+        "appointment",
+        msg("تم إلغاء الموعد", "Appointment Cancelled"),
+        msg(
+            "قام المريض بإلغاء طلب الكشف الخاص به",
+            "The patient has cancelled their appointment request",
+        ),
+        { appointmentId: appointment._id, patientId },
+        "normal",
+    );
 
     return appointment;
 };

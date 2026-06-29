@@ -8,6 +8,7 @@ const notificationSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "User",
             required: true,
+            index: true,
         },
         type: {
             type: String,
@@ -26,6 +27,15 @@ const notificationSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        priority: {
+            type: String,
+            enum: ["urgent", "normal", "low"],
+            default: "normal",
+        },
+        expiresAt: {
+            type: Date,
+            default: null,
+        },
         data: {
             type: Schema.Types.Mixed,
             default: {},
@@ -36,7 +46,7 @@ const notificationSchema = new Schema(
     },
 );
 
-notificationSchema.index({ user: 1, read: 1 });
-notificationSchema.index({ createdAt: -1 });
+notificationSchema.index({ user: 1, read: 1, createdAt: -1 });
+notificationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export default mongoose.models.Notification || mongoose.model("Notification", notificationSchema);

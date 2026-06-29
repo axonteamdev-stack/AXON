@@ -2,6 +2,7 @@ import Medication from "../models/Medication.js";
 import DoseLog from "../models/DoseLog.js";
 import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
+import * as NotificationService from "./notificationService.js";
 
 const INTERVAL_MAP = Object.freeze({
   "once daily": 24,
@@ -81,6 +82,21 @@ export const create = async (data) => {
   }));
 
   await DoseLog.insertMany(doseLogs);
+
+  if (data.prescribedBy) {
+    await NotificationService.create(
+      data.patientId,
+      "medication",
+      msg("دواء جديد", "New Medication"),
+      msg(
+        `تم وصف دواء ${data.medicineName} لك`,
+        `${data.medicineName} has been prescribed for you`,
+      ),
+      { medicationId: medication._id, prescribedBy: data.prescribedBy },
+      "normal",
+    );
+  }
+
   return medication;
 };
 

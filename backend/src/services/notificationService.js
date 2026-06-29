@@ -3,15 +3,14 @@ import AppError from "../utils/AppError.js";
 import { msg } from "../utils/i18n.js";
 import { getIO } from "../config/socket.js";
 
-// DEAD CODE FLAG
-/*
-export const create = async (userId, type, title, message, data = {}) => {
+export const create = async (userId, type, title, message, data = {}, priority = "normal") => {
   const notification = await Notification.create({
     user: userId,
     type,
     title,
     message,
     data,
+    priority,
   });
 
   try {
@@ -22,15 +21,15 @@ export const create = async (userId, type, title, message, data = {}) => {
       title,
       message,
       data,
+      priority,
       createdAt: notification.createdAt,
     });
   } catch {
-    console.warn("Socket not available for notification");
+    // Socket not available — notification is still persisted
   }
 
   return notification;
 };
-*/
 
 export const getForUser = async (userId, page = 1, limit = 20) => {
   const skip = (page - 1) * limit;
@@ -59,7 +58,7 @@ export const markAsRead = async (notificationId, userId) => {
   const notification = await Notification.findOneAndUpdate(
     { _id: notificationId, user: userId },
     { read: true },
-    { new: true },
+    { returnDocument: "after" },
   );
 
   if (!notification) {
