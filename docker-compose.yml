@@ -1,0 +1,50 @@
+services:
+  mongodb:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: axon
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      MONGO_URI: mongodb://mongodb:27017/axon
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-long-random-string}
+      REFRESH_SECRET: ${REFRESH_SECRET:-change-me-to-another-long-random-string}
+      JWT_EXPIRES_IN: 15m
+      REFRESH_EXPIRES_IN: 7d
+      APP_URL: http://localhost:3000
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:3000
+      AI_DDI_SERVICE_URL: http://ai:5001/api/predict-ddi-batch
+      UPLOAD_DIR: ./uploads
+    volumes:
+      - backend_uploads:/app/uploads
+      - backend_logs:/app/logs
+
+  ai:
+    build:
+      context: ./ai
+      dockerfile: AXON-DDI/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      AXON_PORT: 5001
+
+volumes:
+  mongodb_data:
+  backend_uploads:
+  backend_logs:

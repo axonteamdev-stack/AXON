@@ -1,16 +1,83 @@
-# React + Vite
+# AXON — Web Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> React 19 + Vite 8 web application for the AXON healthcare platform. Provides patient and doctor interfaces with bilingual (Arabic/English) and RTL support.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Layer | Technology |
+|-------|------------|
+| **Framework** | React 19 |
+| **Build Tool** | Vite 8 |
+| **Styling** | Tailwind CSS 4 |
+| **Routing** | React Router 7 |
+| **i18n** | i18next + react-i18next + browser-language-detector |
+| **HTTP Client** | Axios |
+| **Animation** | Framer Motion 12 |
+| **Icons** | Lucide React |
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+The dev server starts on `http://localhost:5173` by default.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Build for Production
+
+```bash
+npm run build    # Outputs to dist/
+npm run preview  # Preview production build
+```
+
+### Lint
+
+```bash
+npm run lint     # ESLint with React hooks plugin
+```
+
+## Environment Variables
+
+```env
+VITE_API_URL=http://localhost:3000/api/v1
+```
+
+## Features
+
+- **Authentication** — Login, signup (patient/doctor), password reset
+- **Dashboard** — Role-based home screens for patients and doctors
+- **Medications** — Prescribe, self-prescribe, track doses with intake schedules
+- **Appointments** — Book, manage, real-time chat with doctors
+- **Posts** — Doctor articles and patient community posts with likes/comments
+- **Medical Records** — Health profile, radiology/lab test uploads, emergency QR
+- **DDI Checker** — Drug interaction checking with visual risk indicators
+- **AI ChatBot** — Bilingual medical AI assistant
+- **Notifications** — In-app notification system
+- **i18n** — Full Arabic/English support with RTL layout
+
+## Project Structure
+
+```
+frontend/
+├── src/
+│   ├── components/     # Reusable UI components
+│   │   ├── layout/     # Sidebar, Header, DashboardLayout
+│   │   └── dashboard/  # Dashboard-specific components
+│   ├── pages/          # Route-level page components
+│   ├── hooks/          # Custom React hooks
+│   ├── i18n/           # Translation files (ar, en)
+│   ├── services/       # API client and service functions
+│   ├── App.jsx         # Root component with routes
+│   └── main.jsx        # Entry point
+├── public/             # Static assets
+├── index.html          # HTML shell
+└── vite.config.js      # Vite configuration
+```
+
+## Related
+
+- [Backend API](../backend/README.md)
+- [AI DDI Service](../ai/README.md)
+- [Mobile App](../flutter/README.md)

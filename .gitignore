@@ -54,3 +54,6 @@ AXON-DDI
 
 # Presentation data (auto-generated)
 AI_PRESENTATION_DATA.md
+
+# Security documentation (presentation prep)
+docs/security_overview.md
