@@ -9,6 +9,7 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
+    host: true,
     port: 5173,
     proxy: {
       '^/(auth|users|posts|appointments|records|medications|chat|ddi|notifications|health)': {

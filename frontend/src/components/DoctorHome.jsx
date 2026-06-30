@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, Bell, Home, Calendar, Star, MessageCircle, User, Plus, Camera, ThumbsUp, ChevronLeft, ChevronRight, Send, Image, ImageOff, Pencil, Lock, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Search, Bell, Home, Calendar, Star, MessageCircle, User, Plus, Camera, ThumbsUp, ChevronLeft, ChevronRight, Send, Image, ImageOff, Pencil, Lock, Trash2, Eye, EyeOff, Menu, X } from 'lucide-react';
 
 const DEFAULT_AVATAR = "https://ui-avatars.com/api/?name=User&background=0F4C81&color=fff";
 
@@ -18,6 +18,7 @@ const DoctorHome = () => {
   const [currentChatPatient, setCurrentChatPatient] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessageText, setNewMessageText] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleOpenChat = (patient) => {
     setCurrentChatPatient(patient);
@@ -201,15 +202,33 @@ const DoctorHome = () => {
   };
 
   return (
-    <div className={`flex h-screen overflow-hidden bg-[#F5F7FA] font-['Inter','Poppins',sans-serif] ${isRtl ? 'rtl' : 'ltr'}`}>
+    <div className={`flex h-screen overflow-hidden bg-[#F5F7FA] font-['Inter','Poppins',sans-serif] relative ${isRtl ? 'rtl' : 'ltr'}`}>
+      {/* Mobile backdrop */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Left Sidebar */}
-      <aside className={`w-60 bg-white border-slate-200 flex flex-col shrink-0 ${isRtl ? 'border-l' : 'border-r'}`}>
+      <aside
+        className={`fixed inset-y-0 ${isRtl ? 'right-0' : 'left-0'} z-50 w-60 bg-white border-slate-200 flex flex-col shrink-0 transform transition-transform duration-200 ease-out lg:static lg:translate-x-0 lg:z-auto ${isRtl ? 'border-l' : 'border-r'} ${mobileMenuOpen ? 'translate-x-0' : isRtl ? 'translate-x-full' : '-translate-x-full'}`}
+      >
         {/* Logo */}
-        <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-lg">A</span>
+        <div className="p-6 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+              <span className="text-white font-bold text-lg">A</span>
+            </div>
+            <h2 className="text-xl font-bold tracking-tight text-primary">As'alny</h2>
           </div>
-          <h2 className="text-xl font-bold tracking-tight text-primary">As'alny</h2>
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -218,6 +237,7 @@ const DoctorHome = () => {
             <button
               key={item.id}
               onClick={() => {
+                setMobileMenuOpen(false);
                 if (item.id === 'ai-chat') {
                   navigate('/ai-chat');
                 } else {
@@ -238,23 +258,32 @@ const DoctorHome = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden relative">
+      <main className="flex-1 flex flex-col overflow-hidden relative min-w-0">
         {/* Top Header */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
-          {/* Search */}
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <Search className={`absolute top-1/2 -translate-y-1/2 text-slate-400 ${isRtl ? 'right-3' : 'left-3'}`} size={20} />
-              <input
-                className={`w-full ${isRtl ? 'pr-10 pl-4 text-right' : 'pl-10 pr-4 text-left'} py-2.5 bg-slate-100 border-none rounded-full focus:ring-2 focus:ring-primary/30 text-sm transition-all`}
-                placeholder={isRtl ? 'ابحث عن مرضى أو تقارير...' : 'Search patients or reports...'}
-                type="text"
-              />
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-8 shrink-0 gap-3">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden shrink-0 p-2.5 rounded-xl bg-slate-100 text-slate-600"
+              aria-label={isRtl ? 'فتح القائمة' : 'Open menu'}
+            >
+              <Menu size={20} />
+            </button>
+            {/* Search */}
+            <div className="flex-1 max-w-md hidden sm:block">
+              <div className="relative">
+                <Search className={`absolute top-1/2 -translate-y-1/2 text-slate-400 ${isRtl ? 'right-3' : 'left-3'}`} size={20} />
+                <input
+                  className={`w-full ${isRtl ? 'pr-10 pl-4 text-right' : 'pl-10 pr-4 text-left'} py-2.5 bg-slate-100 border-none rounded-full focus:ring-2 focus:ring-primary/30 text-sm transition-all`}
+                  placeholder={isRtl ? 'ابحث عن مرضى أو تقارير...' : 'Search patients or reports...'}
+                  type="text"
+                />
+              </div>
             </div>
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 shrink-0">
             <button className="p-2.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
               <Bell size={20} />
             </button>
@@ -262,7 +291,7 @@ const DoctorHome = () => {
         </header>
 
         {/* Dashboard Content */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
           {/* Welcome Section */}
           {activeSidebar === 'home' && (
             <div className={`mb-8 flex ${isRtl ? 'flex-row-reverse' : 'flex-row'} justify-between items-center`}>

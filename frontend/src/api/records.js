@@ -23,5 +23,8 @@ export const addLabTest = (formData) =>
 export const generateQRCode = () =>
   client.post('/records/qr').then((r) => r.data);
 
-export const accessRecordByQR = (token, pin) =>
-  client.post('/records/qr/access', { token, pin }).then((r) => r.data);
+export const accessRecordByQR = (patientId) =>
+  client.get(`/records/qr/access/${patientId}`).then((r) => r.data);
+
+export const getEmergencyData = (qrToken) =>
+  client.get(`/records/emergency-data/${qrToken}`).then((r) => r.data);

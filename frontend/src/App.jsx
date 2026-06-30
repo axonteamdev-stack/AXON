@@ -84,12 +84,38 @@ function Home() {
   );
 }
 
+const APP_SHELL_ROUTES = ['/doctor-home', '/patient-home', '/dashboard', '/ai-chat'];
+
+function useIsLoggedIn() {
+  const [loggedIn, setLoggedIn] = React.useState(() => !!localStorage.getItem('token'));
+
+  useEffect(() => {
+    const sync = () => setLoggedIn(!!localStorage.getItem('token'));
+    window.addEventListener('storage', sync);
+    return () => window.removeEventListener('storage', sync);
+  }, []);
+
+  return loggedIn;
+}
+
+function AppNavbar() {
+  const { pathname } = useLocation();
+  const isLoggedIn = useIsLoggedIn();
+
+  // Dashboard pages (and "/" once a logged-in user is redirected into one) render their own
+  // header/sidebar, so the marketing Navbar must not stack on top of it.
+  const hasOwnChrome = APP_SHELL_ROUTES.includes(pathname) || (pathname === '/' && isLoggedIn);
+  if (hasOwnChrome) return null;
+
+  return <Navbar />;
+}
+
 function App() {
   return (
     <Router>
       <SettingsProvider>
         <ScrollToTop />
-        <Navbar />
+        <AppNavbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

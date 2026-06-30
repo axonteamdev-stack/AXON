@@ -13,9 +13,9 @@ import {
 
 const router = Router();
 
-const isTest = process.env.NODE_ENV === "test";
+const isDevOrTest = process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development";
 
-const loginLimiter = isTest
+const loginLimiter = isDevOrTest
   ? (req, res, next) => next()
   : rateLimit({
       windowMs: 15 * 60 * 1000,
@@ -30,7 +30,7 @@ const loginLimiter = isTest
       },
     });
 
-const authLimiter = isTest
+const authLimiter = isDevOrTest
   ? (req, res, next) => next()
   : rateLimit({
       windowMs: 15 * 60 * 1000,
