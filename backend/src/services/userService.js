@@ -13,13 +13,15 @@ export const getAllDoctors = async (page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
 
   const [doctors, total] = await Promise.all([
-    User.find({ role: "doctor", isVerified: true })
-      .select("fullName personalPhoto doctorProfile rating")
+    User.find({ role: "doctor" })
+      .select(
+        "-password -passwordResetToken -passwordResetExpires -isDeleted -lastLoginAt -doctorProfile.medicalLicenseNumber -doctorProfile.licenseImage",
+      )
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean(),
-    User.countDocuments({ role: "doctor", isVerified: true }),
+    User.countDocuments({ role: "doctor" }),
   ]);
 
   return {
@@ -37,9 +39,10 @@ export const getDoctorDetails = async (doctorId) => {
   const doctor = await User.findOne({
     _id: doctorId,
     role: "doctor",
-    isVerified: true,
   })
-    .select("-password -passwordResetToken -passwordResetExpires")
+    .select(
+      "-password -passwordResetToken -passwordResetExpires -doctorProfile.medicalLicenseNumber -doctorProfile.licenseImage",
+    )
     .lean();
 
   if (!doctor) throw new AppError("Doctor not found", 404);
@@ -54,7 +57,7 @@ export const searchDoctors = async (
   limit = 10,
 ) => {
   const skip = (page - 1) * limit;
-  const query = { role: "doctor", isVerified: true };
+  const query = { role: "doctor" };
 
   if (specialization) {
     query["doctorProfile.specialization"] = new RegExp(specialization, "i");
@@ -69,7 +72,9 @@ export const searchDoctors = async (
 
   const [doctors, total] = await Promise.all([
     User.find(query)
-      .select("fullName personalPhoto doctorProfile rating")
+      .select(
+        "-password -passwordResetToken -passwordResetExpires -isDeleted -lastLoginAt -doctorProfile.medicalLicenseNumber -doctorProfile.licenseImage",
+      )
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)

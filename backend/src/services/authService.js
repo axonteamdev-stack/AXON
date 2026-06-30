@@ -121,7 +121,7 @@ export const registerDoctor = async (data) => {
     gender: data.gender,
     password: data.password,
     role: "doctor",
-    isVerified: false,
+    isVerified: true,
     personalPhoto: data.personalPhoto || null,
     doctorProfile: {
       specialization: data.specialization,
