@@ -7,7 +7,7 @@ import {
     Activity, Zap, Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { askQuestion, getConversations, getMessages } from '../api/chatbot';
+import { askQuestion, getBotConversations, getBotMessages } from '../api/chatbot';
 
 const AIChat = () => {
     const { t, i18n } = useTranslation();
@@ -33,7 +33,7 @@ const AIChat = () => {
     useEffect(() => {
         const fetchConversations = async () => {
             try {
-                const result = await getConversations();
+                const result = await getBotConversations();
                 const list = result.data?.conversations || [];
                 setConversations(list);
             } catch (err) {
@@ -53,7 +53,7 @@ const AIChat = () => {
         }
         const fetchMessages = async () => {
             try {
-                const result = await getMessages(currentConversationId);
+                const result = await getBotMessages(currentConversationId);
                 const list = result.data?.messages || [];
                 setMessages(
                     list.map((m) => ({
@@ -116,7 +116,7 @@ const AIChat = () => {
                 setCurrentConversationId(newConversationId);
                 // Refresh conversations list
                 try {
-                    const convResult = await getConversations();
+                    const convResult = await getBotConversations();
                     setConversations(convResult.data?.conversations || []);
                 } catch {}
             }

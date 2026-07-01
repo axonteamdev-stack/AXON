@@ -5,8 +5,8 @@ export const askQuestion = (message, conversationId) =>
     .post('/chatbot/ask', { message, conversationId })
     .then((r) => r.data);
 
-export const getConversations = () =>
+export const getBotConversations = () =>
   client.get('/chatbot/conversations').then((r) => r.data);
 
-export const getMessages = (conversationId) =>
+export const getBotMessages = (conversationId) =>
   client.get(`/chatbot/${conversationId}/messages`).then((r) => r.data);
