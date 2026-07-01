@@ -110,26 +110,6 @@ const PatientHome = () => {
   const [apiRecord, setApiRecord] = useState(null);
   const [isLoadingData, setIsLoadingData] = useState(false);
 
-  const displayAppointments = useMemo(() =>
-    apiAppointments.map((a) => ({
-      id: a._id,
-      doctor: {
-        id: a.doctor?._id,
-        name: a.doctor?.fullName || 'Doctor',
-        specialty: '',
-        fee: a.price || 0,
-        img: a.doctor?.personalPhoto || null,
-      },
-      hospital: null,
-      date: a.scheduledAt ? new Date(a.scheduledAt).toLocaleDateString('en-GB') : '',
-      time: a.scheduledAt ? new Date(a.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
-      notes: a.notes || '',
-      bookedAt: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-GB') : '',
-      status: a.status === 'pending' ? 'Upcoming' : a.status === 'accepted' ? 'Upcoming' : a.status === 'completed' ? 'Completed' : a.status === 'cancelled' ? 'Cancelled' : a.status,
-    })),
-    [apiAppointments]
-  );
-
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user');
     return saved ? JSON.parse(saved) : null;
@@ -161,6 +141,26 @@ const PatientHome = () => {
       weight: '60'
     };
   });
+
+  const displayAppointments = useMemo(() =>
+    apiAppointments.map((a) => ({
+      id: a._id,
+      doctor: {
+        id: a.doctor?._id,
+        name: a.doctor?.fullName || 'Doctor',
+        specialty: '',
+        fee: a.price || 0,
+        img: a.doctor?.personalPhoto || null,
+      },
+      hospital: null,
+      date: a.scheduledAt ? new Date(a.scheduledAt).toLocaleDateString('en-GB') : '',
+      time: a.scheduledAt ? new Date(a.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+      notes: a.notes || '',
+      bookedAt: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-GB') : '',
+      status: a.status === 'pending' ? 'Upcoming' : a.status === 'accepted' ? 'Upcoming' : a.status === 'completed' ? 'Completed' : a.status === 'cancelled' ? 'Cancelled' : a.status,
+    })),
+    [apiAppointments]
+  );
 
   useEffect(() => {
     const handlePopState = (e) => {
