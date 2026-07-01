@@ -195,11 +195,11 @@ const PatientHome = () => {
           getMyRecord(),
         ]);
         if (!mounted) return;
-        if (drRes.status === 'fulfilled') setApiDoctors(drRes.value.doctors || drRes.value || []);
-        if (apptRes.status === 'fulfilled') setApiAppointments(apptRes.value.appointments || apptRes.value || []);
-        if (convRes.status === 'fulfilled') setApiConversations(convRes.value.conversations || convRes.value || []);
-        if (medsRes.status === 'fulfilled') setApiMedications(medsRes.value.medications || medsRes.value || []);
-        if (recordRes.status === 'fulfilled') setApiRecord(recordRes.value.record || recordRes.value || null);
+        if (drRes.status === 'fulfilled') setApiDoctors(drRes.value.data?.doctors || []);
+        if (apptRes.status === 'fulfilled') setApiAppointments(apptRes.value.data?.appointments || []);
+        if (convRes.status === 'fulfilled') setApiConversations(convRes.value.data?.conversations || []);
+        if (medsRes.status === 'fulfilled') setApiMedications(medsRes.value.data?.medications || []);
+        if (recordRes.status === 'fulfilled') setApiRecord(recordRes.value.data?.record || null);
       } catch (err) {
         console.error('Failed to load patient data', err);
       } finally {
