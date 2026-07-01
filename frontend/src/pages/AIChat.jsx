@@ -3,71 +3,11 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Bot, Send, ArrowLeft, MoreVertical, Trash2,
-    User, Plus, MessageSquare, Shield,
+    User, Plus, MessageSquare, Shield, Menu, X,
     Activity, Zap, Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const getMedicalAIResponse = (query, isRtl) => {
-    const q = query.toLowerCase();
-    const responses = [
-        {
-            keywords: ['headache', 'head pain', 'migraine', 'صداع', 'ألم الرأس'],
-            en: "Headaches can be triggered by stress, dehydration, or poor sleep. For mild headaches, rest and hydration often help.\n\nHowever, seek immediate care if the headache is:\n• Sudden and severe (thunderclap)\n• Accompanied by fever, stiff neck, or vision changes\n• Following a head injury\n\n⚠️ This is general information only — always consult a doctor for proper diagnosis.",
-            ar: "يمكن أن يحدث الصداع بسبب التوتر أو الجفاف أو قلة النوم. للصداع الخفيف، تساعد الراحة وشرب الماء.\n\nاطلب رعاية فورية إذا كان الصداع:\n• مفاجئاً وشديداً\n• مصحوباً بحمى أو تصلب الرقبة أو تغييرات في الرؤية\n• بعد إصابة في الرأس\n\n⚠️ هذه معلومات عامة فقط — استشر طبيبك دائماً للتشخيص الصحيح."
-        },
-        {
-            keywords: ['fever', 'temperature', 'high temp', 'حمى', 'حرارة', 'سخانة'],
-            en: "Fever is often a sign your body is fighting an infection.\n\nGeneral guidance for adults:\n• Below 38.5°C — Rest, fluids, and monitor\n• 38.5–39°C — Paracetamol may help; consult a doctor\n• Above 39°C — Seek medical attention\n• Above 40°C — Emergency care immediately\n\n⚠️ Always consult a healthcare professional for proper evaluation.",
-            ar: "الحمى غالباً علامة على أن جسمك يقاوم عدوى.\n\nإرشادات عامة للبالغين:\n• أقل من 38.5° — الراحة والسوائل والمراقبة\n• 38.5-39° — الباراسيتامول قد يساعد؛ استشر الطبيب\n• فوق 39° — اطلب عناية طبية\n• فوق 40° — رعاية طارئة فوراً\n\n⚠️ استشر دائماً متخصصاً للتقييم الصحيح."
-        },
-        {
-            keywords: ['chest pain', 'chest', 'heart attack', 'cardiac', 'ألم الصدر', 'قلب', 'ضربات القلب'],
-            en: "🚨 Chest pain requires immediate medical attention.\n\nCall emergency services NOW if you experience:\n• Severe chest pressure or pain\n• Pain spreading to arm, jaw, or back\n• Shortness of breath\n• Sweating, nausea, or dizziness\n\nDo not wait — these may be signs of a heart attack.\n\n⚠️ Even if the cause turns out to be non-cardiac, chest pain should always be evaluated urgently.",
-            ar: "🚨 يستدعي ألم الصدر اهتماماً طبياً فورياً.\n\naتصل بخدمات الطوارئ الآن إذا كنت تعاني من:\n• ضغط أو ألم شديد في الصدر\n• ألم ينتشر إلى الذراع أو الفك أو الظهر\n• ضيق في التنفس\n• تعرق أو غثيان أو دوخة\n\nلا تنتظر — قد تكون هذه علامات نوبة قلبية.\n\n⚠️ حتى لو تبين أن السبب غير قلبي، يجب دائماً تقييم ألم الصدر بشكل عاجل."
-        },
-        {
-            keywords: ['diabetes', 'blood sugar', 'sugar', 'insulin', 'سكري', 'سكر الدم', 'سكر'],
-            en: "Diabetes management involves:\n• Regular blood glucose monitoring\n• Balanced diet — low in refined carbs and sugar\n• Regular physical activity (150 min/week)\n• Taking medications/insulin as prescribed\n• Regular HbA1c checks\n\nWarning signs to watch:\n• Excessive thirst or hunger\n• Frequent urination\n• Blurred vision\n• Slow-healing wounds\n\n⚠️ Work closely with your doctor for a personalized treatment plan.",
-            ar: "إدارة السكري تشمل:\n• مراقبة منتظمة لمستوى السكر في الدم\n• نظام غذائي متوازن — منخفض الكربوهيدرات المكررة والسكر\n• نشاط بدني منتظم (150 دقيقة/أسبوع)\n• تناول الأدوية/الأنسولين حسب الوصفة\n• فحوصات HbA1c المنتظمة\n\nعلامات تحذيرية يجب مراقبتها:\n• عطش أو جوع مفرط\n• كثرة التبول\n• ضبابية الرؤية\n• بطء التئام الجروح\n\n⚠️ تعاون مع طبيبك للحصول على خطة علاجية شخصية."
-        },
-        {
-            keywords: ['blood pressure', 'hypertension', 'high pressure', 'ضغط الدم', 'ضغط دم', 'ضغط'],
-            en: "Blood pressure management tips:\n• Reduce salt intake (under 5g/day)\n• Exercise regularly (30 min/day)\n• Maintain a healthy weight\n• Limit alcohol and avoid smoking\n• Manage stress through relaxation techniques\n• Take prescribed medications consistently\n\nNormal: 120/80 mmHg\nHigh (Hypertension): Above 140/90 mmHg\n\n⚠️ Never stop blood pressure medications without consulting your doctor.",
-            ar: "نصائح لإدارة ضغط الدم:\n• تقليل الملح (أقل من 5 جرام/يوم)\n• ممارسة التمارين بانتظام (30 دقيقة/يوم)\n• الحفاظ على وزن صحي\n• تحديد الكحول وتجنب التدخين\n• إدارة التوتر من خلال تقنيات الاسترخاء\n• تناول الأدوية الموصوفة بانتظام\n\nطبيعي: 120/80 ملم زئبق\nمرتفع: فوق 140/90 ملم زئبق\n\n⚠️ لا توقف أدوية ضغط الدم دون استشارة طبيبك."
-        },
-        {
-            keywords: ['cough', 'cold', 'flu', 'influenza', 'respiratory', 'breathing', 'كحة', 'سعال', 'برد', 'انفلونزا', 'تنفس'],
-            en: "For coughs and respiratory issues:\n• Stay hydrated with warm fluids\n• Rest adequately\n• Honey and ginger tea can soothe the throat\n• Avoid smoke and air irritants\n\nSee a doctor if:\n• Cough lasts more than 2–3 weeks\n• Blood appears in sputum\n• High fever alongside breathing difficulty\n• Wheezing or chest tightness\n\n⚠️ Seek medical advice for an accurate diagnosis.",
-            ar: "للسعال والمشاكل التنفسية:\n• اشرب الكثير من السوائل الدافئة\n• خذ قسطاً كافياً من الراحة\n• شاي العسل والزنجبيل يهدئ الحلق\n• تجنب الدخان والمهيجات الجوية\n\nاستشر الطبيب إذا:\n• استمر السعال لأكثر من 2-3 أسابيع\n• ظهر دم في البلغم\n• حمى عالية مع صعوبة في التنفس\n• أزيز أو ضيق في الصدر\n\n⚠️ اطلب المشورة الطبية للتشخيص الدقيق."
-        },
-        {
-            keywords: ['stomach', 'nausea', 'vomit', 'diarrhea', 'digestive', 'معدة', 'غثيان', 'قيء', 'إسهال', 'هضم', 'بطن'],
-            en: "For stomach and digestive issues:\n• Stay hydrated — sip water or oral rehydration solution frequently\n• Eat bland foods: rice, toast, bananas, boiled potatoes\n• Avoid dairy, fatty, or spicy foods temporarily\n• Rest and avoid strenuous activity\n\nSeek immediate care if:\n• Severe or persistent abdominal pain\n• Blood in stool or vomit\n• Signs of dehydration (dark urine, dizziness, dry mouth)\n• Symptoms persist beyond 2 days\n\n⚠️ Consult your doctor for proper evaluation.",
-            ar: "لمشاكل المعدة والجهاز الهضمي:\n• حافظ على ترطيب الجسم — اشرب الماء أو محلول إماهة الفم بكميات صغيرة ومتكررة\n• تناول أطعمة خفيفة: أرز، خبز محمص، موز، بطاطس مسلوقة\n• تجنب الألبان والأطعمة الدهنية أو الحارة مؤقتاً\n• استرح وتجنب الأنشطة المجهدة\n\nاطلب رعاية فورية إذا:\n• ألم شديد أو مستمر في البطن\n• دم في البراز أو القيء\n• علامات الجفاف (بول داكن، دوخة، جفاف الفم)\n• الأعراض تستمر أكثر من يومين\n\n⚠️ استشر طبيبك للتقييم الصحيح."
-        },
-        {
-            keywords: ['sleep', 'insomnia', 'tired', 'fatigue', 'exhausted', 'نوم', 'أرق', 'تعب', 'إرهاق'],
-            en: "For better sleep and managing fatigue:\n• Keep a consistent sleep schedule (same bedtime/wake time)\n• Avoid screens 1 hour before bed\n• Keep your bedroom cool, dark, and quiet\n• Limit caffeine after 2 PM\n• Try deep breathing or meditation before bed\n• Exercise regularly, but not within 3 hours of sleep\n\n⚠️ Persistent fatigue or insomnia (more than a few weeks) may indicate an underlying condition — see your doctor.",
-            ar: "لنوم أفضل وإدارة التعب:\n• الحفاظ على جدول نوم منتظم (نفس وقت النوم والاستيقاظ)\n• تجنب الشاشات لمدة ساعة قبل النوم\n• اجعل غرفة نومك باردة ومظلمة وهادئة\n• تقليل الكافيين بعد الساعة 2 ظهراً\n• جرب التنفس العميق أو التأمل قبل النوم\n• مارس الرياضة بانتظام، ولكن ليس خلال 3 ساعات من النوم\n\n⚠️ قد يشير التعب المستمر أو الأرق لأكثر من بضعة أسابيع إلى حالة كامنة — استشر طبيبك."
-        },
-        {
-            keywords: ['allergy', 'allergic', 'rash', 'itching', 'hives', 'حساسية', 'طفح', 'حكة'],
-            en: "For allergic reactions:\n\nMild symptoms (runny nose, sneezing, mild rash):\n• Antihistamines (e.g., cetirizine, loratadine)\n• Avoid known triggers\n• Cold compress for skin irritation\n\n🚨 Severe symptoms — call emergency immediately:\n• Throat swelling or difficulty breathing\n• Sudden widespread rash with dizziness\n• These may indicate anaphylaxis\n\n⚠️ See an allergist to identify and manage your specific triggers.",
-            ar: "للحساسية وردود الفعل التحسسية:\n\nأعراض خفيفة (سيلان الأنف، العطس، طفح خفيف):\n• مضادات الهيستامين (مثل سيتيريزين، لوراتادين)\n• تجنب المحفزات المعروفة\n• كمادة باردة لتهيج الجلد\n\n🚨 أعراض شديدة — اتصل بالطوارئ فوراً:\n• تورم الحلق أو صعوبة التنفس\n• طفح جلدي مفاجئ واسع مع دوار\n• قد تكون هذه علامات صدمة تأقية\n\n⚠️ راجع طبيب حساسية لتحديد محفزاتك وإدارتها."
-        }
-    ];
-
-    for (const response of responses) {
-        if (response.keywords.some(kw => q.includes(kw))) {
-            return isRtl ? response.ar : response.en;
-        }
-    }
-
-    return isRtl
-        ? "شكراً لسؤالك. بناءً على ما وصفته، أنصحك بالتواصل مع طبيب متخصص للحصول على تشخيص دقيق.\n\nكمساعد ذكاء اصطناعي طبي، يمكنني تقديم معلومات صحية عامة فقط وليس تشخيصاً طبياً.\n\nهل يمكنك وصف أعراضك بمزيد من التفصيل؟"
-        : "Thank you for your question. Based on what you've described, I recommend consulting a specialist for an accurate diagnosis.\n\nAs a medical AI assistant, I can provide general health information only — not a medical diagnosis.\n\nCould you describe your symptoms in more detail?";
-};
+import { askQuestion, getConversations, getMessages } from '../api/chatbot';
 
 const AIChat = () => {
     const { t, i18n } = useTranslation();
@@ -80,24 +20,63 @@ const AIChat = () => {
         return saved ? JSON.parse(saved) : null;
     });
 
-    const [messages, setMessages] = useState(() => {
-        const query = location.state?.initialMessage || '';
-        if (query) {
-            return [{ id: Date.now(), text: query, sender: 'user' }];
-        }
-        return [{ id: 1, text: isRtl ? "مرحباً! أنا مساعد As'alny الذكي. كيف يمكنني مساعدتك اليوم؟" : "Hello! I'm As'alny AI Assistant. How can I help you today?", sender: 'ai' }];
-    });
+    const [messages, setMessages] = useState([]);
+    const [conversations, setConversations] = useState([]);
+    const [currentConversationId, setCurrentConversationId] = useState(null);
     const [inputValue, setInputValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [isLoadingConversations, setIsLoadingConversations] = useState(true);
+    const [mobileConvOpen, setMobileConvOpen] = useState(false);
     const messagesEndRef = useRef(null);
 
+    // Load conversations on mount
     useEffect(() => {
-        // Clear state to prevent re-sending on navigations
+        const fetchConversations = async () => {
+            try {
+                const result = await getConversations();
+                const list = result.data?.conversations || [];
+                setConversations(list);
+            } catch (err) {
+                console.error('Failed to load conversations:', err);
+            } finally {
+                setIsLoadingConversations(false);
+            }
+        };
+        fetchConversations();
+    }, []);
+
+    // Load messages when a conversation is selected
+    useEffect(() => {
+        if (!currentConversationId) {
+            setMessages([]);
+            return;
+        }
+        const fetchMessages = async () => {
+            try {
+                const result = await getMessages(currentConversationId);
+                const list = result.data?.messages || [];
+                setMessages(
+                    list.map((m) => ({
+                        id: m._id || m.id,
+                        text: m.content,
+                        sender: m.role === 'user' ? 'user' : 'ai',
+                    })),
+                );
+            } catch (err) {
+                console.error('Failed to load messages:', err);
+            }
+        };
+        fetchMessages();
+    }, [currentConversationId]);
+
+    useEffect(() => {
         if (location.state?.initialMessage) {
+            handleSend(location.state.initialMessage);
             window.history.replaceState({}, document.title);
         }
+    }, []);
 
-        // Listen for storage changes to sync user data
+    useEffect(() => {
         const handleStorageChange = () => {
             const saved = localStorage.getItem('user');
             if (saved) setUser(JSON.parse(saved));
@@ -119,82 +98,178 @@ const AIChat = () => {
         if (!query.trim()) return;
 
         const userMessage = { id: Date.now(), text: query, sender: 'user' };
-        setMessages(prev => [...prev, userMessage]);
+        setMessages((prev) => [...prev, userMessage]);
         setInputValue('');
         setIsTyping(true);
 
-        const delay = 1200 + Math.random() * 900;
-        setTimeout(() => {
-            const aiText = getMedicalAIResponse(query, isRtl);
-            setMessages(prev => [...prev, { id: Date.now(), text: aiText, sender: 'ai' }]);
-            setIsTyping(false);
-        }, delay);
-    };
+        try {
+            const result = await askQuestion(query, currentConversationId);
+            const reply = result.data?.reply || '';
+            const newConversationId = result.data?.conversationId;
 
-    const handleNewChat = () => {
-        setMessages([{
-            id: Date.now(),
-            text: isRtl ? "مرحباً! أنا مساعد As'alny الذكي. كيف يمكنني مساعدتك اليوم؟" : "Hello! I'm As'alny AI Assistant. How can I help you today?",
-            sender: 'ai'
-        }]);
-        setInputValue('');
-        // Clear any initial message from previous navigation
-        if (location.state?.initialMessage) {
-            window.history.replaceState({}, document.title);
+            setMessages((prev) => [
+                ...prev,
+                { id: Date.now() + 1, text: reply, sender: 'ai' },
+            ]);
+
+            if (newConversationId && newConversationId !== currentConversationId) {
+                setCurrentConversationId(newConversationId);
+                // Refresh conversations list
+                try {
+                    const convResult = await getConversations();
+                    setConversations(convResult.data?.conversations || []);
+                } catch {}
+            }
+        } catch (err) {
+            const fallback = isRtl
+                ? 'عذراً، تعذر الاتصال بالمساعد الذكي. يرجى المحاولة لاحقاً.'
+                : 'Sorry, the AI assistant is unavailable. Please try again later.';
+            setMessages((prev) => [
+                ...prev,
+                { id: Date.now() + 1, text: fallback, sender: 'ai' },
+            ]);
+        } finally {
+            setIsTyping(false);
         }
     };
 
-    return (
-        <div className="flex h-screen bg-[#F0F4F8] overflow-hidden font-['Inter',sans-serif]" dir={isRtl ? 'rtl' : 'ltr'}>
-            {/* Sidebar */}
-            <aside className="hidden lg:flex w-80 bg-white/70 backdrop-blur-xl border-x border-slate-200/50 flex-col shrink-0 relative z-20">
-                <div className="p-6 border-b border-slate-100/50">
-                    <button
-                        onClick={() => navigate('/')}
-                        className="flex items-center gap-2 text-slate-500 hover:text-primary transition-all duration-300 mb-8 group"
-                    >
-                        <div className="p-2 rounded-lg group-hover:bg-primary/10 transition-colors">
-                            <ArrowLeft size={18} />
-                        </div>
-                        <span className="font-semibold text-sm">{isRtl ? 'العودة للرئيسية' : 'Back to Home'}</span>
-                    </button>
+    const handleNewChat = () => {
+        setCurrentConversationId(null);
+        setMessages([]);
+        setInputValue('');
+    };
 
-                    <button
-                        onClick={handleNewChat}
-                        className="w-full bg-linear-to-r from-primary to-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 active:scale-95"
-                    >
-                        <Plus size={20} />
-                        {isRtl ? 'محادثة جديدة' : 'New Chat'}
-                    </button>
-                </div>
+    const handleSelectConversation = (convId) => {
+        setCurrentConversationId(convId);
+    };
 
-                <div className="flex-1" />
-
-                <div className="p-6 border-t border-slate-100/50 space-y-4">
-
-                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/50 border border-slate-100/50">
-                        <div className="w-11 h-11 rounded-xl bg-linear-to-br from-primary/20 to-blue-500/20 flex items-center justify-center text-primary shadow-inner">
-                            {user?.avatar ? (
-                                <img src={user.avatar} alt={user.name} className="w-full h-full rounded-xl object-cover" />
-                            ) : (
-                                <User size={22} />
-                            )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-slate-900 truncate">{user?.name || user?.firstName || 'User Account'}</p>
-                            <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest truncate">
-                                {user?.role === 'doctor' ? (isRtl ? 'طبيب' : 'Doctor') : (isRtl ? 'مريض' : 'Patient')}
+    const renderConversationsList = () => (
+        <div className="flex flex-col h-full">
+            <div className="p-6 border-b border-slate-100/50">
+                <button
+                    onClick={() => navigate('/')}
+                    className="flex items-center gap-2 text-slate-500 hover:text-primary transition-all duration-300 mb-8 group"
+                >
+                    <div className="p-2 rounded-lg group-hover:bg-primary/10 transition-colors">
+                        <ArrowLeft size={18} />
+                    </div>
+                    <span className="font-semibold text-sm">{isRtl ? 'العودة للرئيسية' : 'Back to Home'}</span>
+                </button>
+                <button
+                    onClick={handleNewChat}
+                    className="w-full bg-linear-to-r from-primary to-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 active:scale-95"
+                >
+                    <Plus size={20} />
+                    {isRtl ? 'محادثة جديدة' : 'New Chat'}
+                </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                {isLoadingConversations ? (
+                    <div className="flex justify-center py-8">
+                        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                ) : conversations.length === 0 ? (
+                    <p className="text-sm text-slate-400 text-center py-8">
+                        {isRtl ? 'لا توجد محادثات سابقة' : 'No previous conversations'}
+                    </p>
+                ) : (
+                    conversations.map((conv) => (
+                        <button
+                            key={conv._id}
+                            onClick={() => { handleSelectConversation(conv._id); setMobileConvOpen(false); }}
+                            className={`w-full text-left p-4 rounded-2xl transition-all duration-200 ${
+                                currentConversationId === conv._id
+                                    ? 'bg-primary/10 border border-primary/20'
+                                    : 'hover:bg-slate-50 border border-transparent'
+                            }`}
+                        >
+                            <p className="text-sm font-bold text-slate-900 truncate">
+                                {conv.title || (isRtl ? 'محادثة' : 'Conversation')}
                             </p>
-                        </div>
+                            <p className="text-xs text-slate-400 mt-1 truncate">
+                                {conv.lastMessage}
+                            </p>
+                        </button>
+                    ))
+                )}
+            </div>
+            <div className="p-6 border-t border-slate-100/50 space-y-4">
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/50 border border-slate-100/50">
+                    <div className="w-11 h-11 rounded-xl bg-linear-to-br from-primary/20 to-blue-500/20 flex items-center justify-center text-primary shadow-inner">
+                        {user?.avatar ? (
+                            <img src={user.avatar} alt={user.name} className="w-full h-full rounded-xl object-cover" />
+                        ) : (
+                            <User size={22} />
+                        )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-900 truncate">{user?.name || user?.firstName || 'User Account'}</p>
+                        <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest truncate">
+                            {user?.role === 'doctor' ? (isRtl ? 'طبيب' : 'Doctor') : (isRtl ? 'مريض' : 'Patient')}
+                        </p>
                     </div>
                 </div>
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="flex h-screen bg-[#F0F4F8] overflow-hidden font-['Inter',sans-serif]" dir={isRtl ? 'rtl' : 'ltr'}>
+            {/* Mobile backdrop */}
+            {mobileConvOpen && (
+                <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setMobileConvOpen(false)} />
+            )}
+
+            {/* Mobile sidebar */}
+            <aside
+                className={`fixed inset-y-0 ${isRtl ? 'right-0' : 'left-0'} z-50 w-80 bg-white/95 backdrop-blur-xl border-slate-200 flex flex-col shrink-0 transform transition-transform duration-200 ease-out lg:hidden ${isRtl ? 'border-l' : 'border-r'} ${mobileConvOpen ? 'translate-x-0' : isRtl ? 'translate-x-full' : '-translate-x-full'}`}
+            >
+                <div className="p-4 flex justify-end">
+                    <button onClick={() => setMobileConvOpen(false)} className="p-2 rounded-lg text-slate-500 hover:bg-slate-100">
+                        <X size={20} />
+                    </button>
+                </div>
+                {renderConversationsList()}
             </aside>
 
-            {/* Main Chat Area */}
-            <main className="flex-1 flex flex-col relative z-10 bg-transparent">
-                {/* Messages Panel */}
-                <div className="flex-1 overflow-y-auto p-8 pt-32 space-y-10 custom-scrollbar relative">
+            {/* Desktop sidebar */}
+            <aside className="hidden lg:flex w-80 bg-white/70 backdrop-blur-xl border-x border-slate-200/50 flex-col shrink-0 relative z-20">
+                {renderConversationsList()}
+            </aside>
+
+            {/* Mobile header */}
+            <div className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-white/80 backdrop-blur-md border-b border-slate-100">
+                <button onClick={() => setMobileConvOpen(true)} className="p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+                    <Menu size={22} />
+                </button>
+                <h1 className="text-sm font-bold text-primary">As'alny AI</h1>
+                <button onClick={() => navigate('/')} className="p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+                    <ArrowLeft size={22} />
+                </button>
+            </div>
+
+            <main className="flex-1 flex flex-col relative z-10 bg-transparent pt-14 lg:pt-0">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-8 pt-20 sm:pt-32 space-y-6 sm:space-y-10 custom-scrollbar relative">
                     <AnimatePresence>
+                        {messages.length === 0 && !isTyping && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex flex-col items-center justify-center h-full text-center py-20"
+                            >
+                                <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center mb-6">
+                                    <Bot size={40} className="text-primary" />
+                                </div>
+                                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                                    {isRtl ? 'مساعد As\'alny الذكي' : 'As\'alny AI Assistant'}
+                                </h2>
+                                <p className="text-slate-500 max-w-md">
+                                    {isRtl
+                                        ? 'اطرح سؤالك الطبي للحصول على معلومات صحية عامة'
+                                        : 'Ask your medical question for general health information'}
+                                </p>
+                            </motion.div>
+                        )}
                         {messages.map((message) => (
                             <motion.div
                                 key={message.id}
@@ -218,7 +293,7 @@ const AIChat = () => {
                                             <Bot size={24} />
                                         )}
                                     </div>
-                                    <div className={`relative group`}>
+                                    <div className="relative group">
                                         <div className={`p-6 rounded-[2rem] shadow-sm transition-shadow hover:shadow-md ${message.sender === 'user'
                                             ? 'bg-linear-to-br from-primary to-blue-700 text-white rounded-tr-none'
                                             : 'bg-white text-slate-700 rounded-tl-none border border-slate-100'
@@ -261,10 +336,8 @@ const AIChat = () => {
                     <div ref={messagesEndRef} className="h-4" />
                 </div>
 
-                {/* Input Area */}
-                <div className="p-8 bg-linear-to-t from-white via-white/80 to-transparent relative z-20">
+                <div className="p-4 sm:p-8 bg-linear-to-t from-white via-white/80 to-transparent relative z-20">
                     <div className="max-w-4xl mx-auto">
-
                         <div className="relative group p-1">
                             <div className="absolute -inset-1.5 bg-linear-to-r from-primary/30 via-blue-400/30 to-primary/30 rounded-[2.5rem] blur opacity-0 group-focus-within:opacity-100 transition duration-1000 group-focus-within:duration-500 animate-gradient"></div>
                             <div className="relative flex items-end gap-4 bg-white/80 backdrop-blur-2xl border border-slate-200/60 p-4 rounded-[2.2rem] shadow-2xl shadow-slate-200/50">

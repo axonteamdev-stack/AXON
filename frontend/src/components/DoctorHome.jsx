@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Search, Bell, Home, Calendar, Star, MessageCircle, User, Plus, Camera, ThumbsUp, ChevronLeft, ChevronRight, Send, Image, ImageOff, Pencil, Lock, Trash2, Eye, EyeOff, Menu, X } from 'lucide-react';
+import { getMyProfile } from '../api/users';
 
 const DEFAULT_AVATAR = "https://ui-avatars.com/api/?name=User&background=0F4C81&color=fff";
 
@@ -100,6 +101,56 @@ const DoctorHome = () => {
       licenseImage: null
     };
   });
+
+  // Fetch real doctor profile from API on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const result = await getMyProfile();
+        const apiUser = result.data?.user;
+        if (!apiUser) return;
+
+        const profile = apiUser.doctorProfile || {};
+
+        const mappedData = {
+          name: apiUser.fullName || doctorData.name,
+          specialization: profile.specialization || doctorData.specialization,
+          avatar: apiUser.personalPhoto || doctorData.avatar,
+          bio: profile.about || doctorData.bio,
+          phone: apiUser.phoneNumber || doctorData.phone,
+          email: apiUser.email || doctorData.email,
+          experience: profile.yearsExperience?.toString() || doctorData.experience,
+          price: profile.price?.toString() || doctorData.price,
+          license: profile.medicalLicenseNumber || doctorData.license,
+          licenseImage: profile.licenseImage || null,
+        };
+        setDoctorData(mappedData);
+
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const updatedUser = {
+          ...storedUser,
+          id: apiUser.id || storedUser.id,
+          name: apiUser.fullName || storedUser.name,
+          email: apiUser.email || storedUser.email,
+          role: apiUser.role || storedUser.role,
+          avatar: apiUser.personalPhoto || storedUser.avatar,
+          specialization: profile.specialization || storedUser.specialization,
+          phone: apiUser.phoneNumber || storedUser.phone,
+          experience: profile.yearsExperience?.toString() || storedUser.experience,
+          price: profile.price?.toString() || storedUser.price,
+          license: profile.medicalLicenseNumber || storedUser.license,
+          bio: profile.about || storedUser.bio,
+          licenseImage: profile.licenseImage || null,
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+        window.dispatchEvent(new Event('storage'));
+      } catch (err) {
+        console.error('Failed to fetch doctor profile:', err);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   // Mock patient requests
   const [patientRequests, setPatientRequests] = useState([
