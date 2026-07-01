@@ -8,39 +8,16 @@ import {
   Star, ArrowRight, MessageCircle, MessageSquare, Lightbulb, Calendar, Camera,
   CalendarPlus, Building2, Pill, ClipboardList, Pencil, Trash2, Send,
   AlertCircle, Activity, FlaskConical, Lock, LogOut, Info, CloudUpload, Eye, EyeOff,
-  Menu, X
+  Menu, X, Loader2
 } from 'lucide-react';
-import { getAllDoctors, searchDoctors, getMyProfile } from '../api/users';
-import { createAppointment, getMyAppointments, cancelAppointment, updateAppointmentStatus } from '../api/appointments';
-import { getMyConversations, getMessages, sendMessage } from '../api/chat';
-import { getMyMedications } from '../api/medications';
-import { getMyRecord, updateRecord, addRadiologyTest, addLabTest } from '../api/records';
-import { updateProfile as apiUpdateProfile } from '../api/users';
+
+import * as appointmentsApi from '../api/appointments';
+import * as chatApi from '../api/chat';
+import * as medicationsApi from '../api/medications';
+import * as postsApi from '../api/posts';
+import * as usersApi from '../api/users';
 
 const DEFAULT_AVATAR = "https://ui-avatars.com/api/?name=User&background=0F4C81&color=fff";
-
-const doctors = [
-  {
-    id: 1,
-    name: 'Dr. Sara Mohamed',
-    specialty: 'Neurology',
-    experience: 12,
-    rating: 4.9,
-    fees: 420.0,
-    image: DEFAULT_AVATAR,
-    available: true
-  },
-  {
-    id: 2,
-    name: 'Dr. Khaled Omar',
-    specialty: 'Dermatology',
-    experience: 8,
-    rating: 4.7,
-    fees: 350.0,
-    image: DEFAULT_AVATAR,
-    available: false
-  }
-];
 
 const PatientHome = () => {
   const { i18n } = useTranslation();
@@ -79,9 +56,12 @@ const PatientHome = () => {
   const [showNewPw, setShowNewPw] = useState(false);
   const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [passwordError, setPasswordError] = useState('');
-  const [medsTakenToday, setMedsTakenToday] = useState(0);
-  const medsTotalToday = apiMedications.length || 1;
-  const [nextDoseInMinutes, setNextDoseInMinutes] = useState(20);
+  const [medsTakenToday, setMedsTakenToday] = useState(() => {
+    const saved = localStorage.getItem('medsTakenToday');
+    return saved ? Number(saved) : 0;
+  });
+  const [medsTotalToday] = useState(4);
+  const [nextDoseInMinutes, setNextDoseInMinutes] = useState(360);
   const [isPanadolTaken, setIsPanadolTaken] = useState(false);
   const [hospitalSearch, setHospitalSearch] = useState('');
   const [selectedCity, setSelectedCity] = useState('All');
@@ -94,21 +74,33 @@ const PatientHome = () => {
   const [bookingNotes, setBookingNotes] = useState('');
   const [bookingStep, setBookingStep] = useState(1);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
-  const [chatMessages, setChatMessages] = useState([]);
-  const [chatInput, setChatInput] = useState('');
-  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [doctorSearch, setDoctorSearch] = useState('');
   const [hospitalBookSearch, setHospitalBookSearch] = useState('');
-
+  const [confirmedBookings, setConfirmedBookings] = useState([]);
   const [historyTab, setHistoryTab] = useState('appointments');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const [apiDoctors, setApiDoctors] = useState([]);
-  const [apiAppointments, setApiAppointments] = useState([]);
-  const [apiConversations, setApiConversations] = useState([]);
-  const [apiMedications, setApiMedications] = useState([]);
-  const [apiRecord, setApiRecord] = useState(null);
-  const [isLoadingData, setIsLoadingData] = useState(false);
+  /* eslint-disable no-unused-vars */
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState(null);
+  const [medicationsLoading, setMedicationsLoading] = useState(false);
+  const [medicationsError, setMedicationsError] = useState(null);
+  const [postsLoading, setPostsLoading] = useState(false);
+  const [postsError, setPostsError] = useState(null);
+  const [doctorsLoading, setDoctorsLoading] = useState(false);
+  const [doctorsError, setDoctorsError] = useState(null);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(false);
+  const [appointmentsError, setAppointmentsError] = useState(null);
+  const [conversationsLoading, setConversationsLoading] = useState(false);
+  const [conversationsError, setConversationsError] = useState(null);
+
+  const [fetchedProfile, setFetchedProfile] = useState(null);
+  const [medicationsList, setMedicationsList] = useState([]);
+  const [postsList, setPostsList] = useState([]);
+  const [doctorsList, setDoctorsList] = useState([]);
+  const [appointmentsList, setAppointmentsList] = useState([]);
+  const [conversationsList, setConversationsList] = useState([]);
+  /* eslint-enable no-unused-vars */
 
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user');
@@ -142,26 +134,6 @@ const PatientHome = () => {
     };
   });
 
-  const displayAppointments = useMemo(() =>
-    apiAppointments.map((a) => ({
-      id: a._id,
-      doctor: {
-        id: a.doctor?._id,
-        name: a.doctor?.fullName || 'Doctor',
-        specialty: '',
-        fee: a.price || 0,
-        img: a.doctor?.personalPhoto || null,
-      },
-      hospital: null,
-      date: a.scheduledAt ? new Date(a.scheduledAt).toLocaleDateString('en-GB') : '',
-      time: a.scheduledAt ? new Date(a.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
-      notes: a.notes || '',
-      bookedAt: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-GB') : '',
-      status: a.status === 'pending' ? 'Upcoming' : a.status === 'accepted' ? 'Upcoming' : a.status === 'completed' ? 'Completed' : a.status === 'cancelled' ? 'Cancelled' : a.status,
-    })),
-    [apiAppointments]
-  );
-
   useEffect(() => {
     const handlePopState = (e) => {
       e.preventDefault();
@@ -175,39 +147,114 @@ const PatientHome = () => {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [activeTab]);
 
+  const fetchProfile = async () => {
+    setProfileLoading(true);
+    try {
+      const res = await usersApi.getMyProfile();
+      const data = res.data?.data || res.data;
+      if (data) {
+        setFetchedProfile(data);
+        const fullName = data.name || `${data.firstName || ''} ${data.lastName || ''}`.trim();
+        setPatientData(prev => ({
+          ...prev,
+          name: fullName || prev.name,
+          avatar: data.avatar || prev.avatar,
+          bio: data.bio || prev.bio,
+          id: data.id || data._id || prev.id,
+          email: data.email || prev.email,
+          phone: data.phone || prev.phone,
+          height: data.height || prev.height,
+          weight: data.weight || prev.weight,
+        }));
+      }
+    } catch (err) {
+      setProfileError(err.message);
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  const fetchMedications = async () => {
+    setMedicationsLoading(true);
+    try {
+      const res = await medicationsApi.getMyMedications();
+      const data = res.data?.data || res.data || [];
+      setMedicationsList(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setMedicationsError(err.message);
+    } finally {
+      setMedicationsLoading(false);
+    }
+  };
+
+  const fetchPosts = async () => {
+    setPostsLoading(true);
+    try {
+      const res = await postsApi.getAllPosts();
+      const data = res.data?.data || res.data || [];
+      const list = Array.isArray(data) ? data : [];
+      setPostsList(list);
+      setPosts(list);
+    } catch (err) {
+      setPostsError(err.message);
+    } finally {
+      setPostsLoading(false);
+    }
+  };
+
+  const fetchDoctors = async () => {
+    setDoctorsLoading(true);
+    try {
+      const res = await usersApi.getAllDoctors();
+      const data = res.data?.data || res.data || [];
+      setDoctorsList(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setDoctorsError(err.message);
+    } finally {
+      setDoctorsLoading(false);
+    }
+  };
+
+  const fetchAppointments = async () => {
+    setAppointmentsLoading(true);
+    try {
+      const res = await appointmentsApi.getMyAppointments();
+      const data = res.data?.data || res.data || [];
+      setAppointmentsList(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setAppointmentsError(err.message);
+    } finally {
+      setAppointmentsLoading(false);
+    }
+  };
+
+  const fetchConversations = async () => {
+    setConversationsLoading(true);
+    try {
+      const res = await chatApi.getMyConversations();
+      const data = res.data?.data || res.data || [];
+      setConversationsList(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setConversationsError(err.message);
+    } finally {
+      setConversationsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+    fetchMedications();
+    fetchPosts();
+    fetchDoctors();
+    fetchAppointments();
+    fetchConversations();
+  }, []);
+
   useEffect(() => {
     const id = window.setInterval(() => {
       setNextDoseInMinutes((m) => (m > 0 ? m - 1 : 0));
     }, 60_000);
     return () => window.clearInterval(id);
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-    const fetchData = async () => {
-      setIsLoadingData(true);
-      try {
-        const [drRes, apptRes, convRes, medsRes, recordRes] = await Promise.allSettled([
-          getAllDoctors(),
-          getMyAppointments(),
-          getMyConversations(),
-          getMyMedications(),
-          getMyRecord(),
-        ]);
-        if (!mounted) return;
-        if (drRes.status === 'fulfilled') setApiDoctors(drRes.value.data?.doctors || []);
-        if (apptRes.status === 'fulfilled') setApiAppointments(apptRes.value.data?.appointments || []);
-        if (convRes.status === 'fulfilled') setApiConversations(convRes.value.data?.conversations || []);
-        if (medsRes.status === 'fulfilled') setApiMedications(medsRes.value.data?.medications || []);
-        if (recordRes.status === 'fulfilled') setApiRecord(recordRes.value.data?.record || null);
-      } catch (err) {
-        console.error('Failed to load patient data', err);
-      } finally {
-        if (mounted) setIsLoadingData(false);
-      }
-    };
-    fetchData();
-    return () => { mounted = false; };
   }, []);
 
   const medsProgress = useMemo(() => {
@@ -255,7 +302,18 @@ const PatientHome = () => {
             <div className="flex items-center justify-center gap-2.5 mb-5">
               <span className="text-2xl" role="img" aria-label="pill" style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>💊</span>
               <span className="text-[#004A87] font-black text-lg">
-                {isRtl ? `الجرعة القادمة خلال ${nextDoseInMinutes} دقيقة` : `Next dose in ${nextDoseInMinutes} minutes`}
+                {(() => {
+                  const h = Math.floor(nextDoseInMinutes / 60);
+                  const m = nextDoseInMinutes % 60;
+                  if (h > 0) {
+                    return isRtl
+                      ? `الجرعة القادمة خلال ${h} ساعة${m > 0 ? ` و ${m} دقيقة` : ''}`
+                      : `Next dose in ${h}h${m > 0 ? ` ${m}m` : ''}`;
+                  }
+                  return isRtl
+                    ? `الجرعة القادمة خلال ${m} دقيقة`
+                    : `Next dose in ${m} minutes`;
+                })()}
               </span>
             </div>
 
@@ -299,7 +357,18 @@ const PatientHome = () => {
 
                 <div className="flex flex-col gap-2.5 max-w-[240px]">
                   <button
-                    onClick={() => setMedsTakenToday((v) => Math.min(medsTotalToday, v + 1))}
+                    onClick={() => {
+                      setMedsTakenToday((v) => {
+                        const next = v + 1;
+                        if (next >= medsTotalToday) {
+                          localStorage.setItem('medsTakenToday', '0');
+                          return 0;
+                        }
+                        localStorage.setItem('medsTakenToday', String(next));
+                        return next;
+                      });
+                      setNextDoseInMinutes(360);
+                    }}
                     className="w-full bg-[#004A87] text-white py-2.5 rounded-[14px] font-black hover:bg-[#003a6b] transition-all shadow-md shadow-[#004A87]/20 text-base"
                   >
                     {isRtl ? 'تم التناول' : 'Taken'}
@@ -441,6 +510,9 @@ const PatientHome = () => {
                       likes: (newPosts[idx].likes || 0) + (newPosts[idx].liked ? -1 : 1)
                     };
                     setPosts(newPosts);
+                    if (post._id) {
+                      postsApi.toggleLike(post._id).catch(() => {});
+                    }
                   }}
                   className={`flex items-center gap-2 font-bold transition-colors ${post.liked ? 'text-red-500' : 'text-slate-500 hover:text-red-500'}`}
                 >
@@ -491,19 +563,23 @@ const PatientHome = () => {
                       e.preventDefault();
                       const input = e.target.elements.comment;
                       if (input.value.trim()) {
+                        const commentText = input.value.trim();
                         const newPosts = [...posts];
                         const currentComments = newPosts[idx].commentsList || [];
                         newPosts[idx] = {
                           ...newPosts[idx],
                           commentsList: [...currentComments, {
                             author: patientData.name,
-                            text: input.value.trim(),
+                            text: commentText,
                             time: isRtl ? 'الآن' : 'Just now'
                           }],
                           comments: currentComments.length + 1
                         };
                         setPosts(newPosts);
                         input.value = '';
+                        if (post._id) {
+                          postsApi.addComment(post._id, { text: commentText }).catch(() => {});
+                        }
                       }
                     }}
                     className="flex items-center gap-2 relative"
@@ -603,14 +679,25 @@ const PatientHome = () => {
               <button
                 onClick={() => {
                   if (newPostTitle && newPostContent) {
-                    setPosts([{
+                    const newPost = {
                       title: newPostTitle,
                       content: newPostContent,
                       image: newPostImage,
                       author: patientData.name,
                       time: isRtl ? 'الآن' : 'Just now'
-                    }, ...posts]);
+                    };
+                    setPosts([newPost, ...posts]);
                     setIsCreatingPost(false);
+                    postsApi.createCommunityPost({
+                      title: newPostTitle,
+                      content: newPostContent,
+                      image: newPostImage,
+                    }).then(res => {
+                      const saved = res.data?.data || res.data;
+                      if (saved) {
+                        setPosts(prev => [{ ...saved, author: patientData.name, time: isRtl ? 'الآن' : 'Just now' }, ...prev.slice(1)]);
+                      }
+                    }).catch(() => {});
                     setNewPostTitle('');
                     setNewPostContent('');
                     setNewPostImage(null);
@@ -699,7 +786,16 @@ const PatientHome = () => {
             onClick={() => {
               if (!isPanadolTaken) {
                 setIsPanadolTaken(true);
-                setMedsTakenToday((v) => Math.min(medsTotalToday, v + 1));
+                setMedsTakenToday((v) => {
+                  const next = v + 1;
+                  if (next >= medsTotalToday) {
+                    localStorage.setItem('medsTakenToday', '0');
+                    return 0;
+                  }
+                  localStorage.setItem('medsTakenToday', String(next));
+                  return next;
+                });
+                setNextDoseInMinutes(360);
               }
             }}
             disabled={isPanadolTaken}
@@ -799,13 +895,21 @@ const PatientHome = () => {
                     phone: newPhone || patientData.phone,
                     height: newHeight || patientData.height,
                     weight: newWeight || patientData.weight,
+                    avatar: patientData.avatar
                   };
 
                   setPatientData(updatedData);
                   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
                   localStorage.setItem('user', JSON.stringify({ ...currentUser, ...updatedData }));
                   window.dispatchEvent(new Event('storage'));
-                  apiUpdateProfile(updatedData).catch((err) => console.error('Profile update failed', err));
+                  usersApi.updateProfile({
+                    name: updatedData.name,
+                    email: updatedData.email,
+                    phone: updatedData.phone,
+                    height: updatedData.height,
+                    weight: updatedData.weight,
+                    avatar: updatedData.avatar,
+                  }).catch(() => {});
 
                   setActiveProfileView(null);
                 }}
@@ -923,7 +1027,6 @@ const PatientHome = () => {
                       setHealthConditions(prev => [...prev, ...newConditions]);
                       setConditionInputs([]);
                       setIsEditingHealth(false);
-                      updateRecord({ healthConditions: newConditions }).catch((err) => console.error('Health conditions save failed', err));
                     }}
                     className="w-full bg-[#004A87] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#003a6b] transition-all hover:scale-[1.02] active:scale-95"
                   >
@@ -1051,7 +1154,6 @@ const PatientHome = () => {
                       setAllergies(prev => [...prev, ...newAllergies]);
                       setAllergyInputs([]);
                       setIsEditingAllergies(false);
-                      updateRecord({ allergies: newAllergies }).catch((err) => console.error('Allergies save failed', err));
                     }}
                     className="w-full bg-[#004A87] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#003a6b] transition-all hover:scale-[1.02] active:scale-95"
                   >
@@ -1211,12 +1313,6 @@ const PatientHome = () => {
                       setRadiologyEntries(prev => [...prev, ...validDrafts]);
                       setRadiologyDrafts([]);
                       setIsEditingRadiology(false);
-                      validDrafts.forEach((d) => {
-                        const fd = new FormData();
-                        if (d.image) fd.append('image', d.image);
-                        if (d.description) fd.append('description', d.description);
-                        addRadiologyTest(fd).catch((err) => console.error('Radiology save failed', err));
-                      });
                     }}
                     className="w-full bg-[#004A87] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#003a6b] transition-all hover:scale-[1.02] active:scale-95"
                   >
@@ -1374,12 +1470,6 @@ const PatientHome = () => {
                       setLabEntries(prev => [...prev, ...validDrafts]);
                       setLabDrafts([]);
                       setIsEditingLab(false);
-                      validDrafts.forEach((d) => {
-                        const fd = new FormData();
-                        if (d.image) fd.append('image', d.image);
-                        if (d.description) fd.append('description', d.description);
-                        addLabTest(fd).catch((err) => console.error('Lab save failed', err));
-                      });
                     }}
                     className="w-full bg-[#004A87] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#003a6b] transition-all hover:scale-[1.02] active:scale-95"
                   >
@@ -1634,52 +1724,28 @@ const PatientHome = () => {
     );
   };
 
-  const handleSelectConversation = async (conv) => {
-    setActiveChatDoctor(conv);
-    setIsLoadingMessages(true);
-    try {
-      const res = await getMessages(conv._id);
-      setChatMessages(res.messages || res || []);
-    } catch (err) {
-      console.error('Failed to load messages', err);
-      setChatMessages([]);
-    } finally {
-      setIsLoadingMessages(false);
-    }
-  };
-
-  const handleSendMessage = async () => {
-    if (!chatInput.trim() || !activeChatDoctor) return;
-    const text = chatInput;
-    setChatInput('');
-    setChatMessages((prev) => [...prev, { _id: Date.now(), sender: 'patient', text, createdAt: new Date().toISOString() }]);
-    try {
-      const res = await sendMessage(activeChatDoctor._id, text);
-      const msgs = await getMessages(activeChatDoctor._id);
-      setChatMessages(msgs.messages || msgs || []);
-    } catch (err) {
-      console.error('Failed to send message', err);
-    }
-  };
-
-  const chatDoctors = useMemo(() =>
-    apiConversations.map((c) => ({
-      _id: c._id,
-      name: c.doctor?.fullName || c.doctorName || (isRtl ? 'طبيب' : 'Doctor'),
-      specialty: c.doctor?.specialty || '',
-      img: c.doctor?.personalPhoto || c.doctorImage || null,
-      lastMessage: c.lastMessage?.text || c.lastMessage || '',
-    })),
-    [apiConversations]
-  );
-
   const renderChatsContent = () => {
+    const doctors = doctorsList.length > 0 ? doctorsList.map(d => ({
+      name: d.name || `${d.firstName || ''} ${d.lastName || ''}`.trim() || (isRtl ? 'دكتور' : 'Doctor'),
+      specialty: d.specialty || (isRtl ? 'طبيب' : 'General'),
+      img: d.avatar || null,
+      id: d._id || d.id,
+    })) : [
+      { name: isRtl ? 'د. أحمد حسن' : 'Dr. Ahmed Hassan', specialty: isRtl ? 'أخصائي أمراض القلب' : 'Cardiology Specialist', img: '/assets/IMG_9401.PNG' },
+      { name: isRtl ? 'د. سارة محمد' : 'Dr. Sara Mohamed', specialty: isRtl ? 'استشاري المخ والأعصاب' : 'Neurology Consultant', img: null },
+      { name: isRtl ? 'د. عمر علي' : 'Dr. Omar Ali', specialty: isRtl ? 'طب باطني' : 'Internal Medicine', img: null },
+      { name: isRtl ? 'د. أحمد حسن' : 'Dr. Ahmed Hassan', specialty: isRtl ? 'أخصائي أمراض القلب' : 'Cardiology Specialist', img: '/assets/IMG_9401.PNG' },
+      { name: isRtl ? 'د. سارة محمد' : 'Dr. Sara Mohamed', specialty: isRtl ? 'استشاري المخ والأعصاب' : 'Neurology Consultant', img: null },
+      { name: isRtl ? 'د. عمر علي' : 'Dr. Omar Ali', specialty: isRtl ? 'طب باطني' : 'Internal Medicine', img: null },
+    ];
+
     if (activeChatDoctor) {
       return (
         <div className="max-w-3xl mx-auto w-full h-[calc(100vh-120px)] flex flex-col bg-[#F5F7FA] rounded-3xl overflow-hidden shadow-sm border border-slate-200">
+          {/* Chat Header */}
           <div className="bg-[#004A87] text-white px-6 py-4 flex items-center justify-between shrink-0">
             <button
-              onClick={() => { setActiveChatDoctor(null); setChatMessages([]); }}
+              onClick={() => setActiveChatDoctor(null)}
               className="p-2 hover:bg-white/10 rounded-full transition-colors flex items-center gap-2"
             >
               <ChevronLeft size={24} className={isRtl ? 'rotate-180' : ''} />
@@ -1696,36 +1762,35 @@ const PatientHome = () => {
             </div>
           </div>
 
+          {/* Chat Messages */}
           <div className="flex-1 p-6 overflow-y-auto flex flex-col gap-4">
-            {isLoadingMessages ? (
-              <div className="flex justify-center py-8">
-                <div className="w-6 h-6 border-2 border-[#004A87] border-t-transparent rounded-full animate-spin"></div>
+            {/* Received Message */}
+            <div className="flex">
+              <div className="bg-white text-slate-800 px-5 py-3 rounded-2xl rounded-tl-sm shadow-sm max-w-[80%] border border-slate-100">
+                <p className="font-medium">{isRtl ? 'ما هي شكواك؟' : 'What is your complaint?'}</p>
               </div>
-            ) : chatMessages.length === 0 ? (
-              <div className="flex justify-center py-8">
-                <p className="text-slate-400 font-medium">{isRtl ? 'لا توجد رسائل بعد' : 'No messages yet'}</p>
-              </div>
-            ) : (
-              chatMessages.map((msg) => (
-                <div key={msg._id} className={`flex ${msg.sender === 'patient' || msg.sender === 'patient' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`px-5 py-3 rounded-2xl max-w-[80%] shadow-sm border ${msg.sender === 'patient' || msg.sender === 'patient' ? 'bg-[#004A87] text-white rounded-tr-sm border-[#004A87]/20' : 'bg-white text-slate-800 rounded-tl-sm border-slate-100'}`}>
-                    <p className="font-medium">{msg.text}</p>
-                  </div>
-                </div>
-              ))
-            )}
+            </div>
           </div>
 
+          {/* Chat Input */}
           <div className="bg-white p-4 border-t border-slate-100 flex items-center gap-3 shrink-0">
             <input
+              id="chat-message-input"
               type="text"
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
               placeholder={isRtl ? 'اكتب رسالتك...' : 'Type your message...'}
               className="flex-1 bg-white border border-slate-200 rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#004A87]/20 font-medium placeholder:text-slate-400"
             />
-            <button onClick={handleSendMessage} className="w-12 h-12 rounded-full bg-[#004A87] text-white flex items-center justify-center hover:bg-[#003a6b] transition-colors shrink-0 shadow-md">
+            <button
+              onClick={() => {
+                const input = document.getElementById('chat-message-input');
+                if (input && input.value.trim() && activeChatDoctor?.id) {
+                  const msg = input.value.trim();
+                  chatApi.sendMessage(activeChatDoctor.id, { content: msg }).catch(() => {});
+                  input.value = '';
+                }
+              }}
+              className="w-12 h-12 rounded-full bg-[#004A87] text-white flex items-center justify-center hover:bg-[#003a6b] transition-colors shrink-0 shadow-md"
+            >
               <Send size={20} className={isRtl ? 'rotate-180 -ml-1' : 'ml-1'} />
             </button>
           </div>
@@ -1736,39 +1801,31 @@ const PatientHome = () => {
     return (
       <div className="max-w-3xl mx-auto w-full pb-24">
         <div className="mb-8">
-          <h3 className="text-2xl font-black text-[#004A87]">{isRtl ? 'محادثاتي' : 'My Conversations'}</h3>
+          <h3 className="text-2xl font-black text-[#004A87]">{isRtl ? 'أطبائي' : 'My Doctors'}</h3>
         </div>
 
         <div className="space-y-4">
-          {chatDoctors.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-100">
-              <MessageCircle size={52} className="text-slate-300 mb-4" strokeWidth={1.5} />
-              <h3 className="text-xl font-black text-slate-400 mb-1">{isRtl ? 'لا توجد محادثات' : 'No conversations yet'}</h3>
-              <p className="text-slate-400 text-sm font-medium">{isRtl ? 'ابدأ محادثة مع طبيبك' : 'Start a chat with your doctor'}</p>
-            </div>
-          ) : (
-            chatDoctors.map((doc, idx) => (
-              <div key={doc._id || idx} className="bg-white rounded-3xl p-4 sm:p-5 flex items-center shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-slate-100 shrink-0 border-2 border-slate-50 flex items-center justify-center">
-                  {doc.img ? (
-                    <img src={doc.img} alt={doc.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <User size={32} className="text-slate-400" />
-                  )}
-                </div>
-                <div className={`flex-1 ${isRtl ? 'pr-4 sm:pr-6' : 'pl-4 sm:pl-6'}`}>
-                  <h4 className="font-bold text-slate-900 text-lg sm:text-xl">{doc.name}</h4>
-                  <p className="text-slate-500 text-sm sm:text-base font-medium truncate">{doc.lastMessage || doc.specialty}</p>
-                </div>
-                <button
-                  onClick={() => handleSelectConversation(doc)}
-                  className="bg-[#004A87] text-white px-6 sm:px-10 py-2.5 sm:py-3 rounded-2xl font-bold shadow-md shadow-[#004A87]/20 hover:bg-[#003a6b] transition-all hover:scale-105 active:scale-95 text-sm sm:text-base"
-                >
-                  {isRtl ? 'محادثة' : 'Chat'}
-                </button>
+          {doctors.map((doc, idx) => (
+            <div key={idx} className="bg-white rounded-3xl p-4 sm:p-5 flex items-center shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-slate-100 shrink-0 border-2 border-slate-50 flex items-center justify-center">
+                {doc.img ? (
+                  <img src={doc.img} alt={doc.name} className="w-full h-full object-cover" />
+                ) : (
+                  <User size={32} className="text-slate-400" />
+                )}
               </div>
-            ))
-          )}
+              <div className={`flex-1 ${isRtl ? 'pr-4 sm:pr-6' : 'pl-4 sm:pl-6'}`}>
+                <h4 className="font-bold text-slate-900 text-lg sm:text-xl">{doc.name}</h4>
+                <p className="text-slate-500 text-sm sm:text-base font-medium">{doc.specialty}</p>
+              </div>
+              <button
+                onClick={() => setActiveChatDoctor(doc)}
+                className="bg-[#004A87] text-white px-6 sm:px-10 py-2.5 sm:py-3 rounded-2xl font-bold shadow-md shadow-[#004A87]/20 hover:bg-[#003a6b] transition-all hover:scale-105 active:scale-95 text-sm sm:text-base"
+              >
+                {isRtl ? 'محادثة' : 'Chat'}
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -2093,18 +2150,31 @@ const PatientHome = () => {
     );
   };
 
-  const bookingDoctors = useMemo(() =>
-    apiDoctors.map((d) => ({
-      id: d._id,
-      name: d.name || `Dr. ${d.firstName || ''} ${d.lastName || ''}`.trim(),
-      specialty: d.specialty || 'General',
-      rating: d.rating || 4.5,
-      fee: d.fees || d.fee || 300,
-      available: d.isAvailable !== undefined ? d.isAvailable : true,
-      img: d.profileImage || d.image || null,
-    })),
-    [apiDoctors]
-  );
+  const bookingDoctors = doctorsList.length > 0 ? doctorsList.map((d, i) => ({
+    id: d._id || d.id || i + 1,
+    name: d.name || `${d.firstName || ''} ${d.lastName || ''}`.trim() || 'Doctor',
+    specialty: d.specialty || 'General',
+    rating: d.rating || 4.5,
+    fee: d.fee || d.consultationFee || 300,
+    available: d.available !== false,
+    img: d.avatar || null,
+  })) : [
+    { id: 1, name: 'Dr. Ahmed Hassan', specialty: 'Cardiology', rating: 4.9, fee: 300, available: true, img: null },
+    { id: 2, name: 'Dr. Sara Mohamed', specialty: 'Neurology', rating: 4.8, fee: 350, available: true, img: null },
+    { id: 3, name: 'Dr. Omar Ali', specialty: 'Internal Medicine', rating: 4.7, fee: 250, available: true, img: null },
+    { id: 4, name: 'Dr. Nour El-Din', specialty: 'Dermatology', rating: 4.6, fee: 280, available: true, img: null },
+    { id: 5, name: 'Dr. Mona Khalil', specialty: 'Pediatrics', rating: 4.9, fee: 320, available: true, img: null },
+    { id: 6, name: 'Dr. Yasser Fathi', specialty: 'Orthopedics', rating: 4.5, fee: 400, available: false, img: null },
+    { id: 7, name: 'Dr. Heba Mansour', specialty: 'Gynecology', rating: 4.8, fee: 350, available: true, img: null },
+    { id: 8, name: 'Dr. Khaled Mostafa', specialty: 'Ophthalmology', rating: 4.7, fee: 270, available: true, img: null },
+    { id: 9, name: 'Dr. Rania Samir', specialty: 'Psychiatry', rating: 4.6, fee: 400, available: true, img: null },
+    { id: 10, name: 'Dr. Tarek Nabil', specialty: 'General Surgery', rating: 4.8, fee: 500, available: true, img: null },
+    { id: 11, name: 'Dr. Dina Fouad', specialty: 'Endocrinology', rating: 4.9, fee: 380, available: true, img: null },
+    { id: 12, name: 'Dr. Amr Shalaby', specialty: 'Urology', rating: 4.5, fee: 300, available: true, img: null },
+    { id: 13, name: 'Dr. Layla Ibrahim', specialty: 'Rheumatology', rating: 4.7, fee: 350, available: false, img: null },
+    { id: 14, name: 'Dr. Sherif Gamal', specialty: 'Gastroenterology', rating: 4.6, fee: 420, available: true, img: null },
+    { id: 15, name: 'Dr. Noha Abdel Aziz', specialty: 'Oncology', rating: 4.9, fee: 600, available: true, img: null },
+  ];
 
   const timeSlots = ['08:00 AM','08:30 AM','09:00 AM','09:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM','12:30 PM','01:00 PM','01:30 PM','02:00 PM','02:30 PM','03:00 PM','03:30 PM','04:00 PM','04:30 PM','05:00 PM','05:30 PM','06:00 PM'];
 
@@ -2324,16 +2394,31 @@ const PatientHome = () => {
               <label className="block text-sm font-bold text-slate-700 mb-2">{isRtl ? 'ملاحظات (اختياري)' : 'Notes (optional)'}</label>
               <textarea value={bookingNotes} onChange={e => setBookingNotes(e.target.value)} rows={3} placeholder={isRtl ? 'اكتب أي تفاصيل إضافية...' : 'Add any additional details...'} className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#004A87]/20 text-slate-800 font-medium text-sm resize-none placeholder:text-slate-300" />
             </div>
-            <button onClick={async () => {
-                const scheduledAt = new Date(`${bookingDate} ${bookingTime}`);
-                try {
-                  await createAppointment({ doctorId: bookingDoctor?.id, scheduledAt, notes: bookingNotes });
-                  const res = await getMyAppointments();
-                  setApiAppointments(res.appointments || res || []);
-                  setBookingConfirmed(true);
-                } catch (err) {
-                  console.error('Failed to create appointment', err);
-                }
+            <button onClick={() => {
+                const newBooking = {
+                  id: Date.now(),
+                  doctor: bookingDoctor,
+                  hospital: bookingHospital,
+                  date: bookingDate,
+                  time: bookingTime,
+                  notes: bookingNotes,
+                  bookedAt: new Date().toLocaleDateString('en-GB'),
+                  status: 'Upcoming',
+                };
+                setConfirmedBookings(prev => [...prev, newBooking]);
+                setBookingConfirmed(true);
+                appointmentsApi.createAppointment({
+                  doctorId: bookingDoctor?.id,
+                  doctorName: bookingDoctor?.name,
+                  hospital: bookingHospital?.name,
+                  scheduledAt: `${bookingDate} ${bookingTime}`,
+                  notes: bookingNotes,
+                }).then(res => {
+                  const saved = res.data?.data || res.data;
+                  if (saved) {
+                    setAppointmentsList(prev => [...prev, saved]);
+                  }
+                }).catch(() => {});
               }}
               className="w-full bg-[#004A87] text-white py-4 rounded-2xl font-bold text-base hover:bg-[#003a6b] transition-all active:scale-95 shadow-lg shadow-[#004A87]/20">
               {isRtl ? 'تأكيد الحجز' : 'Confirm Booking'}
@@ -2346,13 +2431,7 @@ const PatientHome = () => {
 
   const renderHistoryContent = () => {
 
-    const medicationHistory = apiMedications.length > 0 ? apiMedications.map((m) => ({
-      name: m.name || 'Medication',
-      dose: m.dosage || m.dose || '',
-      takenAt: m.time || m.frequency || '08:00 AM',
-      date: m.startDate ? new Date(m.startDate).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB'),
-      status: m.status === 'taken' ? 'Taken' : m.status === 'skipped' ? 'Skipped' : 'Pending',
-    })) : [
+    const medicationHistory = [
       { name: isRtl ? 'بانادول' : 'Panadol', dose: '500mg', takenAt: '08:00 AM', date: new Date().toLocaleDateString('en-GB'), status: 'Taken' },
       { name: isRtl ? 'فيتامين د' : 'Vitamin D', dose: '1000IU', takenAt: '10:00 PM', date: new Date().toLocaleDateString('en-GB'), status: isPanadolTaken ? 'Taken' : 'Pending' },
       { name: isRtl ? 'بانادول' : 'Panadol', dose: '500mg', takenAt: '02:00 PM', date: new Date(Date.now() - 86400000).toLocaleDateString('en-GB'), status: 'Taken' },
@@ -2401,7 +2480,7 @@ const PatientHome = () => {
         {/* Appointments tab */}
         {historyTab === 'appointments' && (
           <div className="space-y-4">
-            {displayAppointments.length === 0 ? (
+            {(appointmentsList.length === 0 && confirmedBookings.length === 0) ? (
               <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-100">
                 <CalendarDays size={52} className="text-slate-300 mb-4" strokeWidth={1.5} />
                 <h3 className="text-xl font-black text-slate-400 mb-1">{isRtl ? 'لا توجد مواعيد بعد' : 'No appointments yet'}</h3>
@@ -2412,58 +2491,57 @@ const PatientHome = () => {
                 </button>
               </div>
             ) : (
-              [...displayAppointments].reverse().map((b) => (
-                <div key={b.id} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-all">
+              [...appointmentsList, ...confirmedBookings].slice().reverse().map((b, idx) => (
+                <div key={b._id || b.id || idx} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-all">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-[#004A87]/10 rounded-2xl flex items-center justify-center shrink-0">
                         <User size={22} className="text-[#004A87]" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-slate-900">{b.doctor?.name}</h4>
-                        <p className="text-slate-500 text-sm">{b.doctor?.specialty || 'Specialist'}</p>
+                        <h4 className="font-bold text-slate-900">{b.doctor?.name || b.doctorName || (isRtl ? 'طبيب' : 'Doctor')}</h4>
+                        <p className="text-slate-500 text-sm">{b.doctor?.specialty || b.specialty || ''}</p>
                       </div>
                     </div>
-                    <span className={`text-xs font-bold px-3 py-1.5 rounded-full shrink-0 ${b.status === 'Upcoming' ? 'bg-blue-100 text-blue-700' : b.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+                    <span className={`text-xs font-bold px-3 py-1.5 rounded-full shrink-0 ${(b.status === 'Upcoming' || b.status === 'pending') ? 'bg-blue-100 text-blue-700' : (b.status === 'Completed' || b.status === 'completed') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
                       {b.status}
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-slate-50 rounded-xl p-3">
-                      <p className="text-xs text-slate-400 font-medium mb-0.5">{isRtl ? 'السعر' : 'Price'}</p>
-                      <p className="text-sm font-bold text-slate-800">EGP {b.doctor?.fee || 0}</p>
+                      <p className="text-xs text-slate-400 font-medium mb-0.5">{isRtl ? 'المستشفى' : 'Hospital'}</p>
+                      <p className="text-sm font-bold text-slate-800 leading-tight">{b.hospital?.name || b.hospital || (isRtl ? 'غير محدد' : 'Not specified')}</p>
+                      <p className="text-xs text-slate-500">{b.hospital?.city || ''}</p>
                     </div>
                     <div className="bg-slate-50 rounded-xl p-3">
                       <p className="text-xs text-slate-400 font-medium mb-0.5">{isRtl ? 'التاريخ والوقت' : 'Date & Time'}</p>
-                      <p className="text-sm font-bold text-slate-800">{b.date}</p>
-                      <p className="text-xs text-slate-500">{b.time}</p>
+                      <p className="text-sm font-bold text-slate-800">{b.date || (b.scheduledAt ? new Date(b.scheduledAt).toLocaleDateString('en-GB') : '')}</p>
+                      <p className="text-xs text-slate-500">{b.time || (b.scheduledAt ? new Date(b.scheduledAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '')}</p>
                     </div>
                   </div>
-                  {b.notes && (
+                  {(b.notes || b.notes) && (
                     <div className="mt-3 bg-amber-50 rounded-xl p-3">
                       <p className="text-xs text-amber-700 font-medium">{isRtl ? 'ملاحظات: ' : 'Notes: '}{b.notes}</p>
                     </div>
                   )}
                   <div className="flex gap-2 mt-4">
-                    <button onClick={async () => {
-                        try {
-                          await updateAppointmentStatus(b.id, 'completed');
-                          const res = await getMyAppointments();
-                          setApiAppointments(res.appointments || res || []);
-                        } catch (err) { console.error(err); }
-                      }}
-                      disabled={b.status === 'Completed' || b.status === 'Cancelled'}
+                    <button onClick={() => {
+                      if (b._id) {
+                        appointmentsApi.updateAppointmentStatus(b._id, 'completed').catch(() => {});
+                      }
+                      setConfirmedBookings(prev => prev.map(x => (x.id === b.id || x._id === b._id) ? { ...x, status: 'Completed' } : x));
+                    }}
+                      disabled={b.status === 'Completed' || b.status === 'completed' || b.status === 'Cancelled' || b.status === 'cancelled'}
                       className="flex-1 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed">
                       {isRtl ? 'مكتمل' : 'Mark Completed'}
                     </button>
-                    <button onClick={async () => {
-                        try {
-                          await cancelAppointment(b.id);
-                          const res = await getMyAppointments();
-                          setApiAppointments(res.appointments || res || []);
-                        } catch (err) { console.error(err); }
-                      }}
-                      disabled={b.status === 'Completed' || b.status === 'Cancelled'}
+                    <button onClick={() => {
+                      if (b._id) {
+                        appointmentsApi.cancelAppointment(b._id).catch(() => {});
+                      }
+                      setConfirmedBookings(prev => prev.map(x => (x.id === b.id || x._id === b._id) ? { ...x, status: 'Cancelled' } : x));
+                    }}
+                      disabled={b.status === 'Completed' || b.status === 'completed' || b.status === 'Cancelled' || b.status === 'cancelled'}
                       className="flex-1 py-2.5 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed border border-red-200">
                       {isRtl ? 'إلغاء' : 'Cancel'}
                     </button>
@@ -2557,7 +2635,7 @@ const PatientHome = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] font-['Inter','Poppins',sans-serif]">
+    <div className="min-h-screen bg-[#F5F7FA] font-['Inter','Poppins',sans-serif] pt-20">
       <div className="flex h-screen overflow-hidden relative">
         {/* Mobile backdrop */}
         {mobileMenuOpen && (
@@ -2570,13 +2648,7 @@ const PatientHome = () => {
         <aside
           className={`fixed inset-y-0 ${isRtl ? 'right-0' : 'left-0'} z-50 w-60 bg-white border-slate-200 flex flex-col shrink-0 transform transition-transform duration-200 ease-out lg:static lg:translate-x-0 lg:z-auto ${isRtl ? 'border-l' : 'border-r'} ${mobileMenuOpen ? 'translate-x-0' : isRtl ? 'translate-x-full' : '-translate-x-full'}`}
         >
-          <div className="p-6 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#0F4C81] rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">A</span>
-              </div>
-              <h2 className="text-xl font-bold tracking-tight text-[#0F4C81]">As'alny</h2>
-            </div>
+          <div className="p-6 flex items-center justify-end gap-3">
             <button
               onClick={() => setMobileMenuOpen(false)}
               className="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100"
@@ -2601,37 +2673,14 @@ const PatientHome = () => {
           </nav>
         </aside>
 
-        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-          <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between shrink-0 gap-3">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <button
-                onClick={() => setMobileMenuOpen(true)}
-                className="lg:hidden shrink-0 p-2.5 rounded-xl bg-slate-100 text-slate-600"
-                aria-label={isRtl ? 'فتح القائمة' : 'Open menu'}
-              >
-                <Menu size={20} />
-              </button>
-              <div className="flex-1 max-w-md relative hidden sm:block">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                <input className="w-full pl-11 pr-4 py-2.5 bg-slate-100 rounded-xl focus:ring-2 focus:ring-[#0F4C81]/30 text-sm" placeholder={isRtl ? 'ابحث...' : 'Search...'} />
-              </div>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-              <button className="p-2.5 rounded-xl bg-slate-100 text-slate-600 relative">
-                <Bell size={20} />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
-              <div className="flex items-center gap-3 cursor-pointer p-2 rounded-xl" onClick={() => setActiveTab('profile')}>
-                <div className="text-right hidden sm:block">
-                  <p className="text-sm font-semibold text-slate-800">{patientData.name}</p>
-                  <p className="text-xs text-slate-500">#{patientData.id}</p>
-                </div>
-                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#0F4C81]/20 shrink-0">
-                  <img alt={patientData.name} className="w-full h-full object-cover" src={patientData.avatar || DEFAULT_AVATAR} />
-                </div>
-              </div>
-            </div>
-          </header>
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0 relative">
+          {/* Floating Notification Button */}
+          <div className={`absolute top-4 ${isRtl ? 'left-4' : 'right-4'} z-30`}>
+            <button className="p-3 rounded-full bg-white shadow-md border border-slate-100 text-slate-600 hover:bg-slate-50 hover:text-primary transition-all">
+              <Bell size={24} />
+              <span className="absolute top-1.5 right-1.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+          </div>
 
           <main className="flex-1 overflow-y-auto p-4 sm:p-8 pt-6">
             {activeTab === 'home' && (
@@ -2653,6 +2702,7 @@ const PatientHome = () => {
           </main>
         </div>
       </div>
+
     </div>
   );
 };
