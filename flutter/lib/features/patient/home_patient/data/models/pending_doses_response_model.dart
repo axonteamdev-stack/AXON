@@ -7,7 +7,9 @@ class PendingDosesResponseModel extends PendingDosesResponseEntity {
     required PendingDosesDataModel super.data,
   });
 
-  factory PendingDosesResponseModel.fromJson(Map<String, dynamic> json) {
+  factory PendingDosesResponseModel.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return PendingDosesResponseModel(
       success: json['success'],
       message: json['message'],
@@ -29,11 +31,30 @@ class PendingDosesDataModel extends PendingDosesDataEntity {
     required List<DoseModel> super.doses,
   });
 
-  factory PendingDosesDataModel.fromJson(Map<String, dynamic> json) {
+  factory PendingDosesDataModel.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    // في حالة الـ API يرجع doses كـ List
+    if (json['doses'] != null) {
+      return PendingDosesDataModel(
+        doses: (json['doses'] as List)
+            .map((e) => DoseModel.fromJson(e))
+            .toList(),
+      );
+    }
+
+    // في حالة الـ API يرجع dose واحدة
+    if (json['dose'] != null) {
+      return PendingDosesDataModel(
+        doses: [
+          DoseModel.fromJson(json['dose']),
+        ],
+      );
+    }
+
+    // لو مفيش أي جرعات
     return PendingDosesDataModel(
-      doses: (json['doses'] as List)
-          .map((e) => DoseModel.fromJson(e))
-          .toList(),
+      doses: [],
     );
   }
 

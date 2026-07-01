@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-class DoctorProfileHeaderDelegate
-    extends SliverPersistentHeaderDelegate {
+class DoctorProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
 
   DoctorProfileHeaderDelegate({required this.child});
@@ -16,10 +15,10 @@ class DoctorProfileHeaderDelegate
   }
 
   @override
-  double get maxExtent => 200;
+  double get maxExtent => 250;
 
   @override
-  double get minExtent => 200;
+  double get minExtent => 250;
 
   @override
   bool shouldRebuild(_) => false;

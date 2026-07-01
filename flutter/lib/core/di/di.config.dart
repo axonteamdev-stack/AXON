@@ -83,6 +83,48 @@ import '../../features/doctor/Profile%20Doctor/domain/repo/doctor_profile_repo.d
     as _i968;
 import '../../features/doctor/Profile%20Doctor/domain/usecases/update_doctor_profile_use_case.dart'
     as _i811;
+import '../../features/notifications/data/datasource/notification_remote_data_source.dart'
+    as _i594;
+import '../../features/notifications/data/datasource/notification_remote_data_source_impl.dart'
+    as _i85;
+import '../../features/notifications/data/repositories/notification_repository_impl.dart'
+    as _i361;
+import '../../features/notifications/domain/repositories/notification_repository.dart'
+    as _i367;
+import '../../features/notifications/domain/usecases/get_notifications_usecase.dart'
+    as _i587;
+import '../../features/notifications/domain/usecases/get_unread_count_usecase.dart'
+    as _i85;
+import '../../features/notifications/domain/usecases/mark_all_read_usecase.dart'
+    as _i418;
+import '../../features/notifications/presentation/manager/notification_cubit.dart'
+    as _i329;
+import '../../features/patient/appointment/data/datasource/appointment_remote_data_source.dart'
+    as _i559;
+import '../../features/patient/appointment/data/datasource/appointment_remote_data_source_impl.dart'
+    as _i651;
+import '../../features/patient/appointment/data/repository/appointment_repository_impl.dart'
+    as _i500;
+import '../../features/patient/appointment/domain/repository/appointment_repository.dart'
+    as _i670;
+import '../../features/patient/appointment/domain/usecases/create_appointment_usecase.dart'
+    as _i461;
+import '../../features/patient/appointment/domain/usecases/create_setup_intent_usecase.dart'
+    as _i112;
+import '../../features/patient/appointment/presentation/manager/appointment_cubit.dart'
+    as _i879;
+import '../../features/patient/axon_ai/data/datasource/axon_ai_remote_data_source.dart'
+    as _i535;
+import '../../features/patient/axon_ai/data/datasource/axon_ai_remote_data_source_impl.dart'
+    as _i146;
+import '../../features/patient/axon_ai/data/repository/axon_ai_repository_impl.dart'
+    as _i974;
+import '../../features/patient/axon_ai/domain/repository/axon_ai_repository.dart'
+    as _i560;
+import '../../features/patient/axon_ai/domain/usecases/check_interaction_use_case.dart'
+    as _i154;
+import '../../features/patient/axon_ai/presentation/manager/axon_ai_cubit.dart'
+    as _i836;
 import '../../features/patient/book_doctor/data/data_sourses/remote_data/doctors_remote_data_source.dart'
     as _i846;
 import '../../features/patient/book_doctor/data/data_sourses/remote_data/impl/doctors_remote_data_source_impl.dart'
@@ -99,6 +141,18 @@ import '../../features/patient/book_doctor/domain/useCases/search_doctors_usecas
     as _i182;
 import '../../features/patient/book_doctor/presentation/manager/doctors_cubit.dart'
     as _i892;
+import '../../features/patient/chat%20bot/data/data_sources/chat_bot_remote_data_source.dart'
+    as _i240;
+import '../../features/patient/chat%20bot/data/data_sources/hat_bot_remote_data_source_impl.dart'
+    as _i749;
+import '../../features/patient/chat%20bot/data/repo/chat_bot_repository_impl.dart'
+    as _i270;
+import '../../features/patient/chat%20bot/domain/repository/chat_bot_repository.dart'
+    as _i425;
+import '../../features/patient/chat%20bot/domain/use_cases/ask_question_use_case.dart'
+    as _i654;
+import '../../features/patient/chat%20bot/presentation/manager/chat_bot_cubit/chat_bot_cubit.dart'
+    as _i584;
 import '../../features/patient/comunity_patient/data/datasources/community_remote_datasource.dart'
     as _i543;
 import '../../features/patient/comunity_patient/data/datasources/impl/community_remote_datasource_impl.dart'
@@ -199,6 +253,8 @@ import '../../features/patient/profile_patient/presentation/manager/patient_edit
     as _i1052;
 import '../../features/patient/profile_patient/presentation/manager/patient_edit_documents/patient_edit_documents_cubit.dart'
     as _i961;
+import '../../features/patient/profile_patient/presentation/manager/profile%20patient/patient_profile_cubit.dart'
+    as _i118;
 import '../../features/patient/qr_patient/data/data_sources/impl/qr_patient_remote_data_source_impl.dart'
     as _i68;
 import '../../features/patient/qr_patient/data/data_sources/qr_patient_remote_data_source.dart'
@@ -224,16 +280,26 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final networkModule = _$NetworkModule();
     gh.factory<_i613.GeneralRegisterCubit>(() => _i613.GeneralRegisterCubit());
+    gh.factory<_i118.PatientProfileCubit>(() => _i118.PatientProfileCubit());
     gh.singleton<_i119.ApiManager>(() => _i119.ApiManager());
     gh.lazySingleton<_i161.InternetConnection>(
       () => networkModule.internetConnection,
     );
     gh.lazySingleton<_i631.GenderCubit>(() => _i631.GenderCubit());
+    gh.factory<_i594.NotificationRemoteDataSource>(
+      () => _i85.NotificationRemoteDataSourceImpl(gh<_i119.ApiManager>()),
+    );
+    gh.factory<_i559.AppointmentRemoteDataSource>(
+      () => _i651.AppointmentRemoteDataSourceImpl(gh<_i119.ApiManager>()),
+    );
     gh.factory<_i798.ProfileRemoteDataSource>(
       () => _i949.ProfileRemoteDataSourceImpl(gh<_i119.ApiManager>()),
     );
     gh.factory<_i238.QrPatientRemoteDataSource>(
       () => _i68.QrPatientRemoteDataSourceImpl(gh<_i119.ApiManager>()),
+    );
+    gh.factory<_i240.ChatBotRemoteDataSource>(
+      () => _i749.ChatBotRemoteDataSourceImpl(gh<_i119.ApiManager>()),
     );
     gh.factory<_i127.QrPatientRepository>(
       () =>
@@ -245,20 +311,39 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i881.MedicationRemoteDataSource>(
       () => _i69.MedicationRemoteDataSourceImpl(gh<_i119.ApiManager>()),
     );
+    gh.factory<_i535.AxonAiRemoteDataSource>(
+      () => _i146.AxonAiRemoteDataSourceImpl(gh<_i119.ApiManager>()),
+    );
     gh.factory<_i116.ProfileRepository>(
       () => _i32.ProfileRepositoryImpl(gh<_i798.ProfileRemoteDataSource>()),
     );
     gh.lazySingleton<_i932.NetworkInfo>(
       () => _i932.NetworkInfoImpl(gh<_i161.InternetConnection>()),
     );
+    gh.factory<_i560.AxonAiRepository>(
+      () => _i974.AxonAiRepositoryImpl(gh<_i535.AxonAiRemoteDataSource>()),
+    );
+    gh.factory<_i670.AppointmentRepository>(
+      () => _i500.AppointmentRepositoryImpl(
+        gh<_i559.AppointmentRemoteDataSource>(),
+      ),
+    );
     gh.factory<_i773.DoctorProfileRemoteDataSource>(
       () => _i185.DoctorProfileRemoteDataSourceImpl(
         apiManager: gh<_i119.ApiManager>(),
       ),
     );
+    gh.factory<_i425.ChatBotRepository>(
+      () => _i270.ChatBotRepositoryImpl(gh<_i240.ChatBotRemoteDataSource>()),
+    );
     gh.factory<_i968.DoctorProfileRepo>(
       () => _i824.DoctorProfileRepoImpl(
         gh<_i773.DoctorProfileRemoteDataSource>(),
+      ),
+    );
+    gh.factory<_i367.NotificationRepository>(
+      () => _i361.NotificationRepositoryImpl(
+        gh<_i594.NotificationRemoteDataSource>(),
       ),
     );
     gh.factory<_i940.DoctorArticlesRemoteDataSource>(
@@ -314,6 +399,18 @@ extension GetItInjectableX on _i174.GetIt {
         apiManager: gh<_i119.ApiManager>(),
       ),
     );
+    gh.factory<_i654.AskQuestionUseCase>(
+      () => _i654.AskQuestionUseCase(gh<_i425.ChatBotRepository>()),
+    );
+    gh.factory<_i587.GetNotificationsUseCase>(
+      () => _i587.GetNotificationsUseCase(gh<_i367.NotificationRepository>()),
+    );
+    gh.factory<_i85.GetUnreadCountUseCase>(
+      () => _i85.GetUnreadCountUseCase(gh<_i367.NotificationRepository>()),
+    );
+    gh.factory<_i418.MarkAllReadUseCase>(
+      () => _i418.MarkAllReadUseCase(gh<_i367.NotificationRepository>()),
+    );
     gh.factory<_i396.DoctorsRepo>(
       () => _i514.DoctorsRepoImpl(
         doctorsRemoteDataSource: gh<_i846.DoctorsRemoteDataSource>(),
@@ -333,6 +430,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i244.QrPatientCubit>(
       () => _i244.QrPatientCubit(gh<_i414.GetQrPatientUseCase>()),
+    );
+    gh.factory<_i154.CheckInteractionUseCase>(
+      () => _i154.CheckInteractionUseCase(gh<_i560.AxonAiRepository>()),
+    );
+    gh.factory<_i461.CreateAppointmentUseCase>(
+      () => _i461.CreateAppointmentUseCase(gh<_i670.AppointmentRepository>()),
+    );
+    gh.factory<_i112.CreateSetupIntentUseCase>(
+      () => _i112.CreateSetupIntentUseCase(gh<_i670.AppointmentRepository>()),
     );
     gh.factory<_i223.AuthRemoteDataSource>(
       () => _i810.AuthRemoteDataSourceImpl(
@@ -429,6 +535,25 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i66.PendingDosesCubit(
         gh<_i858.GetPendingDosesUseCase>(),
         gh<_i344.MarkDoseAsTakenUseCase>(),
+      ),
+    );
+    gh.factory<_i584.ChatBotCubit>(
+      () => _i584.ChatBotCubit(gh<_i654.AskQuestionUseCase>()),
+    );
+    gh.factory<_i836.AxonAiCubit>(
+      () => _i836.AxonAiCubit(gh<_i154.CheckInteractionUseCase>()),
+    );
+    gh.factory<_i329.NotificationCubit>(
+      () => _i329.NotificationCubit(
+        gh<_i587.GetNotificationsUseCase>(),
+        gh<_i85.GetUnreadCountUseCase>(),
+        gh<_i418.MarkAllReadUseCase>(),
+      ),
+    );
+    gh.factory<_i879.AppointmentCubit>(
+      () => _i879.AppointmentCubit(
+        gh<_i461.CreateAppointmentUseCase>(),
+        gh<_i112.CreateSetupIntentUseCase>(),
       ),
     );
     gh.factory<_i437.MedicineListCubit>(

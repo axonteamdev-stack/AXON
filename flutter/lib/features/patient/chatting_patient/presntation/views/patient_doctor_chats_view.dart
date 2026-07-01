@@ -54,7 +54,7 @@ class PatientDoctorChatsView extends StatelessWidget {
             showBackButton: false,
             title: context.l10n.my_doctors,
             titleAlignment: Alignment.center,
-            height: 100,
+            height: 150,
             padding: EdgeInsets.only(top: 24.h),
             gradient: LinearGradient(
               colors: [AppColors.primaryColor, AppColors.blue],

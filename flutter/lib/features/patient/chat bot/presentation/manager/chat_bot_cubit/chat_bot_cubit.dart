@@ -1,120 +1,68 @@
-import 'dart:convert';
+import 'package:Axon/features/patient/chat%20bot/data/models/ask_question_request.dart';
+import 'package:Axon/features/patient/chat%20bot/data/models/chat_message_model.dart';
+import 'package:Axon/features/patient/chat%20bot/domain/use_cases/ask_question_use_case.dart';
+import 'package:Axon/features/patient/chat%20bot/presentation/manager/chat_bot_cubit/chat_bot_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:Axon/core/service/shared_pref/shared_pref.dart';
-import 'package:Axon/features/patient/chat bot/data/models/chat_message_model.dart';
-import 'package:Axon/features/patient/chat bot/data/repo/chat_bot_repo.dart';
-import 'chat_bot_state.dart';
+import 'package:injectable/injectable.dart';
 
-class ChatBotCubit extends Cubit<ChatBotState> {
-  final ChatBotRepository repository;
-  final List<ChatMessageModel> _messages = [];
+@injectable
+class ChatBotCubit
+    extends Cubit<ChatBotState> {
+  final AskQuestionUseCase useCase;
 
-  static const String _storageKey = 'chat_bot_messages';
+  ChatBotCubit(
+    this.useCase,
+  ) : super(ChatBotInitial());
 
-  ChatBotCubit(this.repository) : super(ChatBotInitial()) {
-    print('🟢 ChatBotCubit CREATED');
-    _loadMessages();
-  }
+  List<ChatMessageModel> messages = [
+    ChatMessageModel(
+      message:
+          'Hello! I am Axon AI. How can I help you today?',
+      type: MessageType.bot,
+    ),
+  ];
 
-  List<ChatMessageModel> get messages =>
-      List.unmodifiable(_messages);
+  String conversationId = '';
 
-  Future<void> _loadMessages() async {
-    print('📂 Loading messages from SharedPreferences');
-
-    try {
-      final data =
-          SharedPref.preferences.getString(_storageKey);
-
-      print('📦 Raw stored data: $data');
-
-      if (data != null && data.isNotEmpty) {
-        final List decoded = jsonDecode(data);
-        _messages.addAll(
-          decoded
-              .map((e) => ChatMessageModel.fromJson(e))
-              .toList(),
-        );
-        print('✅ Loaded ${_messages.length} messages');
-      }
-    } catch (e) {
-      print('❌ Error loading messages: $e');
-    }
-
-    if (_messages.isEmpty) {
-      print('ℹ️ No messages found, adding welcome message');
-      _messages.add(
-        ChatMessageModel(
-          message:
-              '👋 Hi, I’m your AI medical assistant.\nAsk me anything about your health.',
-          type: MessageType.bot,
-        ),
-      );
-    }
-
-    emit(ChatBotSuccess(List.from(_messages)));
-  }
-
-  /// ================= Save =================
-  Future<void> _saveMessages() async {
-    final encoded =
-        jsonEncode(_messages.map((e) => e.toJson()).toList());
-
-    print('💾 Saving messages: $encoded');
-
-    await SharedPref.preferences.setString(
-      _storageKey,
-      encoded,
-    );
-  }
-
-  /// ================= Send =================
-  Future<void> sendMessage(String text) async {
-    print('✉️ User sending message: $text');
-
-    if (text.trim().isEmpty) {
-      print('⚠️ Message is empty, ignored');
-      return;
-    }
-
-    _messages.add(
+  Future<void> sendMessage(
+    String text,
+  ) async {
+    messages.add(
       ChatMessageModel(
         message: text,
         type: MessageType.user,
       ),
     );
 
-    await _saveMessages();
-
-    emit(ChatBotLoading(List.from(_messages)));
+    emit(ChatBotLoading());
 
     try {
-      print('🤖 Calling repository.sendMessage');
-      final reply = await repository.sendMessage(text);
+      final response =
+          await useCase(
+        AskQuestionRequest(
+          message: text,
+          conversationId:
+              conversationId,
+        ),
+      );
 
-      print('🤖 AI reply received: $reply');
+      conversationId =
+          response.conversationId;
 
-      _messages.add(
+      messages.add(
         ChatMessageModel(
-          message: reply,
+          message: response.reply,
           type: MessageType.bot,
         ),
       );
-    } catch (e, s) {
-      print('❌ ERROR while sending message');
-      print('❌ Error: $e');
-      print('📌 StackTrace: $s');
 
-      _messages.add(
-        ChatMessageModel(
-          message:
-              '⏳ The assistant is temporarily unavailable. Please try again in a moment.',
-          type: MessageType.bot,
+      emit(ChatBotSuccess());
+    } catch (e) {
+      emit(
+        ChatBotError(
+          e.toString(),
         ),
       );
     }
-
-    await _saveMessages();
-    emit(ChatBotSuccess(List.from(_messages)));
   }
 }

@@ -15,7 +15,7 @@ class DoctorProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DoctorProfileCubit, DoctorProfileState>(
       builder: (context, state) {
-        final cubit = context.read<DoctorProfileCubit>();
+        // final cubit = context.read<DoctorProfileCubit>();
 
         return Container(
           // height: MediaQuery.sizeOf(context).height*0.65,

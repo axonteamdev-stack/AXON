@@ -30,7 +30,7 @@ class PatientProfileHeader extends StatelessWidget {
         : null;
 
     return CustomAppBar(
-      height: 200.h,
+      height: 220.h,
       showBackButton: false,
       titleAlignment: Alignment.center,
       titleWidget: Column(

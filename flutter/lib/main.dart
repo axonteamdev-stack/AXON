@@ -9,9 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  Stripe.publishableKey = "pk_test_xxxxxxxxxxxxxxxxx";
+
+  await Stripe.instance.applySettings();
+
   await SharedPref.preferences.instantiatePreferences();
 
   final pref = SharedPref();
@@ -23,7 +29,7 @@ void main() async {
   String startRoute;
 
   if (seenOnboarding != true) {
-    startRoute = AppRoutes.splash; 
+    startRoute = AppRoutes.splash;
   } else if (token != null && token.isNotEmpty) {
     if (role?.toLowerCase() == "doctor") {
       startRoute = AppRoutes.doctorMain;
@@ -37,6 +43,7 @@ void main() async {
   }
 
   Bloc.observer = AppBlocObserver();
+
   configureDependencies();
 
   runApp(Axon(startRoute: startRoute));
@@ -63,10 +70,7 @@ class Axon extends StatelessWidget {
 
                 locale: locale,
 
-                supportedLocales: const [
-                  Locale('en'),
-                  Locale('ar'),
-                ],
+                supportedLocales: const [Locale('en'), Locale('ar')],
 
                 localizationsDelegates: const [
                   AppLocalizations.delegate,
@@ -77,8 +81,7 @@ class Axon extends StatelessWidget {
 
                 localeResolutionCallback: (locale, supportedLocales) {
                   for (final supportedLocale in supportedLocales) {
-                    if (supportedLocale.languageCode ==
-                        locale?.languageCode) {
+                    if (supportedLocale.languageCode == locale?.languageCode) {
                       return supportedLocale;
                     }
                   }

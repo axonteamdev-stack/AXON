@@ -1,7 +1,9 @@
 import 'package:Axon/core/extensions/localization_ext.dart';
+import 'package:Axon/core/routes/app_routes.dart';
 import 'package:Axon/core/style/app_images.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/text_app.dart';
+import 'package:Axon/features/notifications/presentation/view/notification_screen.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/widgets/notification_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -34,10 +36,8 @@ class HomeHeader extends StatelessWidget {
           colors: [AppColors.primaryColor, AppColors.blue],
         ),
       ),
-
       child: Stack(
         children: [
-          /// Background circles
           Positioned(
             right: -40,
             top: -30,
@@ -134,9 +134,7 @@ class HomeHeader extends StatelessWidget {
                           weight: AppTextWeight.bold,
                           fontSize: 20.sp,
                         ),
-
                         SizedBox(height: 8.h),
-
                         TextApp(
                           text: context.l10n.health_matters,
                           color: Colors.white70,
@@ -157,7 +155,9 @@ class HomeHeader extends StatelessWidget {
                     ),
                     child: NotificationIcon(
                       count: notificationCount,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.notifications);
+                      },
                     ),
                   ),
                 ],

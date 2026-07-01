@@ -19,8 +19,12 @@ import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor
 import 'package:Axon/features/doctor/Chatting%20Doctor/presentation/views/doctor_view_patient_radiology_view.dart';
 import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/doctor_main_view.dart';
 import 'package:Axon/features/doctor/Profile%20Doctor/presentation/views/doctor_edit_profile_view.dart';
+import 'package:Axon/features/notifications/presentation/manager/notification_cubit.dart';
+import 'package:Axon/features/notifications/presentation/view/notification_screen.dart';
 import 'package:Axon/features/onboarding/presentation/views/intro_view.dart';
 import 'package:Axon/features/onboarding/presentation/views/onboarding_view.dart';
+import 'package:Axon/features/patient/axon_ai/presentation/manager/axon_ai_cubit.dart';
+import 'package:Axon/features/patient/axon_ai/presentation/view/axon_ai_view.dart';
 
 import 'package:Axon/features/patient/book_doctor/domain/entities/doctor_entity.dart';
 import 'package:Axon/features/patient/book_doctor/domain/useCases/get_all_doctors_usecase.dart';
@@ -29,6 +33,7 @@ import 'package:Axon/features/patient/book_doctor/presentation/manager/doctors_c
 import 'package:Axon/features/patient/book_doctor/presentation/view/book_doctor_view.dart';
 import 'package:Axon/features/patient/book_doctor/presentation/view/doctor_details_view.dart';
 import 'package:Axon/features/patient/book_doctor/presentation/view/doctors_tabs_view.dart';
+import 'package:Axon/features/patient/chat%20bot/presentation/manager/chat_bot_cubit/chat_bot_cubit.dart';
 import 'package:Axon/features/patient/chat%20bot/presentation/views/chat_bot_view.dart';
 import 'package:Axon/features/patient/chatting_patient/presntation/views/patient_doctor_private_chat_view.dart';
 import 'package:Axon/features/patient/comunity_patient/presentation/views/patient_community_view.dart';
@@ -101,6 +106,8 @@ class AppRoutes {
   static const patientEditAllergies = 'patientEditAllergies';
   static const patientEditRadiology = 'patientEditRadiology';
   static const patientEditLabTests = 'patientEditLabTests';
+
+  static const notifications = 'notifications';
   // Security
   static const changePassword = 'changePassword';
   static const deleteAccount = 'deleteAccount';
@@ -110,6 +117,8 @@ class AppRoutes {
 
   // doctor Main
   static const doctorMain = 'doctorMain';
+
+  static const axonAi = 'axonAi';
   //doctor Auth Success
   static const accountCreatedDoctor = 'accountCreatedDoctor';
   //doctor edit profile
@@ -164,16 +173,6 @@ class AppRoutes {
       case patientMedicalProfile:
         return BaseRoute(page: PatientRegistrationFlow());
 
-      // case AppRoutes.patientAllergies:
-      //   return BaseRoute(
-      //     page: const PatientAllergiesView(),
-      //   );
-
-      // case AppRoutes.patientHealthConditions:
-      //   return BaseRoute(
-      //     page:  PatientHealthConditionsView(),
-      //   );
-
       // Forgot Password
       case forgotPasswordEmail:
         return BaseRoute(page: ForgotPasswordEmailView());
@@ -183,13 +182,6 @@ class AppRoutes {
 
       case resetPassword:
         return BaseRoute(page: const ResetPasswordView());
-
-      // Patient Documents
-      // case patientLabTests:
-      //   return BaseRoute(page: const PatientLabTestsView());
-
-      // case patientRadiology:
-      //   return BaseRoute(page: const PatientRadiologyView());
 
       // Auth Success
       case accountCreated:
@@ -204,8 +196,13 @@ class AppRoutes {
 
       // qr
       case qrPatient:
+        return BaseRoute(page: QrPatientView());
+      case axonAi:
         return BaseRoute(
-          page: QrPatientView(),
+          page: BlocProvider(
+            create: (_) => getIt<AxonAiCubit>(),
+            child: const AxonAiView(),
+          ),
         );
 
       // Patient Profile
@@ -258,10 +255,6 @@ class AppRoutes {
       // Doctor Main
       case doctorMain:
         return BaseRoute(page: const DoctorMainView());
-      // case accountCreatedDoctor:
-      // return BaseRoute(page: const AccountDoctorCreatedView());
-
-      // Doctor edit profile
 
       case doctorEditProfile:
         return BaseRoute(page: const DoctorEditProfileView());
@@ -305,14 +298,27 @@ class AppRoutes {
       case AppRoutes.doctorViewPatientAllergies:
         return BaseRoute(page: DoctorViewPatientAllergiesView());
 
+      case AppRoutes.notifications:
+        return BaseRoute(
+          page: BlocProvider(
+            create: (_) => getIt<NotificationCubit>()..getNotifications(),
+            child: const NotificationScreen(),
+          ),
+        );
+
       case AppRoutes.doctorViewPatientRadiology:
         return BaseRoute(page: DoctorViewPatientRadiologyView());
 
       case AppRoutes.doctorViewPatientLabTests:
         return BaseRoute(page: DoctorViewPatientLabTestsView());
 
-      case chatBot:
-        return BaseRoute(page: ChatBotView());
+      case AppRoutes.chatBot:
+        return BaseRoute(
+          page: BlocProvider(
+            create: (_) => getIt<ChatBotCubit>(),
+            child: const ChatBotView(),
+          ),
+        );
 
       case AppRoutes.bookDoctorTabs:
         return BaseRoute(

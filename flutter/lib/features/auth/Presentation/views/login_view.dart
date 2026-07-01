@@ -13,23 +13,21 @@ import 'package:Axon/core/widgets/custom_text_field.dart';
 import 'package:Axon/core/widgets/text_app.dart';
 import 'package:Axon/features/auth/Presentation/manager/login/login_cubit.dart';
 import 'package:Axon/features/auth/Presentation/views/widgets/form_label.dart';
-import 'package:Axon/features/auth/Presentation/views/widgets/or_divider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Axon/core/extensions/localization_ext.dart';
 
-
 class LoginView extends StatelessWidget {
   LoginView({super.key});
-  LoginCubit loginCubit =getIt<LoginCubit>() ;
+  final LoginCubit loginCubit = getIt<LoginCubit>();
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer <LoginCubit ,LoginState>(
+    return BlocConsumer<LoginCubit, LoginState>(
       bloc: loginCubit,
       builder: (context, state) {
-      // bool  isloaded =state is LoginLoading ; 
+        // bool  isloaded =state is LoginLoading ;
         return Scaffold(
           backgroundColor: AppColors.white,
           body: SingleChildScrollView(
@@ -39,12 +37,12 @@ class LoginView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(child: Image.asset(AppImages.logoApp, width: 250.w)),
-    
+                  Center(child: Image.asset(AppImages.logoApp, width: 270.w)),
+
                   FormLabel(text: context.l10n.email),
-    
-                  SizedBox(height: 8.h),
-    
+
+                  SizedBox(height: 12.h),
+
                   CustomTextField(
                     controller: loginCubit.emailController,
                     hintText: context.l10n.enter_email,
@@ -54,13 +52,13 @@ class LoginView extends StatelessWidget {
                     ),
                     validator: ValidationHelper.validateEmail,
                   ),
-    
-                  SizedBox(height: 22.h),
-    
+
+                  SizedBox(height: 25.h),
+
                   FormLabel(text: context.l10n.password),
-    
-                  SizedBox(height: 8.h),
-    
+
+                  SizedBox(height: 12.h),
+
                   CustomTextField(
                     controller: loginCubit.passwordController,
                     hintText: context.l10n.enter_password,
@@ -71,9 +69,9 @@ class LoginView extends StatelessWidget {
                     ),
                     validator: ValidationHelper.validatePassword,
                   ),
-    
-                  SizedBox(height: 10.h),
-    
+
+                  SizedBox(height: 12.h),
+
                   Align(
                     alignment: Alignment.centerRight,
                     child: InkWell(
@@ -91,9 +89,9 @@ class LoginView extends StatelessWidget {
                       ),
                     ),
                   ),
-    
+
                   SizedBox(height: 35.h),
-    
+
                   CustomButton(
                     text: context.l10n.sign_in,
                     height: 50.h,
@@ -101,9 +99,9 @@ class LoginView extends StatelessWidget {
                     isLoading: state is LoginLoading,
                     onPressed: () => loginCubit.login(context),
                   ),
-    
+
                   SizedBox(height: 25.h),
-    
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -115,10 +113,7 @@ class LoginView extends StatelessWidget {
                       SizedBox(width: 4.w),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppRoutes.registration,
-                          );
+                          Navigator.pushNamed(context, AppRoutes.registration);
                         },
                         child: TextApp(
                           text: context.l10n.sign_up,
@@ -129,79 +124,64 @@ class LoginView extends StatelessWidget {
                       ),
                     ],
                   ),
-    
-                  SizedBox(height: 22.h),
-    
-                  const OrDivider(),
-    
+
                   SizedBox(height: 25.h),
-    
-                  Container(
-                    height: 50.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      border: Border.all(color: Colors.grey.shade300),
-                      color: Colors.white,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          AppImages.google,
-                          width: 24.w,
-                          height: 24.h,
-                        ),
-                        SizedBox(width: 12.w),
-                        TextApp(
-                          text: context.l10n.sign_in_google,
-                          fontSize: 15.sp,
-                          weight: AppTextWeight.semiBold,
-                        ),
-                      ],
-                    ),
-                  ),
-    
+
+                  // const OrDivider(),
+                  //
+                  // SizedBox(height: 25.h),
+                  //
+                  // Container(
+                  //   height: 50.h,
+                  //   decoration: BoxDecoration(
+                  //     borderRadius: BorderRadius.circular(10.r),
+                  //     border: Border.all(color: Colors.grey.shade300),
+                  //     color: Colors.white,
+                  //   ),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Image.asset(
+                  //         AppImages.google,
+                  //         width: 24.w,
+                  //         height: 24.h,
+                  //       ),
+                  //       SizedBox(width: 12.w),
+                  //       TextApp(
+                  //         text: context.l10n.sign_in_google,
+                  //         fontSize: 15.sp,
+                  //         weight: AppTextWeight.semiBold,
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   SizedBox(height: 40.h),
                 ],
               ),
             ),
           ),
-        ); 
+        );
       },
       listener: (context, state) {
+        if (state is LoginSuccess) {
+          Snackbar.showSuccess(context, message: context.l10n.successfully);
 
-  if (state is LoginSuccess) {
+          final role = SharedPref().getString(PrefKeys.userRole);
 
-    Snackbar.showSuccess(
-      context,
-      message: context.l10n.successfully,
+          if (role?.toLowerCase() == "doctor") {
+            context.pushName(AppRoutes.doctorMain);
+          } else if (role?.toLowerCase() == "patient") {
+            context.pushName(AppRoutes.patientMain);
+          } else {
+            context.pushName(AppRoutes.login);
+          }
+        } else if (state is LoginError) {
+          Snackbar.showError(
+            context,
+            message: mapFailureToMessage(context, state.failure),
+          );
+        }
+      },
     );
-
-    final role = SharedPref().getString(PrefKeys.userRole);
-
-    if (role?.toLowerCase() == "doctor") {
-
-      context.pushName(AppRoutes.doctorMain);
-
-    } else if (role?.toLowerCase() == "patient") {
-
-      context.pushName(AppRoutes.patientMain);
-
-    } else {
-
-      context.pushName(AppRoutes.login);
-
-    }
-  }
-
-  else if (state is LoginError) {
-
-    Snackbar.showError(
-      context,
-      message: mapFailureToMessage(context, state.failure),
-    );
-
-  }
-},) ;
   }
 }

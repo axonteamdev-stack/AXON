@@ -1,7 +1,5 @@
 // doctor_dm.dart
 
-
-
 import 'package:Axon/features/patient/book_doctor/domain/entities/doctor_entity.dart';
 
 class DoctorDM extends DoctorEntity {
@@ -19,31 +17,23 @@ class DoctorDM extends DoctorEntity {
   });
 
   factory DoctorDM.fromJson(Map<String, dynamic> json) {
+    print("DOCTOR JSON => $json");
+
     final doctorProfile = json["doctorProfile"] ?? {};
 
     return DoctorDM(
-      id: json["_id"] ?? "",
+      id: json["id"] ?? json["_id"] ?? "",
       fullName: json["fullName"] ?? "",
       email: json["email"],
       phoneNumber: json["phoneNumber"],
       personalPhoto: json["personalPhoto"],
       gender: json["gender"],
       specialization:
-          json["specialization"] ??
-          doctorProfile["specialization"] ??
-          "",
+          json["specialization"] ?? doctorProfile["specialization"] ?? "",
       yearsExperience:
-          json["yearsExperience"] ??
-          doctorProfile["yearsExperience"] ??
-          0,
-      about:
-          json["about"] ??
-          doctorProfile["about"] ??
-          "",
-      price:
-          json["price"] ??
-          doctorProfile["price"] ??
-          0,
+          json["yearsExperience"] ?? doctorProfile["yearsExperience"] ?? 0,
+      about: json["about"] ?? doctorProfile["about"] ?? "",
+      price: json["price"] ?? doctorProfile["price"] ?? 0,
     );
   }
 }

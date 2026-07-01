@@ -3,7 +3,7 @@ class Endpoints {
       "https://tender-morna-axon-fp-b76b6646.koyeb.app/";
 
   static const String baseUrlImage =
-      "https://tender-morna-axon-fp-b76b6646.koyeb.app/";
+      "https://tender-morna-axon-fp-b76b6646.koyeb.app";
 
   // ================== AUTH ==================
 
@@ -22,7 +22,7 @@ class Endpoints {
   // ============== my profile ==============
   static const String myProfile = "/users/me";
 
-  static  String getPatientById(String id) => "/users/patients/$id";
+  static String getPatientById(String id) => "/users/patients/$id";
 
   // ================== ARTICLES ==================
 
@@ -45,7 +45,7 @@ class Endpoints {
 
   static const String getMedicineDose = "/medications/pending-doses";
 
-static String markDoseAsTaken(String id) => "/medications/$id/doses";
+  static String markDoseAsTaken(String id) => "/medications/$id/doses";
   // ================== DOCTORS ==================
 
   static const String getAllDoctors = "users/doctors?page=1&limit=10";
@@ -55,10 +55,9 @@ static String markDoseAsTaken(String id) => "/medications/$id/doses";
 
   static const String getDoctorPosts = "/posts/doctor";
 
-  // static const String searchDoctors = 
+  // static const String searchDoctors =
   // "/auth/search-doctors";
-  static const String searchDoctors =
-    "/users/doctors/search";
+  static const String searchDoctors = "/users/doctors/search";
 
   static const String updateProfile = "/users/me";
 
@@ -78,4 +77,16 @@ static String markDoseAsTaken(String id) => "/medications/$id/doses";
   static String addComment(String postId) => "/posts/$postId/comments";
 
   static String getComments(String postId) => "/posts/$postId/comments";
+
+  // ================== NOTIFICATIONS ==================
+
+  static const String notifications = "/notifications";
+
+  static const String unreadNotificationsCount = "/notifications/unread-count";
+
+  static const String markAllNotificationsRead = "/notifications/read-all";
+
+  static const createAppointment = "/appointments";
+
+  static const createSetupIntent = "/payments/setup-intent";
 }

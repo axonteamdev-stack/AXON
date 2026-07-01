@@ -69,5 +69,6 @@
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
-  "cmake.sourceDirectory": "D:/body/AXON/flutter/linux"
+  "cmake.sourceDirectory": "D:/body/AXON/flutter/linux",
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

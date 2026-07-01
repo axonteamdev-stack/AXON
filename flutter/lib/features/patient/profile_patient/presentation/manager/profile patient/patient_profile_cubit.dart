@@ -1,8 +1,9 @@
 import 'package:Axon/features/patient/profile_patient/presentation/manager/profile%20patient/patient_profile_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 
-
+@injectable
 class PatientProfileCubit extends Cubit<PatientProfileState> {
   PatientProfileCubit()
       : super(

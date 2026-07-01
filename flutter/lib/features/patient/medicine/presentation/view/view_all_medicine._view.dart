@@ -3,7 +3,6 @@ import 'package:Axon/core/extensions/localization_ext.dart';
 import 'package:Axon/core/style/colors.dart';
 import 'package:Axon/core/widgets/custom_app_bar.dart';
 import 'package:Axon/core/widgets/custom_text_field.dart';
-import 'package:Axon/features/doctor/Home%20Doctor/presentation/views/widgets/header_icons.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/delete_medicine/delete_medicine_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/get_medicine.dart/medicine_list_cubit.dart';
 import 'package:Axon/features/patient/medicine/presentation/manager/medicine_filter/medicine_filter_cubit.dart';
@@ -53,7 +52,7 @@ class _ViewAllMedicineState extends State<ViewAllMedicine> {
               children: [
                 CustomAppBar(
                   title: "MY MEDICINE",
-                  height: 180,
+                  height: 260,
                   trailing: Container(
                     width: 45.w,
                     height: 45.w,
@@ -63,7 +62,6 @@ class _ViewAllMedicineState extends State<ViewAllMedicine> {
                       borderRadius: BorderRadius.circular(18.r),
                       border: Border.all(color: Colors.white.withOpacity(.2)),
                     ),
-                    child: NotificationIcon(count: 5, onTap: () {}),
                   ),
                   bottom: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),

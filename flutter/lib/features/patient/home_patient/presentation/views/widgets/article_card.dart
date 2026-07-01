@@ -16,10 +16,7 @@ class ArticleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.pushName(
-          AppRoutes.patientArticleDetails,
-          arguments: item.id,
-        );
+        context.pushName(AppRoutes.patientArticleDetails, arguments: item.id);
       },
       child: Container(
         width: 170.w,
@@ -37,49 +34,43 @@ class ArticleCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             /// image
-           ClipRRect(
-  borderRadius: BorderRadius.vertical(
-    top: Radius.circular(14.r),
-  ),
-  child: item.image.isNotEmpty
-      ? Image.network(
-          "${Endpoints.baseUrlImage}${item.image}",
-          height: 120.h,
-          width: double.infinity,
-          fit: BoxFit.cover,
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(14.r)),
+              child: item.image.isNotEmpty
+                  ? Image.network(
+                      "${Endpoints.baseUrlImage}${item.image}",
+                      height: 120.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
 
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              width: double.infinity,
-              height: 120.h,
-              color: Colors.grey[200],
-              child: const Icon(
-                Icons.image_not_supported,
-                color: Colors.grey,
-              ),
-            );
-          },
-        )
-      : Container(
-          width: double.infinity,
-          height: 120.h,
-          color: Colors.grey[200],
-          child: const Icon(
-            Icons.image_not_supported,
-            color: Colors.grey,
-          ),
-        ),
-),
-            SizedBox(height: 10.h,),
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: double.infinity,
+                          height: 120.h,
+                          color: Colors.grey[200],
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey,
+                          ),
+                        );
+                      },
+                    )
+                  : Container(
+                      width: double.infinity,
+                      height: 120.h,
+                      color: Colors.grey[200],
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        color: Colors.grey,
+                      ),
+                    ),
+            ),
+            SizedBox(height: 10.h),
 
             /// title
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 8.w,
-                vertical: 6.h,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
               child: Center(
                 child: TextApp(
                   text: item.title,

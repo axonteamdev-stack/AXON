@@ -1,5 +1,6 @@
 import 'package:Axon/features/patient/home_patient/domain/entities/article_entity.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/widgets/articles_tips_section.dart';
+import 'package:Axon/features/patient/home_patient/presentation/views/widgets/axon_ai.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/widgets/quick_actions_section.dart';
 import 'package:Axon/features/patient/home_patient/presentation/views/widgets/today_medication_section.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,8 @@ class HomeScrollableContent extends StatelessWidget {
 
             QuickActionsSection(onAddMedicine: onAddMedicine),
 
+            SizedBox(height: 16.h),
+            AxonAi(),
             SizedBox(height: 16.h),
 
             ArticlesTipsSection(articles: articles),
