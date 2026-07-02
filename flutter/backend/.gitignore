@@ -1,0 +1,44 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Build/Dist folders
+/dist
+/build
+/out
+
+# Logs
+npm-debug.log
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Environment variables
+# KEEP THESE OUT OF VERSION CONTROL!!!
+.env
+.env.*
+
+# TypeScript files
+*.tsbuildinfo
+
+# Coverage/Test reports
+/coverage
+.nyc_output
+
+# Editor/OS Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# # NPM package lock files - optional, but generally included for consistency
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+routes.md

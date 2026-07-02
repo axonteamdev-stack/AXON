@@ -1,0 +1,52 @@
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv
+venv/
+env/
+.env
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+
+# Datasets and Large Files
+# Datasets should generally be stored separately (e.g., in cloud storage or on a shared drive).
+# Uncomment or modify based on your project structure.
+/data/
+/datasets/
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.h5
+
+# Machine Learning and Model Checkpoints
+# Ignore trained models and checkpoints which can be very large.
+# Use Git Large File Storage (LFS) if you must track them.
+/models/
+*.model
+*.pt # PyTorch model files
+*.pth # PyTorch checkpoint files
+*.h5 # Keras/TensorFlow model files (can overlap with data, be specific if needed)
+*.onnx
+*.pkl
+*.joblib
+checkpoints/
+logs/
+tensorboard/
+runs/
+
+# Jupyter Notebook Artifacts
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
